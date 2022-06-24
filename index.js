@@ -1,7 +1,7 @@
 const DOMAIN = 'https://demo.tutorialzine.com/2009/09/simple-ajax-website-jquery'
 const URL = DOMAIN + '/demo.html'
 const download = require('image-downloader')
-const puppeteer = require('puppeteer'); //phải có ";"
+const puppeteer = require('puppeteer');
 
 (async () => {
     try {
@@ -24,7 +24,7 @@ const puppeteer = require('puppeteer'); //phải có ";"
         // console.log(imgMeoUrl)
         const options = {
             url: DOMAIN + '/' + imgMeoUrl,
-            dest: 'images'
+            dest: '/Users/hyun_M1/Documents/nodeJS/Puppeteer/puppeteer/images'
         };
         await download.image(options)
             .then(({ filename }) => {
