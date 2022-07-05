@@ -14,13 +14,20 @@
   "dependencies": {
     "captcha-cv-ocr": "^1.1.2",
     "catcha": "^1.0.4",
+    "cheerio": "^1.0.0-rc.12",
     "dayjs": "^1.11.3",
     "fs": "0.0.1-security",
+    "html2canvas": "^1.4.1",
     "image-downloader": "^4.0.1",
+    "jspdf": "^2.5.1",
     "optiic": "0.0.18",
     "puppeteer": "^5.3.0",
     "puppeteer-extra": "^3.3.0",
     "puppeteer-extra-plugin-stealth": "^2.10.1",
-    "tesseract.js": "^2.1.5"
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
+    "tesseract.js": "^2.1.5",
+    "uninstall": "0.0.0",
+    "voca": "^1.4.0"
   }
 }

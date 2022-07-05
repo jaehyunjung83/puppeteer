@@ -7,6 +7,7 @@ const dayjs = require('dayjs');
 require('dayjs/locale/ko');
 const localizedFormat = require('dayjs/plugin/localizedFormat');
 dayjs.extend(localizedFormat);
+const download = require('image-downloader')
 
 const stealthPlugin = StealthPlugin();
 stealthPlugin.enabledEvasions.delete("user-agent-override");
@@ -26,10 +27,6 @@ puppeteer.use(pluginUserAgentOverride);
       // { userDataDir: './user-data-dir' }
     );
 
-    //   await browser.platform('Win32');
-    //   await browser.userAgent(
-    //     "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; .NET4.0C; .NET4.0E; MaWebDRM; rv:11.0) like Gecko"
-    //   );
     const page = await browser.newPage();
 
     await page.setRequestInterception(true);
@@ -77,9 +74,6 @@ puppeteer.use(pluginUserAgentOverride);
       return document.querySelector(".link_view").click();
     });
 
-    // await page.click(linkViewClick)
-
-    // await navigationPromise.then((res) => console.log('조회하기버튼 res', res)).catch(e => console.log('naviPromise Error', err));
 
     await page.waitForSelector("#applcntNm", { waitUntil: "load" });
     await page.click("#applcntNm");
@@ -107,18 +101,24 @@ puppeteer.use(pluginUserAgentOverride);
 
     await page.waitForSelector("#email1");
     await page.click("#email1");
-    await page.type("#email1", "jjjh1983");
+    await page.type("#email1", "");
 
     await page.waitForSelector("#email2");
     await page.click("#email2");
-    await page.type("#email2", "naver.com");
+    await page.type("#email2", "");
+
+
+    
+
+
+    await page.screenshot({ path: 'htmlAtBeforePhoneAuth.png' })
+    const htmlAtBeforePhoneAuth = await page.content()
+    fs.writeFileSync('htmlAtBeforePhoneAuth.html', htmlAtBeforePhoneAuth)
+
 
     console.log("cert전 UserAgent", await page.evaluate("navigator.userAgent"));
     console.log("cert전 UserAgent", await page.evaluate("navigator.platform"));
 
-    // // 공동인증서 인증 버튼 클릭
-    // await page.waitForSelector("#cert");
-    // await page.click("#cert");
 
     // 핸드폰 인증 선택
     await page.waitForSelector("#phone");
@@ -131,17 +131,14 @@ puppeteer.use(pluginUserAgentOverride);
         )
       );
 
+
     console.log("pop열렸을 때 page", page);
-    //   debugger;
+    
     const newPagePromise = new Promise((x) =>
       browser.once("targetcreated", (target) => x(target.page()))
     );
     const popup = await newPagePromise;
-    console.log(
-      "%c 🚀 ~ file: insure.js ~ line 93 ~ popup",
-      "background: blue; color: white",
-      popup
-    );
+    console.log("%c 🚀 ~ file: insure.js ~ line 93 ~ popup", "background: blue; color: white", popup);
 
     // popup창 alert창 뜨는 거 확인 버튼
     page.on("dialog", async (dialog) => {
@@ -149,36 +146,13 @@ puppeteer.use(pluginUserAgentOverride);
       await dialog.accept();
     });
 
-    //  OS 이상하다고 뜨는 alert dialog 무시하기
-    //   await popup.waitForSelector('[name="__CONFIRM__"]', {waitUntil: 'load'});
-    //   const confirm = await popup.$('[name="__CONFIRM__"]');
-    //   await popup.click('[name="__CONFIRM__"]');
-
-    // await navigationPromise.then((res)=>console.log('popup창으로 넘어옴', res));
-
-    // popup창 전체 동의 체크박스
-    //   await popup.waitForSelector("#pubCertAgree");
-
-    // const pubCertAgree = await popup.waitForSelector('form > .agreeWithPolicy > .agreeAll > .label > .checkboxWithTxt', { waitUntil: "load" });
-    // console.log("🚀 ~ file: insure.js ~ line 111 ~ pubCertAgree", pubCertAgree)
-    // await pubCertAgree.click();
 
     await popup.waitForSelector("#ct > .ui_cover > .agency_select__items > .mobilecoItems > .ui_align_mid")
       .then((res) => console.log("통신사 선택", res));
     await popup.click("#ct > .ui_cover > .agency_select__items > .mobilecoItems > .ui_align_mid")
       .then((res) => console.log("통신사 click", res));
 
-    // const newPagePromise2 = new Promise((x) =>
-    //   browser.once("targetcreated", (target) => x(target.page()))
-    // );
-    // const popup2 = await newPagePromise2;
-    // console.log("🚀 ~ file: insure.js ~ line 130 ~ popup2", popup2)
 
-    // await popup.evaluate(() => {
-    //   const lguplus = document.querySelector('#agency-popup-lgm')
-    //   console.log("🚀 ~ file: insure.js ~ line 172 ~ awaitpopup.evaluate ~ lguplus", lguplus)
-    //   lguplus.click()
-    // })
     await popup.click(".licensee-list > .first-item > .licensee_title > #LGU\\+ > .checked")
       .then((res) => console.log("LG U+ click", res));
 
@@ -189,11 +163,6 @@ puppeteer.use(pluginUserAgentOverride);
     await mvnoChoice.click("#mvnoLayerCheck").then(()=>console.log('~통신사 선택완료~')).catch((e)=>console.log(e));
 
 
-    // await popup.waitForSelector(".ui_cover > .all > li > .checkbox > label:nth-child(2)")
-    //   .then((res) => console.log("핸드폰 전체동의 checkbox", res));
-    // await popup.click(".ui_cover > .all > li > .checkbox > label:nth-child(2)")
-    //   .then((res) => console.log("핸드폰 전체동의 checkbox Click()", res));
-
     console.log('통신사선택완료 - 전체동의 사이')
     await popup.evaluate(() => {
       const wholeAgree = document.querySelector("#agree_all");
@@ -202,31 +171,6 @@ puppeteer.use(pluginUserAgentOverride);
       console.log('전체 동의 clicked')
     });
 
-    // const phoneAgree = await popup.evaluate(() => {return document.getElementById(".agree_all")});
-    // console.log("🚀 ~ file: insure.js ~ line 126 ~ phoneAgree", phoneAgree)
-    // await phoneAgree.click().then((res)=>console.log(res)).catch((e) => console.log('error: ', e));
-
-    // const isCheckBoxChecked = await pubCertAgree.getProperty("checked");
-    // console.log("🚀 ~ file: insure.js ~ line 115 ~ isCheckBoxChecked", isCheckBoxChecked)
-
-    //   setTimeout(async () => {
-    //     await page.evaluate((evaluate) => {
-    //       return (document.getElementById("pubCertAgree1").checked = true);
-    //     });
-    //     await page.evaluate(() => {
-    //       return (document.getElementById("pubCertAgree2").checked = true);
-    //     });
-    //   }, [1000]);
-    //   await page.waitForSelector(
-    //     "form > .agreeWithPolicy > .agreeAll > .input#pubCertAgree.checkbox"
-    //   );
-    //   await page.click(
-    //     "form > .agreeWithPolicy > .agreeAll > .input#pubCertAgree.checkbox"
-    //   );
-
-    // popup창 '인증하기' 버튼
-    // await popup.waitForSelector("#btnPubCert");
-    // await popup.click("#btnPubCert");
 
     await popup.waitForSelector("#btnSms").then((res) => console.log('문자(sms)로 인증하기버튼 element', res));
     await popup.click("#btnSms");
@@ -249,14 +193,29 @@ puppeteer.use(pluginUserAgentOverride);
     await popup.click("#mobileno");
     await popup.type("#mobileno", "01088957500");
 
+  // captcha image down
+    const captchaImg = await popup.$eval('#CAPTCHA_CaptchaImage', (el) => el.getAttribute('src'));
+    const options = {
+      url: 'https://nice.checkplus.co.kr' + captchaImg + '.png',
+      dest: '/Users/hyun_M1/Documents/nodeJS/Puppeteer/puppeteer/captcha_img'
+    };
+    await download.image(options)
+      .then(({ filename }) => {
+          console.log('Saved to', filename)
+      })
+      .catch(err => console.error("ERR save!!! " + err))
+
+
     await popup.waitForSelector("#answer");
     await popup.click("#answer");
-    await popup.type("#answer", "2859");
+    await popup.type("#answer", "user한테 받을 captcha");  // user한테 핸드폰 인증번호 argu로 받아서 별도 async funtion으로 전달해야함
 
     await popup.waitForSelector("#btnSubmit");
     await popup.click("#btnSubmit");
 
-    // sms 인증번호 입력 &
+
+    // user한테 sms 인증번호 전달 받아 입력하고 &
+    // captcha answer 전송 버튼하고 sms인증 answer 전송 버튼 모두 btnSubmit이니 헷갈리지 말 것
     await popup.waitForSelector("#btnSubmit");
     await popup.click("#btnSubmit");
 
@@ -265,15 +224,6 @@ puppeteer.use(pluginUserAgentOverride);
     const [, page2] = await browser.pages();
     console.log("🚀 ~ file: insure.js ~ line 206 ~ page2", page2.url);
 
-    // const newPagePromise2 = new Promise((x) =>
-    // browser.once("targetcreated", (target) => x(target.page()))
-    // );
-    // console.log("🚀 ~ file: insure.js ~ line 207 ~ newPagePromise2", newPagePromise2)
-
-    // const nexStepPage = await newPagePromise2;
-
-    // await popup.waitForSelector('#certificate_file')
-    // await popup.click("#certificate_file");
 
     await page2.waitForSelector("#checkAgree1_Y");
     await page2.click("#checkAgree1_Y");
@@ -287,25 +237,8 @@ puppeteer.use(pluginUserAgentOverride);
     await page2.waitForSelector("#checkAgree4_Y");
     await page2.click("#checkAgree4_Y");
 
-    await page2.waitForSelector(
-      "#contents > #insuranceAgree > #agreeForm > .btn_area > .btn_next_go"
-    );
-    await page2.click(
-      "#contents > #insuranceAgree > #agreeForm > .btn_area > .btn_next_go"
-    );
-
-    // await page.waitForSelector("#112201130915");
-    // await page.click("#112201130915");
-
-    // await page.waitForSelector("#popuForm");
-    // await page.click("#popuForm");
-
-    // await page.waitForSelector(
-    //   "#AFTER_START > #resultDetail > .btn_area > .btn_print > .icon_print"
-    // );
-    // await page.click(
-    //   "#AFTER_START > #resultDetail > .btn_area > .btn_print > .icon_print"
-    // );
+    await page2.waitForSelector("#contents > #insuranceAgree > #agreeForm > .btn_area > .btn_next_go");
+    await page2.click("#contents > #insuranceAgree > #agreeForm > .btn_area > .btn_next_go");
 
     await navigationPromise;
 
@@ -322,8 +255,10 @@ puppeteer.use(pluginUserAgentOverride);
 
     const result1 = [];
     const query = await page2.evaluate(() => {
-      return document.evaluate('//*[@id="popuForm"]/table[1]', document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null)
+      return document.getElementById('table')
     })
+    console.log("🚀 ~ file: insure.js ~ line 232 ~ query ~ query", query)
+
     for (let i = 0, length = query.snapshotLength; i < length; ++i) {
       result1.push(query.snapshotItem(i).innerHTML);
     }
@@ -357,6 +292,6 @@ puppeteer.use(pluginUserAgentOverride);
 // document.getElementById('username').value = '정재현',
 // document.getElementById('mynum1').value = '831206',
 // document.getElementById('mynum2').value = '1',
-// document.getElementById('mobileno').value = '01088957500',
+// document.getElementById('mobileno').value = '01088957500';
 // // 보안문자 answer
 // document.getElementById('answer').value = '41153r'
