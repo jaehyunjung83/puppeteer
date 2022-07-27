@@ -22,12 +22,21 @@ puppeteer.use(pluginUserAgentOverride);
 
 (async () => {
   const browser = await puppeteer.launch(
-    { headless: false },
-    { args: ["--window-size=1920,1080", "--disable-notifications"] }
+    { headless: false, devtools: false },
+    { args: [
+      '--start-fuulscreen',
+      // "--window-size=1920,1080", 
+      "--disable-notifications", 
+      '--disable-web-security',
+      // '--disable-features=IsolateOrigins',
+      // '--disable-features=BlockInsecurePrivateNetworkRequests',
+      // '--disable-site-isolation-trials'
+    ] }
     // { userDataDir: './user-data-dir' }
   );
 
   const page = await browser.newPage();
+  
 
   await page.setRequestInterception(true);
 
@@ -40,18 +49,19 @@ puppeteer.use(pluginUserAgentOverride);
       default:
         req.continue();
     }
+    // req.continue();
   });
 
   page.setDefaultNavigationTimeout(0);
 
   const navigationPromise = page.waitForNavigation();
 
-  await page.goto("https://payinfo.or.kr/payinfo.html", {
+  await page.goto("https://payinfo.or.kr/", {
     waitUntil: "networkidle0",
   });
 
 
-  await page.setViewport({ width: 1080, height: 1080 });
+  // await page.setViewport({ width: 1080, height: 1080 });
   console.log("🚀 ~ file: payinfo.js ~ line 60 ~ page", page.frames())
 
   const [ , , secondStartFrame,] = await page.frames();
@@ -64,20 +74,25 @@ puppeteer.use(pluginUserAgentOverride);
     console.log("dialog", dialog);
     dialog.dismiss();
   });
+
+
   // await page.waitForNavigation();
 
   
-  await browser
-  .pages()
-  .then((pages) => console.log("내계좌한눈에 클릭 후 redirect page:", pages));
   
-  // await secondStartFrame.waitForNavigation();
+  // await browser
+  // .pages()
+  // .then((pages) => console.log("내계좌한눈에 클릭 후 redirect page:", pages));
   
-  console.log(page.frames())
+  await secondStartFrame.waitForNavigation();
+  
+  console.log('page.frames()', page.frames())
   
   
   const [ , , , , , mainFrame] = page.frames();
   // await mainFrame.waitForNavigation();
+
+  await mainFrame.waitForNavigation();
 
   await mainFrame.waitForSelector('#r_chk_all', { waitUntil: 'load'})
   await mainFrame.click('#r_chk_all');
@@ -85,346 +100,302 @@ puppeteer.use(pluginUserAgentOverride);
   await mainFrame.waitForSelector('#contents > div.btn_group2 > a')
   await mainFrame.click('#contents > div.btn_group2 > a');
   
+  console.log('frames', page.frames())
+
   await mainFrame.waitForSelector('#rlnmNum1', { waitUntil: 'load'})
   await mainFrame.click('#rlnmNum1')
+  // page.on("dialog", async (dialog) => {
+  //   dialog.dismiss();
+  // });
   await mainFrame.type('#rlnmNum1', '831206')
+  
+  // console.log('frames', page.frames())
+  // await mainFrame.$eval('#rlnmNum1', (eval) => console.log(eval), eval.val('831206') )
 
   // await mainFrame.click('#rlnmNum2')
   // await mainFrame.type('#rlnmNum2', '1001722')
-  await mainFrame.$eval('#rlnmNum2', (eval) => eval.value = '1001722')
+  // await mainFrame.$eval('#rlnmNum2', (eval) => eval.value = '1001722')
 
-  await mainFrame.waitForSelector('#contents > div > div > div:nth-child(4) > div > a:nth-child(1)')
-  await mainFrame.click('#contents > div > div > div:nth-child(4) > div > a:nth-child(1)')
-
-  
-
-
-
-
-
-  await page.waitForSelector("body > #wrapper > #main_contents > .link_view");
-
-  await page.evaluate(() => {
-    return document.querySelector(".link_view").click();
-  });
-
-  await page.waitForSelector("#applcntNm", { waitUntil: "load" });
-  await page.click("#applcntNm");
-  await page.type("#applcntNm", "정재현");
-
-  await page.waitForSelector("#telno1");
-  await page.click("#telno1");
-  await page.type("#telno1", "010");
-
-  await page.waitForSelector("#telno2");
-  await page.click("#telno2");
-  await page.type("#telno2", "8895");
-
-  await page.waitForSelector("#telno3");
-  await page.click("#telno3");
-  await page.type("#telno3", "7500");
-
-  await page.waitForSelector("#ssn1");
-  await page.click("#ssn1");
-  await page.type("#ssn1", "831206");
-
-  await page.waitForSelector("#ssn2");
-  await page.click("#ssn2");
-  await page.type("#ssn2", "1001722");
-
-  await page.waitForSelector("#email1");
-  await page.click("#email1");
-  await page.type("#email1", "");
-
-  await page.waitForSelector("#email2");
-  await page.click("#email2");
-  await page.type("#email2", "");
-
-  // 공동인증 선택
-  await page.waitForSelector("#cert");
-  await page.click("#cert");
-
-  console.log("pop열렸을 때 page", page);
-
-  // popup창으로 전환------------------------------------------------------------------------------------------------
-  const newPagePromise = new Promise((x) =>
-    browser.once("targetcreated", (target) => x(target.page()))
-  );
-  const popup = await newPagePromise;
-  console.log(
-    "%c 🚀 ~ file: insure.js ~ line 93 ~ popup",
-    "background: blue; color: white",
-    popup
-  );
-
-  popup.setDefaultNavigationTimeout(0);
-
-  // popup창 alert창 뜨는 거 확인 버튼
-  page.on("dialog", async (dialog) => {
-    console.log("dialog", dialog);
-    (await dialog) ?? dialog.accept();
-  });
-
-  await popup.waitForSelector(
-    "form > .agreeWithPolicy > .agreeAll > .label > .checkboxWithTxt"
-  );
-  await popup
-    .click("form > .agreeWithPolicy > .agreeAll > .label > .checkboxWithTxt")
-    .then(() => console.log("공동인증서 전체 동의 체크 Click"));
-
-  const confirmBotton = await popup.waitForSelector("#btnPubCert");
-  await confirmBotton.click();
-
-  // 공동인증서 창 뜸 -> iframe page전환------------------------------------------------------------------------------------------------
-  await browser
-    .pages()
-    .then((pages) => console.log("인증서 popup창 떳을 때 pages:", pages));
-
-  const [, , page3] = await browser.pages();
-
-  page3.setDefaultNavigationTimeout(0);
-  // const yettieFramePromise = new Promise((x) =>
-  // console.log("🚀 ~ file: insure_certAuth.js ~ line 138 ~ x", x),
-  //   page3.once("framenavigated", (target) => console.log(target))
-  // );
-  // await yettieFramePromise;
-
-  // const frame3 = await waitForFrame(page3, 'yettie_iframe')
-  
-  
-  await page3.waitForTimeout(3000);
-
-  const [, , frame3] = await page3.frames();
-  console.log("🚀 ~ file: insure_certAuth.js ~ line 139 ~ frame3", frame3);
-  
-  // await page3.evaluate(() => {
-  //   const findCert = document.querySelector("#ico5");
-  //   console.log("🚀 ~ file: insure.js ~ line 190 ~ awaitpopup.evaluate ~ findCert", findCert)
-  //   findCert.click();
-  //   console.log('인증서 hard에서 찾기 icon clicked')
-  // });
-
-  await page3.waitForTimeout(1000);
-  const frameHandle = await page3.$("iframe[id='yettie_iframe']");
-  const yettieiframetest = await frameHandle.contentFrame();
-  
-
-  await yettieiframetest.waitForSelector('[tabindex="6"]');
-  await yettieiframetest.click('[tabindex="6"]');
-
-  const [fileChooser] = await Promise.all([
-    page3.waitForFileChooser(),
-    yettieiframetest.waitForSelector("#fileInputHidden"),
-    yettieiframetest.click("#fileInputHidden"),
-  ]);
-  await fileChooser.accept([
-    "/Users/hyun_M1/Library/Preferences/NPKI/yessign/USER/cn=정재현()008804620180611188000055,ou=SHB,ou=personal4IB,o=yessign,c=kr/정재현()008804620180611188000055_2e51e7f8.pfx",
-  ]);
-  await yettieiframetest.waitForSelector("#hiddenPasswordInput");
-  (await yettieiframetest.type("#hiddenPasswordInput", "wjdwogus1@")) /
-    (await yettieiframetest.waitForSelector('[tabindex="9998"]'));
-  await yettieiframetest.click('[tabindex="9998"]');
-  await yettieiframetest
-    .click('[tabindex="9998"]')
-    .then((res) => console.log("최종 동의 화면이랑 약관 받아오는 res", res));
-
-  //공동인증서 제출 후 redirected Page------------------------------------------------------------------------------------------------
-  await browser
-    .pages()
-    .then((pages) => console.log("공동인증서 제출 후 redirect page:", pages));
-
-  // page2에서 redirect 된 거 같음
-  const [, page4] = await browser.pages();
-  console.log("🚀 ~ file: insure_certAuth.js ~ line 178 ~ page4", page4);
-
-  page4.setDefaultNavigationTimeout(0);
-  
-  await page4.waitForSelector("#checkAgree1_Y");
-  await page4.click("#checkAgree1_Y");
-  await page4.waitForSelector("#checkAgree2_Y");
-  await page4.click("#checkAgree2_Y");
-  await page4.waitForSelector("#checkAgree3_Y");
-  await page4.click("#checkAgree3_Y");
-  await page4.waitForSelector("#checkAgree4_Y");
-  await page4.click("#checkAgree4_Y");
-  await page4.waitForSelector(
-    "#contents > #insuranceAgree > #agreeForm > .btn_area > .btn_next_go"
-  );
-  await page4.click(
-    "#contents > #insuranceAgree > #agreeForm > .btn_area > .btn_next_go"
-  );
-
-  page4.on("dialog", async (dialog) => {
-    console.log("dialog", dialog);
-    (await dialog) ?? dialog.accept();
-  });
-
-  // 전체 RESULT 페이지
-
-  await navigationPromise;
-  await browser
-    .pages()
-    .then((pages) => console.log("RESULT redirect page:", pages));
-
-  const [, page5] = await browser.pages();
-
-  page5.setDefaultNavigationTimeout(0);
-
-  await page5.waitForSelector("#resultDetail");
-  
-
-  const resultText = await page5.$eval("#resultDetail", (eval) => {
-    return eval.innerText;
-  });
-
-  
-
-  const data = await page5.evaluate(() => {
-    const titles = Array.from(document.querySelectorAll('#popuForm > h4.sub_sstit_bul')); 
-    const InsuaranceStatusTable = Array.from(document.querySelectorAll('#popuForm > table:nth-child(8)')); 
-    console.log("🚀 ~ file: insure_certAuth.js ~ line 229 ~ data ~ InsuaranceStatusTable", InsuaranceStatusTable)
-    // 그냥 전체 Table에서 select하면 mobile view 포함해서 중복 조회되므로 pc view의 선택자만 골라서 담기
-   
-    const ISTheaders = [];
-    const ISTcells = {};
-
-    for (let i = 0; i < 2; i++) {
-      for (let j = 0; j < InsuaranceStatusTable[0].rows[i].cells.length; j++) {
-          ISTheaders.push(InsuaranceStatusTable[0].rows[i].cells[j].textContent)
-                      }
-    }
-
-    for (let i = 2; i < InsuaranceStatusTable[0].rows.length; i++) {
-      const cellsrow = []
-        for (let j = 0; j < InsuaranceStatusTable[0].rows[i].cells.length; j++) {
-            cellsrow.push(InsuaranceStatusTable[0].rows[i].cells[j].textContent)
-                        }
-      ISTcells[i] = cellsrow
-    }
-
-    const UnclaimedInsuaranceTable = Array.from(document.querySelectorAll('#unInsrcResultArea > table')); 
-      const UITheaders = [];
-      const UITcells = {};
-
-      for (let i = 0; i < 1; i++) {
-        for (let j = 0; j < UnclaimedInsuaranceTable[0].rows[i].cells.length; j++) {
-          UITheaders.push(UnclaimedInsuaranceTable[0].rows[i].cells[j].textContent)
-                        }
-      }
-
-      for (let i = 1; i < UnclaimedInsuaranceTable[0].rows.length; i++) {
-        const cellsrow = []
-          for (let j = 0; j < UnclaimedInsuaranceTable[0].rows[i].cells.length; j++) {
-              cellsrow.push(UnclaimedInsuaranceTable[0].rows[i].cells[j].textContent)
-                          }
-          UITcells[i] = cellsrow
-      }
-
-    const DormantInsuaranceTable = Array.from(document.querySelectorAll('#popuForm > table:nth-child(14)')); 
-      const DITheaders = [];
-      const DITcells = {};
-
-      for (let i = 0; i < 1; i++) {
-        for (let j = 0; j < DormantInsuaranceTable[0].rows[i].cells.length; j++) {
-          DITheaders.push(DormantInsuaranceTable[0].rows[i].cells[j].textContent)
-                        }
-      }
-
-      for (let i = 1; i < DormantInsuaranceTable[0].rows.length; i++) {
-        const cellsrow = []
-          for (let j = 0; j < DormantInsuaranceTable[0].rows[i].cells.length; j++) {
-              cellsrow.push(DormantInsuaranceTable[0].rows[i].cells[j].textContent)
-                          }
-          DITcells[i] = cellsrow
-      }
-
-
-    // return table.map(td => td.innerText);
-    return {
-      Insurance_Status: {
-        title: titles[0].innerText,
-        header: ISTheaders,
-        column: ISTcells,
-      },
-      Unclaimed_Insuarance: {
-        title: titles[1].innerText,
-        header: UITheaders,
-        column: UITcells,
-      },
-      Dormant_Insuarance: {
-        title: titles[2].innerText,
-        header: DITheaders,
-        column: DITcells,
-      },
-
-    }
-})
-  console.log("🚀 ~ file: insure_certAuth.js ~ line 259 ~ data ~ data", data)
-
-  await fs.writeFile("resultDetail.json", JSON.stringify(data), (err) =>
-    console.log(err)
-  );
-
-
-  const resultAllHTML = await page5.$eval("#resultDetail", (eval) => {
-    return eval.innerHTML;
-  });
-
-  const resultPage = await browser.newPage();
-  await resultPage.setContent(resultAllHTML);
-  await resultPage.screenshot({
-    path: `./TEMP_FOLDER/${dayjs(new Date()).locale("ko").format("llll")}.png`,
-    fullPage: true,
-  });
-  // await resultPage.pdf({ path: `./TEMP_FOLDER/${dayjs(new Date).locale('ko').format('llll')}.pdf` });
-
-  const resultHTML = `
-  <!doctype html>
-    <html lang='ko'>
-      <head>
-        <meta charset="utf-8">
-      </head>
-      <body>
-        ${resultAllHTML}
-      </body>
-    </html>
-  `;
-  fs.writeFileSync(
-    `./TEMP_FOLDER/${dayjs(new Date()).locale("ko").format("llll")}.html`,
-    resultHTML,
-    "utf8",
-    (res) => console.log("파일저장결과:", res)
-  );
-
-
-  // const table = await page5.$$eval("#popuForm > table:nth-child(8)", eval => { return eval });
-  // console.log("🚀 ~ file: insure_certAuth.js ~ line 254 ~ table", table)
-  // const resultTable = { header: "", rows: "" };
-
-  // // // html table to json
-  // table.find("tbody tr th").each(function () {
-  //   resultTable.header.push($(this).html());
-  // });
-  
-  // table.find("tbody tr").each(function () {
-  //   var row = {};
-    
-  //   $(this)
-  //   .find("td")
-  //   .each(function (i) {
-  //     var key = header[i],
-  //     value = $(this).html();
-      
-  //     resultTable.row[key] = value;
+  // const eval = await mainFrame.evaluate(() => {
+  //   return document.getElementsByTagName('form').frmMain1
   //   });
+  // console.log("🚀 ~ file: payinfo.js ~ line 106 ~ eval ~ eval", eval)
+  
+  
+  // const nppfsStartUp = await mainFrame.evaluate(() => { 
+  //   const frmMain1 = document.getElementsByTagName('form').frmMain1;
+  //    window.npPfsStartup(frmMain1, true, true, false, true, "enc", "on") 
+  //   });
+
+  // const npVCtrl = await mainFrame.evaluate(() =>  window.npVCtrl );
+  // console.log("🚀 ~ file: payinfo.js ~ line 115 ~ npVCtrl", npVCtrl)
+
+
+  // page.on("request", (req) => {
     
-  //   resultTable.rows.push(row);
+  //   switch (req.resourceType()) {
+  //     // case "font":
+  //     // case "image":
+  //     //   req.abort();
+  //       // break;
+  //     default:
+  //       req.continue();
+  //   }
+  //   // req.continue();
   // });
+
+  await mainFrame.waitForSelector('#nppfs-keypad-rlnmNum2 > div', { waitUntil: 'load'});
+  await mainFrame.evaluate(() => {
+    frmMain1.installed.value = 'T';
+    console.log('frmMain1.installed.value: ', frmMain1.installed.value)
+    // yessignInstall.js "인증서 관련 환경 아니다.." 오류 없애게
+    // isSupported() false이면 500900입력하고 휴대폰 인증으로 안 넘어가고 다시 agree화면으로 back
+    npAddon.isSupported = function() {
+        return true;
+      };
+
+    console.log('isSupported: ', npAddon.isSupported());
+
+    // npPfsStartup(document.Frm1, true, true, false, true, "enc", "on");
+
+    const touchEnButton1 = Object.values(window.npVCtrl.keypadObject[0]._keypaditems[0].buttons)[4].action;
+    const touchEnButton2 = Object.values(window.npVCtrl.keypadObject[0]._keypaditems[0].buttons)[5].action;
+    const touchEnButton3 = Object.values(window.npVCtrl.keypadObject[0]._keypaditems[0].buttons)[6].action;
+    const touchEnButton4 = Object.values(window.npVCtrl.keypadObject[0]._keypaditems[0].buttons)[7].action;
+    const touchEnButton5 = Object.values(window.npVCtrl.keypadObject[0]._keypaditems[0].buttons)[8].action;
+    const touchEnButton6 = Object.values(window.npVCtrl.keypadObject[0]._keypaditems[0].buttons)[9].action;
+    const touchEnButton7 = Object.values(window.npVCtrl.keypadObject[0]._keypaditems[0].buttons)[10].action;
+    const touchEnButton8 = Object.values(window.npVCtrl.keypadObject[0]._keypaditems[0].buttons)[11].action;
+    const touchEnButton9 = Object.values(window.npVCtrl.keypadObject[0]._keypaditems[0].buttons)[12].action;
+    const touchEnButton0 = Object.values(window.npVCtrl.keypadObject[0]._keypaditems[0].buttons)[13].action;
+    const touchEnButtonConfirm = Object.values(window.npVCtrl.keypadObject[0]._keypaditems[0].buttons).find((e) => e.action == 'action:enter').action;
   
-  // console.log("🚀 ~ file: insure_certAuth.js ~ line 256 ~ resultTable", resultTable)
+  
+    $(`img[data-action="${touchEnButton1}"]`).click().keyup();   //  주민번호 TouchEnKey 창에서 data-action attr이 'data:211ca898b2bf92e503367b090adce492eafc8f41:1'인 element를 찾아 클릭한다.
+    $(`img[data-action="${touchEnButton0}"]`).click().keyup();
+    $(`img[data-action="${touchEnButton0}"]`).click().keyup();
+    $(`img[data-action="${touchEnButton1}"]`).click().keyup();   
+    $(`img[data-action="${touchEnButton7}"]`).click().keyup();   
+    $(`img[data-action="${touchEnButton2}"]`).click().keyup();   
+    $(`img[data-action="${touchEnButton2}"]`).click().keyup();   
+    $(`img[data-action="${touchEnButtonConfirm}"]`).click();   
+
+    console.log('frmMain1.rlnmNum1.value: ', frmMain1.rlnmNum1.value),
+    console.log('frmMain1.rlnmNum2.value: ', frmMain1.rlnmNum2.value),
+    console.log('frmMain1.rlnmNum.value: ', frmMain1.rlnmNum.value)
+   
+    console.log('jumin2 hash value', npVCtrl.keypadObject[0]._hashelement[0].value)
+  }
+  );
+
+  const frmMain1 = await mainFrame.evaluate(() => frmMain1.rlnmNum.value);
+  console.log("🚀 ~ file: payinfo.js ~ line 184 ~ frmMain1", frmMain1)
+
+  // await mainFrame.waitForSelector('#contents > div > div > div:nth-child(4) > div > a:nth-child(2)')
+  // await mainFrame.click('#contents > div > div > div:nth-child(4) > div > a:nth-child(2)')
+  
+  await mainFrame.evaluate(() => window.signFin(frmMain1, frmMain1.rlnmNum.value , OID4Personal, null, null, '01'));
+  
+  console.log('YESKEY 화면 뜬  후', page.frames());
+  
+  const iFrame = await mainFrame.waitForSelector('#finCertSdkIframe', { waitUntil: 'load'});
+  console.log("🚀 ~ file: payinfo.js ~ line 167 ~ iFrame", iFrame)
+  
+  // const finCertSdkIframe = await page.frames().find(frame => frame.childFrames()[0]);
+  // console.log("🚀 ~ file: payinfo.js ~ line 165 ~ finCertSdkIframe", finCertSdkIframe)
+
+  // await mainFrame.waitForNavigation();
+  const finCertSdkIframe = await iFrame.contentFrame();
+  console.log("🚀 ~ file: payinfo.js ~ line 174 ~ finCertSdkIframe", finCertSdkIframe)
+
+  await finCertSdkIframe.waitForSelector('#CLOUD_ID_1', { waitUntil: 'load'})
+
   
 
-  // await page4.waitForSelector('#AFTER_START > btn_area > button')
+  const getPubKeyIdRes = {}
+  const isDeviceInitial = await finCertSdkIframe.evaluate(
+    async(getPubKeyIdRes) => 
+      await finCertClient.main.getPubKeyId()
+      .then((res) => getPubKeyIdRes = res)
+    )
+  console.log("🚀 ~ file: payinfo.js ~ line 175 ~ isDeviceInitial", isDeviceInitial)
+  
+  
+ 
+  
 
-  // await browser.close();
+  
+  await finCertSdkIframe.waitForSelector('#CLOUD_ID_1', { waitUntil: 'load'})
+  await finCertSdkIframe.click('#CLOUD_ID_1')
+  await finCertSdkIframe.type('#CLOUD_ID_1', '정재현')
+
+  
+  
+
+
+  await finCertSdkIframe.waitForTimeout(300)
+  await finCertSdkIframe.waitForSelector('#CLOUD_ID_2', { waitUntil: 'load'})
+  await finCertSdkIframe.click('#CLOUD_ID_2')
+  await finCertSdkIframe.type('#CLOUD_ID_2', '01088957500')
+  await finCertSdkIframe.waitForTimeout(300)
+  await finCertSdkIframe.waitForSelector('#CLOUD_ID_3', { waitUntil: 'load'})
+  await finCertSdkIframe.click('#CLOUD_ID_3')
+  await finCertSdkIframe.type('#CLOUD_ID_3', '19831206')
+  await finCertSdkIframe.waitForTimeout(300)
+  // await finCertSdkIframe.waitForSelector('#__fincert_root__ > div > div > div.cf_layout > div.cf_container > div.cf_contents > div.login_input_area > div.checkbox_pack > label > span.checkbox_shape', { waitUntil: 'load'})
+  // await finCertSdkIframe.click('#__fincert_root__ > div > div > div.cf_layout > div.cf_container > div.cf_contents > div.login_input_area > div.checkbox_pack > label > span.checkbox_shape')
+  await finCertSdkIframe.waitForSelector('#__fincert_root__ > div > div > div.cf_layout > div.cf_container > div.cf_contents > div.login_input_area > div.login_confirm_wrap > button')
+  await finCertSdkIframe.click('#__fincert_root__ > div > div > div.cf_layout > div.cf_container > div.cf_contents > div.login_input_area > div.login_confirm_wrap > button')
+
+
+  
+  
+
+
+
+
+  // await finCertSdkIframe.evaluate(() => {
+
+  //   const name = $('#CLOUD_ID_1');
+  //   const phone = $('#CLOUD_ID_2');
+  //   const birth = $('#CLOUD_ID_3');
+
+  //   name.val('정재현');
+  //   phone.val('01088957500');
+  //   birth.val('19831206');
+
+  //   const autologin = $('#__fincert_root__ > div > div > div.cf_layout > div.cf_container > div.cf_contents > div.login_input_area > div.checkbox_pack > label > span.checkbox_shape');
+  //   const confirm = $('#__fincert_root__ > div > div > div.cf_layout > div.cf_container > div.cf_contents > div.login_input_area > div.login_confirm_wrap > button');
+
+  //   autologin.click();
+  //   confirm.click();
+  
+  // })
+
+  
+  await finCertSdkIframe.waitForSelector('#__fincert_root__ > div > div > div.cf_layout > div.cf_container > div.cf_contents > div.code_info_area')
+  // 핸드폰 YesKey인증 번호 문자 발송 후
+  await finCertSdkIframe.waitForSelector('#__fincert_root__ > div > div > div.cf_layer_pagepop.wai_show.active > div > div.lp_container.key_layer > div > div.password_input_area > div')
+
+  
+  await mainFrame.evaluate(() => {
+    console.log('frmMain1.rlnmNum1.value: ', frmMain1.rlnmNum1.value)
+    console.log('frmMain1.rlnmNum2.value: ', frmMain1.rlnmNum2.value)
+    frmMain1.rlnmNum.value = frmMain1.rlnmNum1.value + '1111111'
+    console.log('frmMain1.rlnmNum.value: ', frmMain1.rlnmNum.value)
+
+
+    console.log('jumin2 hash value', npVCtrl.keypadObject[0]._hashelement[0].value)
+  }
+  );
+
+
+  // await page.waitForResponse((res) => console.log(res));
+  
+  
+  // // 기존 연결 끊기
+  // await finCertSdkIframe.waitForSelector('#__fincert_root__ > div > div > div.cf_layer_pagepop.wai_show.active > div > div.lp_header > button')
+  // await finCertSdkIframe.click('#__fincert_root__ > div > div > div.cf_layer_pagepop.wai_show.active > div > div.lp_header > button');
+
+  // await finCertSdkIframe.waitForSelector('#__fincert_root__ > div > div > div.cf_totalmenu > div.tm_menu_wrap > div.tm_menu_inner > div.tm_menu > ul > li:nth-child(1) > ul > li:nth-child(1) > a > p')
+  // await finCertSdkIframe.click('#__fincert_root__ > div > div > div.cf_totalmenu > div.tm_menu_wrap > div.tm_menu_inner > div.tm_menu > ul > li:nth-child(1) > ul > li:nth-child(1) > a > p');
+
+
+  // await finCertSdkIframe.waitForSelector('#__fincert_layer_alert__ > div > div > div > div.cfa_bottom > div > div:nth-child(2) > button')
+  // await finCertSdkIframe.click('#__fincert_layer_alert__ > div > div > div > div.cfa_bottom > div > div:nth-child(2) > button')
+
+  // // 새 연결 상태에서 다시 금융인증서 로그인
+  // await mainFrame.waitForSelector('#contents > div > div > div:nth-child(4) > div > a:nth-child(2)')
+  // await mainFrame.evaluate(() => window.signFin(frmMain1, frmMain1.rlnmNum.value , OID4Personal, null, null, '01'));
+
+
+  // await finCertSdkIframe.waitForSelector('#CLOUD_ID_1', { waitUntil: 'load'})
+  // await finCertSdkIframe.click('#CLOUD_ID_1')
+  // await finCertSdkIframe.type('#CLOUD_ID_1', '정재현')
+  // await finCertSdkIframe.waitForTimeout(300)
+  // await finCertSdkIframe.waitForSelector('#CLOUD_ID_2', { waitUntil: 'load'})
+  // await finCertSdkIframe.click('#CLOUD_ID_2')
+  // await finCertSdkIframe.type('#CLOUD_ID_2', '01088957500')
+  // await finCertSdkIframe.waitForTimeout(300)
+  // await finCertSdkIframe.waitForSelector('#CLOUD_ID_3', { waitUntil: 'load'})
+  // await finCertSdkIframe.click('#CLOUD_ID_3')
+  // await finCertSdkIframe.type('#CLOUD_ID_3', '19831206')
+  // await finCertSdkIframe.waitForTimeout(300)
+  // // await finCertSdkIframe.waitForSelector('#__fincert_root__ > div > div > div.cf_layout > div.cf_container > div.cf_contents > div.login_input_area > div.checkbox_pack > label > span.checkbox_shape', { waitUntil: 'load'})
+  // // await finCertSdkIframe.click('#__fincert_root__ > div > div > div.cf_layout > div.cf_container > div.cf_contents > div.login_input_area > div.checkbox_pack > label > span.checkbox_shape')
+  // await finCertSdkIframe.waitForSelector('#__fincert_root__ > div > div > div.cf_layout > div.cf_container > div.cf_contents > div.login_input_area > div.login_confirm_wrap > button')
+  // await finCertSdkIframe.click('#__fincert_root__ > div > div > div.cf_layout > div.cf_container > div.cf_contents > div.login_input_area > div.login_confirm_wrap > button')
+
+
+
+  await finCertSdkIframe.evaluate(() => {
+
+    // 중요!! finCertSdkIframe(about:black) frame에서!! 금융인증서 hash별 버튼 label
+    const button0 = Object.values(npVCtrl.keypadObject[0]._keypaditems[0].buttons).find((e) => e.label == 0).action;    
+    const button1 = Object.values(npVCtrl.keypadObject[0]._keypaditems[0].buttons).find((e) => e.label == 1).action;    
+    const button2 = Object.values(npVCtrl.keypadObject[0]._keypaditems[0].buttons).find((e) => e.label == 2).action;    
+    const button3 = Object.values(npVCtrl.keypadObject[0]._keypaditems[0].buttons).find((e) => e.label == 3).action;    
+    const button4 = Object.values(npVCtrl.keypadObject[0]._keypaditems[0].buttons).find((e) => e.label == 4).action;    
+    const button5 = Object.values(npVCtrl.keypadObject[0]._keypaditems[0].buttons).find((e) => e.label == 5).action;    // 'data:p53:p53'
+    const button6 = Object.values(npVCtrl.keypadObject[0]._keypaditems[0].buttons).find((e) => e.label == 6).action;    
+    const button7 = Object.values(npVCtrl.keypadObject[0]._keypaditems[0].buttons).find((e) => e.label == 7).action;    
+    const button8 = Object.values(npVCtrl.keypadObject[0]._keypaditems[0].buttons).find((e) => e.label == 8).action;    
+    const button9 = Object.values(npVCtrl.keypadObject[0]._keypaditems[0].buttons).find((e) => e.label == 9).action;    
+
+    $(`img[data-action="${button5}"]`).click().keyup();   //  금융인증서 창에서 data-action attr이 data:p53:p53인 element를 찾아 클릭한다.
+    $(`img[data-action="${button0}"]`).click().keyup();   
+    $(`img[data-action="${button0}"]`).click().keyup();   
+    $(`img[data-action="${button9}"]`).click().keyup();   
+    $(`img[data-action="${button0}"]`).click().keyup();   
+    $(`img[data-action="${button0}"]`).click().keyup();   
+  })
+  
+  console.log('5009입력 후 frames', page.frames());
+
+  // await page.waitForResponse((res) => console.log('500900후 res: ', res));
+
+
+  // const [ , , , , , , mainFrame2] = page.frames();
+  // console.log("🚀 ~ file: payinfo.js ~ line 286 ~ mainFrame2", mainFrame2)
+
+  // const mainFrameSpan = await mainFrame.waitForSelector('span')
+  // console.log("🚀 ~ file: payinfo.js ~ line 289 ~ mainFrameSpan", mainFrameSpan)
+
+  
+
+
+  const errorRes = await mainFrame.waitForSelector('#contents > div.layer_body2.layer_body2_bg')
+  console.log("🚀 ~ file: payinfo.js ~ line 292 ~ errorRes", errorRes)
+  
+
+  const catpchaImg = await mainFrame.waitForSelector('#catpcha > img');
+  console.log("🚀 ~ file: payinfo.js ~ line 291 ~ catpchaImg", catpchaImg)
+
+  
+
+  await mainFrame.evaluate(() => document.getElementsByTagName('div'))
+
+  await mainFrame.waitForSelector('#__fincert_root__ > div > div > div.cf_layout > div.cf_container > div > div.card_swiper')
+  
+  // await page.waitForResponse((res) => console.log(res));
+  
+  // await finCertSdkIframe.waitForNavigation();
+
+  await mainFrame.evaluate(() => document.getElementsByTagName('div'))
+  // await finCertSdkIframe.waitForNavigation();
+  // await finCertSdkIframe.waitForResponse((res) => console.log(res));
+  
+
+// FinCert 인증서 List 중 '폐지' textContent 아닌 것말 고르기!!
+  // FCV_Array.map(e => Array.from(e.children).map(e => e.textContent))
+
+
+  
+  // const finCertSdkIframe = await mainFrame.childFrames();
+  // console.log("🚀 ~ file: payinfo.js ~ line 161 ~ finCertSdkIframe", finCertSdkIframe)
+
+  // const finCertSdkIframe = page.frames().find(frame => console.log(frame), frame.name() === 'iframe');
+  // console.log("🚀 ~ file: payinfo.js ~ line 162 ~ finCertSdkIframe", finCertSdkIframe)
+
+
 })();

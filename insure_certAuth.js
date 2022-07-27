@@ -317,7 +317,7 @@ puppeteer.use(pluginUserAgentOverride);
 })
   console.log("🚀 ~ file: insure_certAuth.js ~ line 259 ~ data ~ data", data)
 
-  await fs.writeFile("resultDetail.json", JSON.stringify(data), (err) =>
+  await fs.writeFile("./TEMP_FOLDER/resultDetail.json", JSON.stringify(data), (err) =>
     console.log(err)
   );
 

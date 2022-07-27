@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "es6", //빌드 결과물을 es6 방식을 한다는 뜻
+    "module": "commonjs", // 빌과의 모듈 방식을 commonjs 방식을 한다는 뜻
+    "moduleResolution": "node", //모듈 해석 방식은 node 처럼 한다는 뜻
+    "sourceMap": true, // .map.js 파일도 함께 생성한다는 뜻
+    "emitDecoratorMetadata": true /* Enables experimental support for ES7 decorators. */,
+    "experimentalDecorators": true /* Enables experimental support for emitting type metadata for decorators. */,
+    "removeComments": false /* Do not emit comments to output. */,
+    "noImplicitAny": false, // 암시적으로 선언되었는데 any로 추론되면 에러를 알려준다.//
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-native",
+    "esModuleInterop": true,
+  },
+  "exclude": [
+    // npm 으로 설치한 모듈들을 import 가능하도록 설정
+    "node_modules"
+  ]
+}
