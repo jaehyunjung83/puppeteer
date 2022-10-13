@@ -1,0 +1,735 @@
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0" name="viewport">
+    <meta content="금융결제원 운영, 어카운트인포(내계좌 한눈에, 내카드 한눈에, 금융정보조회 서비스 등), 페이인포(자동이체 통합관리서비스)등" name="description" />
+    <meta content="자동이체 통합관리 서비스" name="keywords" />
+    <meta content="금융결제원" name="author" />
+
+    <link type="text/css" rel="stylesheet" href="/css/default.css" />
+    <link type="text/css" rel="stylesheet" href="/css/contents.css" />
+    <link type="text/css" rel="stylesheet" href="/css/board.css" />
+    <link type="text/css" rel="stylesheet" href="/css/calendar_kftc.css" />
+
+    <script type="text/javascript" src="./js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="./js/kftc_common.js"></script>
+    <!-- 201509 common.js대신 사용하는 것 -->
+    <!-- Program용 js들 URI.js, kftc.js -->
+    <!-- URI -->
+    <script src="./js/URI.js"></script>
+    <!-- Custom Theme JavaScript -->
+    <script src="./js/kftc.js"></script>
+
+
+    <!--[if lt IE 9]>
+<script src="/js/html5shiv.js"></script>
+<![endif]-->
+
+    <!--<script type="text/javascript" src="/js/selectivizr.js"></script>-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".tbl_list2").find("tr:even").css("background-color", "#f9f9f9")
+        });
+    </script>
+
+    <title>자동이체 통합관리 서비스</title>
+    <link rel="stylesheet" type="text/css" href="./yessignCert/yessign-1.5.0.css">
+
+
+    <script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+
+
+    <script type="text/javascript" src="./pluginfree/jsp/nppfs.script.jsp"></script>
+    <script type="text/javascript" src="./pluginfree/js/nppfs-1.9.0.js"></script>
+    <script type="text/javascript" src="./pluginfree/js/nppfs.addon.js"></script>
+    <script type="text/javascript" src="./yessignCert/yessign-nppfs-1.5.0.min.js"></script>
+    <script type="text/javascript" src="./yessignCert/yessignUtil.js"></script>
+    <script type="text/javascript" src="./yessignCert/yessignCrypto.js"></script>
+</head>
+
+<body>
+    <!-- skipnavi -->
+
+    <div id="skipnavi">
+        <ul>
+            <li><a href="#gnb">메인메뉴바로가기</a></li>
+            <li><a href="#contents">본문바로가기</a></li>
+            <li><a href="#quick">퀵메뉴바로가기</a></li>
+        </ul>
+    </div>
+    <!-- //skipnavi -->
+
+    <!-- wrap -->
+    <div id="wrap">
+
+
+
+
+
+
+
+
+
+
+
+        <!-- 2019-04-09 -->
+
+
+
+
+
+        <!-- 2019-04-09 -->
+
+        <!-- web log cookie-->
+        <link type="text/css" rel="stylesheet" href="/css/default.css" />
+        <link type="text/css" rel="stylesheet" href="/css/jquery.bxslider.css" />
+        <link type="text/css" rel="stylesheet" href="/css/main.css" />
+        <script language='javascript' src='/js/makePCookie.js'></script>
+        <script type="text/javascript" src="/js/common.js"></script>
+        <!-- 2019-04-09 cnbwrap 삭제 -->
+        <!--  <script type="text/javascript" src="/js/cnbSearch.js"></script> -->
+
+        <!-- 2019-04-09 화면세션 개선 -->
+        <script language='JavaScript'>
+            var Top_SetTime = 600;
+            var Top_SetMinTime = 30; // 로그인 연장 안내 팝업 시간
+            var Top_tid;
+
+            function login_time_reset() {
+                clearInterval(Top_tid); // 타이머 해제
+                $("#logout_pop").css('display', 'none') // 팝업 비활성화
+                Top_SetTime = 600;
+                Top_tid = setInterval('login_time()', 1000);
+            }
+
+            function login_time() {
+                var ms = Math.floor(Top_SetTime / 60) + "분 " + (Top_SetTime % 60) + "초";
+                var msg = "<font color='black'>" + ms + "</font>";
+                document.getElementById("login_left_time").innerHTML = msg;
+                Top_SetTime--;
+
+                if ((0 <= Top_SetTime) && (Top_SetTime < Top_SetMinTime)) { //Top_SetMinTime(30초) 미만 남은 경우 1초마다 호출 
+                    $("#logout_pop").css('display', 'block')
+                    document.getElementById("pop_login_left_time").innerHTML = msg;
+                }
+
+                if (Top_SetTime < 0) {
+                    clearInterval(Top_tid);
+                    document.location.href = "/main/main_logout.do?timeout=y"; //자동 로그아웃
+                }
+            }
+        </script>
+
+
+        <!-- header -->
+        <div id="header">
+            <!-- 2019-04-09 cnbwrap 삭제 -->
+
+            <!-- header_inner -->
+            <div class="header_inner">
+                <h1 class="logo">
+                    <a href="/main/main.do"><img src="/images/common/h1_logo_account.gif" alt="계좌통합관리서비스" /></a>
+                </h1>
+
+
+
+                <!-- lay_pop -->
+                <div id="logout_pop" class="layer_wrap2" style="display:none">
+                    <div class="layer2">
+                        <div class="layer_header2">
+                            <h1 class="h1_pop_tit">서비스 이용시간 안내</h1>
+                        </div>
+                        <div class="layer_body2_1">
+                            <span class="time"><strong id='pop_login_left_time'><font color='black'>10분 0초</font></strong></span>
+                            <p class="sub_txt">잠시 후 로그아웃 됩니다.<br /><strong>로그인을 연장 하시겠습니까?</strong></p>
+                        </div>
+                        <div class="layer_footer2">
+                            <div class="btn_group7">
+                                <a href="/main/main_logout.do"><button type="button" class="btn_gray2 mg_r15">로그아웃</button></a>
+                                <button type="button" class="btn_blue4" onclick="login_time_reset()">로그인연장</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--//2019-04-09-->
+
+                <!-- gnb -->
+                <nav class="nav">
+                    <h2 class="hidden">주요메뉴</h2>
+                    <ul id="gnb">
+                        <li>
+                            <!-- 마우스오버시 class="on" -->
+                            <a href="/acntcb/qryAcntSummary.do?menu=1">내계좌한눈에</a>
+                            <div class="dep2_wrap">
+                                <ul class="dep2">
+                                    <li><a href="/acntcb/qryAcntSummary.do?menu=1">은행권</a></li>
+                                    <li><a href="/acntcb/qryAcntSummarySeo.do?menu=4">제2금융권</a></li>
+                                    <!-- 2019-06-27 서민금융 잔고이전해지'2' > '4'-->
+                                    <li><a href="/acntcb/qryAcntStockSummary.do?menu=5">증권사</a></li>
+                                    <!-- 2019-07-27 증권사 추가-->
+                                    <li><a href="/acntcb/drmnt/drmntSummary.do?menu=6">휴면예금&middot;보험금</a></li>
+                                    <li><a href="/acntcb/qryCaclResultList.do?menu=3">처리결과 조회</a></li>
+                                    <!-- 2020-10-19 휴면예금 관련 제목 변경 -->
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="/card/qryCardSumr.do?menu=1">내카드한눈에</a>
+                            <div class="dep2_wrap">
+                                <ul class="dep2">
+                                    <li><a href="/card/qryCardSumr.do?menu=1">카드정보조회</a></li>
+                                    <li><a href="/card/qryCardPnt.do?menu=2">포인트조회</a></li>
+                                    <li><a href="/card/pntcash/qryCardPntCash.do?menu=4">포인트현금화</a></li>
+                                    <!-- 2021-05-18 포인트현금화 -->
+                                    <li><a href="/card/pntcash/PntCashResultList.do?menu=5">신청결과조회</a></li>
+                                    <!-- 2021-05-18 포인트현금화 -->
+                                    <li><a href="/card/withdrawAtzt.do?menu=3">위임동의철회</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="/extl/qryExtlFxamtIns.do?menu=1">금융정보조회</a>
+                            <div class="dep2_wrap">
+                                <ul class="dep2">
+                                    <li><a href="/extl/qryExtlFxamtIns.do?menu=1">보험가입정보조회</a></li>
+                                    <li><a href="/extl/qryExtlLoan.do?menu=3">대출정보조회</a></li>
+                                    <li><a href="/extl/withdrawAtzt.do?menu=4">위임동의철회</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <!-- 2019-11-05 카드이동  -->
+                            <a href="/wdtrns/inq/qryListAcntNum.do?menu=1">계좌자동이체통합관리</a>
+                            <div class="dep2_wrap">
+                                <ul class="dep2">
+                                    <li><a href="/wdtrns/inq/qryListAcntNum.do?menu=1">계좌자동이체조회</a></li>
+                                    <li><a href="/wdtrns/cancel/qryCaclReq.do?menu=2">계좌자동이체해지</a></li>
+                                    <li><a href="/wdtrns/changereq/qryChgReq.do?menu=3">계좌자동이체변경</a></li>
+                                    <li><a href="/wdtrns/cancel/reqCaclList.do?menu=4">해지결과확인</a></li>
+                                    <li><a href="/wdtrns/change/inqChgList.do?menu=5">변경결과확인</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="/cdtrns/inq/qryListCard.do?menu=1">카드자동납부통합관리</a>
+                            <div class="dep2_wrap">
+                                <ul class="dep2">
+                                    <li><a href="/cdtrns/inq/qryListCard.do?menu=1">카드자동납부조회</a></li>
+                                    <li><a href="/cdtrns/cancel/qryCaclCardReq.do?menu=2">카드자동납부해지</a></li>
+                                    <li><a href="/cdtrns/change/qryChgCardReq.do?menu=3">카드자동납부변경</a></li>
+                                    <li><a href="/cdtrns/cancel/reqCaclCardList.do?menu=4">해지결과확인</a></li>
+                                    <li><a href="/cdtrns/change/reqChgCardList.do?menu=5">변경결과확인</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <!-- //  -->
+                        <li>
+                            <a href="/guide/intro.do">서비스안내</a>
+                            <div class="dep2_wrap">
+                                <ul class="dep2">
+                                    <li><a href="/guide/introAcntcb.do?menu=1">서비스소개</a></li>
+                                    <li><a href="/guide/useguideAcntcb.do?menu=4">이용안내</a></li>
+                                    <li><a href="/guide/prtporgAcntcb.do?menu=7">서비스제공 금융회사</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="/cs/webnoti/qryListWebNoti.do">고객지원</a>
+                            <div class="dep2_wrap">
+                                <ul class="dep2">
+                                    <li><a href="/cs/webnoti/qryListWebNoti.do">공지사항</a></li>
+                                    <li><a href="/cs/faq/qryListWebFaq.do">자주하는 질문</a></li>
+                                    <!--<li><a href="/cs/manualInstall.do">프로그램 수동설치</a></li> -->
+                                    <li><a href="javascript:goCenter();">문의하기</a></li>
+                                    <li><a href="javascript:goCenterJ();">고객제안</a></li>
+                                    <!--<li><a href="/cs/webnoti/test.do">테스트</a></li> <!-- 2019-11-01 테스트화면(삭제예정)-->
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- //gnb -->
+
+
+            </div>
+            <!-- //header_inner -->
+        </div>
+        <!-- //header-->
+
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+                var mainNavi = $("#gnb > li"),
+                    subNavi = mainNavi.find(".dep2_wrap")
+
+                function init() {
+                    mainNaviHandler();
+                }
+
+                function mainNaviHandler() {
+                    mainNavi.on({
+                        mouseenter: function() {
+                            $(this).removeClass("on").find(".dep2_wrap").css("display", "block");
+                            $(this).removeClass("on").find(".dep2_wrap").css("display") == "block" ? $(this).addClass("on").children('a').css('height', '50px') : $(this).removeClass("on").children('a').css('height', '40px');
+                        },
+                        mouseleave: function() {
+                            $(this).removeClass("on").find(".dep2_wrap").css("display", "none");
+                            $(this).removeClass("on").children('a').css('height', '40px');
+                        }
+                    });
+                    mainNavi.find("> a").on({
+                        focus: function() {
+                            $(this).parent().addClass("on").find(".dep2_wrap").css("display", "block");
+                        }
+                    });
+                    subNavi.find("li:last-child a").on({
+                        blur: function() {
+                            $(this).parents(".dep2_wrap").css("display", "none").parent().removeClass("on");
+                        }
+                    });
+                }
+
+                init();
+            });
+        </script>
+
+        <script type="text/javascript">
+            function goCenter() {
+                alert("고객센터 화면으로 이동합니다");
+                window.open("http://callcenter.kftc.or.kr/qna/qna_form.jsp", "_blank");
+            }
+
+            function goCenterJ() {
+                alert("고객센터 화면으로 이동합니다");
+                window.open("http://callcenter.kftc.or.kr/customer/custom_list.jsp", "_blank");
+            }
+        </script>
+
+
+
+
+        <!-- container -->
+        <div id="container">
+            <!--  201505 각 페이지로 변경
+			<div class="path">
+				홈 &gt;  &gt; <em class="current"></em> 
+			</div>
+			<h3 class="tit_page">PAGE.name<img src="" alt="" /></h3>
+			-->
+
+
+            <!-- location -->
+
+            <!-- aside -->
+            <div id="aside">
+
+
+
+
+
+
+
+
+
+
+
+                <br />
+                <!-- 외주디자인에는 없는 것 -->
+
+                <h2 class="h2_lnb_tit">내계좌한눈에</h2>
+                <!-- lnb -->
+                <ul id="lnb">
+
+                    <li><a href="/acntcb/qryAcntSummary.do?menu=1" class="on on_d2" class="on">은행권</a></li>
+                    <li><a href="/acntcb/qryAcntSummarySeo.do?menu=4">제2금융권</a></li>
+                    <li><a href="/acntcb/qryAcntStockSummary.do?menu=5">증권사</a></li>
+                    <li><a href="/acntcb/drmnt/drmntSummary.do?menu=6">휴면예금&middot;보험금</a></li>
+                    <li><a href="/acntcb/qryCaclResultList.do?menu=3">처리결과 조회</a></li>
+
+                </ul>
+                <!-- //lnb -->
+
+                <!-- bnr_aside -->
+                <div class="bnr_aside">
+                    <img src="/images/common/bnr_left_common.gif" alt="고객센터 1599-5530">
+                    <dl class="hidden">
+                        <dt>계좌조회서비스 이용시간</dt>
+                        <dd>매일 09:00~22:00</dd>
+                    </dl>
+                    <dl class="hidden">
+                        <dt>계좌해지/잔고이전서비스 이용시간</dt>
+                        <dd>매 영업일 09:00~17:00</dd>
+                    </dl>
+                    <dl class="hidden">
+                        <dt>자동이체조회서비스 이용시간</dt>
+                        <dd>매일 09:00~22:00</dd>
+                    </dl>
+                    <dl class="hidden">
+                        <dt>자동이체 해지/변경서비스 이용시간</dt>
+                        <dd>매 영업일 09:00~17:00</dd>
+                    </dl>
+                </div>
+
+                <!-- //bnr_aside -->
+
+
+
+
+
+
+            </div>
+            <!-- // aside -->
+            <!-- content -->
+            <div id="contents">
+
+                <script type="text/javascript">
+                    var serverCert = '-----BEGIN CERTIFICATE-----MIIE/zCCA+egAwIBAgIEKP1j0jANBgkqhkiG9w0BAQsFADBSMQswCQYDVQQGEwJrcjEQMA4GA1UECgwHeWVzc2lnbjEVMBMGA1UECwwMQWNjcmVkaXRlZENBMRowGAYDVQQDDBF5ZXNzaWduQ0EgQ2xhc3MgMjAeFw0yMDExMTIxNTAwMDBaFw0yMjExMzAxNDU5NTlaMHAxCzAJBgNVBAYTAmtyMRAwDgYDVQQKDAd5ZXNzaWduMQ8wDQYDVQQLDAZzZXJ2ZXIxEDAOBgNVBAsMB3llc3NpZ24xEDAOBgNVBAsMB3BheWluZm8xGjAYBgNVBAMMEXd3dy5wYXlpbmZvLm9yLmtyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAscPyQJHX9AdAVfkoxR/qBlNXYUQcTA4CNG7p3a4I7RtDSX/BRNVB3O+mLsYp2AUnMOaVffOLFqmjRKpBz3VSzf2hAdCaB6O9fofXThb8lirpa0OqcVLuFQ/buycw8lEDNG5AIwcz3GXp+HA18vc57MCiC1GZwkhvoOduGhR5tRHmYiWINM9DrQm9HhKCv7CTF+dJpOR2WBT3eN0KUTSd00ZCWmTK5VUs3nSEy1PX8bPuitXKQuVoE5mPbjEmzVGry9h++nlWhcc8A5gzaCq5Euxtn/eOkXGhTqEJhDWv6cgI0rZBuKACRTN6Zg5lTGFYfO3waxJSIQaZhjsAexy/dwIDAQABo4IBvTCCAbkwgY8GA1UdIwSBhzCBhIAU79xE0saNwA6jOMB8k8bDQb9Kj/ChaKRmMGQxCzAJBgNVBAYTAktSMQ0wCwYDVQQKDARLSVNBMS4wLAYDVQQLDCVLb3JlYSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eSBDZW50cmFsMRYwFAYDVQQDDA1LSVNBIFJvb3RDQSA0ggIQHDAdBgNVHQ4EFgQURGBlsoQ0/g0EfCTAVmgswT6o0P8wDgYDVR0PAQH/BAQDAgUgMBkGA1UdIAEB/wQPMA0wCwYJKoMajJpFAQEDMC0GA1UdEQQmMCSgIgYJKoMajJpECgEBoBUwEwwRd3d3LnBheWluZm8ub3Iua3IwcgYDVR0fBGswaTBnoGWgY4ZhbGRhcDovL2RzLnllc3NpZ24ub3Iua3I6Mzg5L291PWRwNXA2ODIzMCxvdT1BY2NyZWRpdGVkQ0Esbz15ZXNzaWduLGM9a3I/Y2VydGlmaWNhdGVSZXZvY2F0aW9uTGlzdDA4BggrBgEFBQcBAQQsMCowKAYIKwYBBQUHMAGGHGh0dHA6Ly9vY3NwLnllc3NpZ24ub3JnOjQ2MTIwDQYJKoZIhvcNAQELBQADggEBAE3wgPOuy4DA43O8RyRZsRCKGXDvU9IAmqSBIJI154Zyb3j0ZtZ1SNT7tkBrPN4b/OkL+kAEkxdjzjJ8JPjzaHwOqTc6qIPvGI3h29NntTRSFGPvlSmaWZ3QiPtMSQEaxVTUbW3egmM/XqJG/Lg/tCtFzN58uib6YF06Nl0wzR48QsRqvIkzB0axa15AibSeJD09VRcS5Z5HPAYFKhGHabvMPa0VxkBuk4+Nf3aQQ8NsVpBYKQg+taMvwwu5oBr/ajk9HxLp1csaVQtgpfKrk6Cxu8Chi88ljNar4xovgQ+B/HVXSKmrRFXnwGyeqF1ORgT2bwMLs4SRg/SIUtcwUoU=-----END CERTIFICATE-----';
+                    // TouchEnKey.js 보다 먼저 호출되어야 한다.
+                    // 2019-08-29 AOS 개선, aosmgr_common.js 추가
+                    setE2EServerSeed();
+                    // 2019-12-16 IE환경 Active-x 제거
+                </script>
+                <script type="text/javascript" src="/yessignCert/yessignInstall.js"></script>
+
+
+                <script type="text/javascript">
+                    function OnSearch(val) {
+
+                        if (frmMain1.rlnmNum1.value.length != 6 || frmMain1.rlnmNum2.value.length != 7) {
+                            alert("주민등록번호 13자리를 입력해 주세요");
+                        } else {
+                            frmMain1.rlnmNum.value = frmMain1.rlnmNum1.value + frmMain1.rlnmNum2.value;
+
+                            // 202105 금융인증서 서명
+                            if (val == 'f') {
+                                frmMain1.certiKind.value = "f";
+                                signFin(frmMain1, frmMain1.rlnmNum.value, OID4Personal, null, null, '01');
+                            } else {
+                                frmMain1.certiKind.value = "c";
+                                if (frmMain1.installed.value == 'F') {
+                                    alert("보안프로그램을 설치하셔야 이용이 가능한 서비스 입니다. 새로고침(F5 버튼)클릭 후 프로그램을 설치하여 주시기 바랍니다.");
+                                    return;
+                                } else sign(frmMain1, frmMain1.rlnmNum.value, OID4Personal);
+                            }
+                        }
+
+                    }
+
+                    function enterRlnmNum1() {
+                        if (frmMain1.rlnmNum1.value.length == 6) frmMain1.rlnmNum2.focus();
+                    }
+
+                    function enterRlnmNum2(e) {
+                        if (e.keyCode == 13) {
+                            OnSearch();
+                        }
+                    }
+
+                    function changeInputColor(where) {
+                        if (where == 1) {
+                            $('#persign').attr('class', 'on');
+                            $('#orgsign').removeAttr('class', 'on');
+
+                            //document.getElementById("persign").style.display="none";
+                            $('#orgInputDiv').hide();
+                            $('#persInputDiv').show();
+                        } else {
+                            $('#persign').removeAttr('class', 'on');
+                            $('#orgsign').attr('class', 'on');
+                            $('#orgInputDiv').show();
+                            $('#persInputDiv').hide();
+                        }
+                    }
+                </script>
+
+                <!-- location -->
+                <h2 class="hidden">현재위치</h2>
+                <div class="location">
+                    <p>
+                        홈 &gt; 계좌통합관리 &gt; <span class="text_bold">계좌통합조회</span>
+
+                    </p>
+                </div>
+                <!-- location -->
+
+
+
+
+
+                <!-- contents -->
+                <div id="contents" class="sub_contents">
+
+                    <h3 class="h3_contents_tit">계좌통합조회</h3>
+
+
+                    <!-- step -->
+                    <!-- 2019-06-27 서민금융기관해지 1,4의 경우 스텝4까지 출력 -->
+
+                    <ol class="step4 step4_1_on">
+                        <li>
+                            <div>
+                                <p class="txt_step">STEP.1</p>
+                                <p class="text_bold">개인정보 수집 및 이용동의</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <p class="txt_step">STEP.2</p>
+                                <p>로그인</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <p class="txt_step">STEP.3</p>
+                                <p>계좌통합조회</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <p class="txt_step">STEP.4</p>
+                                <p>잔고이전·해지</p>
+                            </div>
+                        </li>
+
+                    </ol>
+                    <!-- //step -->
+
+                    <!-- section -->
+                    <div class="section">
+                        <h4 class="hidden">인증서</h4>
+                        <div class="certi_box certi_box2">
+                            <!-- 2015-10-14 수정 -->
+                            <h5 class="h5_certi_tit">인증서 로그인</h5>
+                            <p class="sub_txt">계좌정보통합관리서비스를 이용하기 위해서는 인증서 로그인을 하여야 합니다.</p>
+                            <div class="tab2">
+                                <div>
+                                    <span>개인명의 계좌 및 카드 통합조회</span>
+                                </div>
+                            </div>
+                            <!-- 개인명의 계좌통합조회 style="display:inline"-->
+                            <div>
+                                <h4 class="hidden">개인명의 계좌통합조회</h4>
+                                <p class="txt_info1"><strong>주민등록번호</strong>입력</p>
+                                <form name="frmMain1" method="post" action="qryAcntSummary.do" onSubmit="OnSearch();return false;">
+                                    <input type="hidden" name="inpType" value="1">
+                                    <input type="hidden" name="certiKind" value="c">
+                                    <input type="hidden" name="installed" value="">
+                                    <input type="hidden" name="menu" value="1">
+                                    <div class="input_field">
+                                        <label for="rlnmNum1" class="hidden">주민등록번호 앞자리</label>
+
+                                        <input type="text" name="rlnmNum1" id="rlnmNum1" class="inp_text" maxlength="6" style="width:198px;height:24px" onkeyup="enterRlnmNum1()" title="예금주 주민등록번호/외국인등록번호 앞6자리" /> -
+                                        <label for="rlnmNum2" class="hidden">주민등록번호 뒷자리</label>
+                                        <!-- 2020-01-09 NOS 가상키패드-->
+                                        <input type="password" id="rlnmNum2" name="rlnmNum2" maxlength="7" value="" onkeypress="enterRlnmNum2(event)" title="예금주 주민등록번호/외국인등록번호 뒤7자리" enc="on" class="inp_text" autocomplete="off" style="width:198px;height:24px" data-keypad-type="num" data-keypad-useyn-type="toggle"
+                                            data-keypad-useyn-input="e2e_pass_card1_toggle" data-keypad-theme="default" />
+                                        <img id="e2e_pass_card1_toggle" src="/pluginfree/icon/icon_mouse_off.gif" style="padding-top:5px" /> 마우스로 입력
+                                        <!-- // 2020-01-09 -->
+                                        <input type="hidden" id="rlnmNum" name="rlnmNum" sign="on" enc="on" value="" />
+                                        <input type="hidden" id="checkConfirm" name="checkConfirm" value="no" />
+                                    </div>
+                                </form>
+                                <p class="txt_point">* 숫자만 입력하시면 됩니다.</p>
+                                <div class="btn_group5">
+
+                                    <a href="javascript:OnSearch()" class="btn_blue3 btn_padding">공동인증서 로그인</a>
+                                    <!-- 2021-04-23 버튼 간격 수정 -->
+                                    <a href="javascript:OnSearch('f')" class="btn_blue3 btn_padding">금융인증서 로그인</a>
+                                    <!-- 2021-04-23 버튼 간격 수정 -->
+
+                                </div>
+                            </div>
+                            <!-- //개인명의 계좌통합조회-->
+
+                        </div>
+                        <p class="txt_info2 bul_round_arrow">본인이 입력하신 <strong>주민등록번호</strong>로 발급된 인증서가 필요합니다. <br />(법인의 경우 계좌통합관리서비스 및 금융정보조회서비스 이용이 불가능합니다.) </p>
+                    </div>
+                    <!-- //section -->
+                </div>
+                <!-- //contents -->
+
+                <script type="text/javascript">
+                    frmMain1.rlnmNum1.focus();
+
+                    $(document).ready(function() {
+                        $('#persign').each(function() {
+                            this.onclick();
+                        });
+
+                        npPfsCtrl.isInstall({
+                            success: function() {
+
+                                frmMain1.installed.value = 'T';
+                            },
+                            fail: function() {
+
+                                frmMain1.installed.value = 'F';
+                            }
+                        });
+                    });
+                </script>
+            </div>
+            <!-- //content -->
+        </div>
+        <!-- //container -->
+
+
+
+
+
+
+
+
+
+
+
+
+        <!-- footer -->
+        <footer id="footer">
+            <!-- footer_menu -->
+            <nav class="footer_menu">
+                <h2 class="hidden">하단메뉴</h2>
+                <ul class="menu">
+                    <li>
+                        <a href="http://www.kftc.or.kr/kftc/main/EgovkftcHubMain.do" target="_blank" title="새창"><img src="/images/common/txt_footer_menu01.gif" alt="회사소개"></a>
+                    </li>
+                    <li>
+                        <a href="http://www.kftc.or.kr/kftc/about/EgovMapInfo.do?category=map1" target="_blank" title="새창"><img src="/images/common/txt_footer_menu02.gif" alt="오시는길"></a>
+                    </li>
+                    <li>
+                        <a href="/main/infoprotect.do"><img src="/images/common/txt_footer_menu03.gif" alt="개인정보처리방침"></a>
+                    </li>
+                    <li>
+                        <a href="/main/servicecharter.do"><img src="/images/common/txt_footer_menu04.gif" alt="고객서비스현장"></a>
+                    </li>
+                    <li>
+                        <a href="http://www.kftc.or.kr/kftc/data/EgovDataCopyrightInfo.do" target="_blank" title="새창"><img src="/images/common/txt_footer_menu05.gif" alt="저작권정책"></a>
+                    </li>
+                    <!-- 2019-11-02 저작권정책 추가-->
+                </ul>
+                <div class="select familysite">
+                    <!-- 2015-12-21 수정 : familysite 추가 및 select script 소스상에서 삭제 common.js로 분리 -->
+                    <button type="button" class="my_value">패밀리 사이트</button>
+                    <!-- 2018-11-19 푸터 패밀리사이트 수정-->
+                    <ul class="list">
+                        <li><a href="http://www.bankpay.or.kr" target="_blank" title="새창으로 열기">계좌이체PG</a></li>
+                        <li><a href="https://www.payinfo.or.kr/payinfo.html" target="_blank" title="새창으로 열기">계좌정보통합관리</a></li>
+                        <li><a href="https://www.yessign.or.kr" target="_blank" title="새창으로 열기">금융인증센터</a></li>
+                        <li><a href="http://www.buycard.or.kr" target="_blank" title="새창으로 열기">물품대금결제</a></li>
+                        <li><a href="https://www.open-platform.or.kr" target="_blank" title="새창으로 열기">오픈플랫폼(은행권)</a></li>
+                        <li><a href="https://audit.kftc.or.kr" target="_blank" title="새창으로 열기">은행조회서 발급</a></li>
+                        <li><a href="http://exk.kftc.or.kr" target="_blank" title="새창으로 열기">EXK(국가간ATM·송금)</a></li>
+                        <li><a href="https://www.knote.kr" target="_blank" title="새창으로 열기">어음정보센터(Knote)</a></li>
+                        <li><a href="https://www.unote.kr/unoteIndex.html" target="_blank" title="새창으로 열기">전자어음(U-note)</a></li>
+                        <li><a href="https://biz.giro.or.kr" target="_blank" title="새창으로 열기">비즈지로</a></li>
+                        <li><a href="http://e-giro.giro.or.kr" target="_blank" title="새창으로 열기">이지로</a></li>
+                        <li><a href="https://www.giro.or.kr" target="_blank" title="새창으로 열기">인터넷지로</a></li>
+                        <li><a href="https://www.e-revenuestamp.or.kr" target="_blank" title="새창으로 열기">전자수입인지</a></li>
+                        <li><a href="https://www.cardrotax.kr" target="_blank" title="새창으로 열기">카드로택스</a></li>
+                        <li><a href="http://www.narabill.kr" target="_blank" title="새창으로 열기">나라빌</a></li>
+                        <li><a href="https://www.billingone.or.kr" target="_blank" title="새창으로 열기">빌링원플러스</a></li>
+                        <li><a href="https://www.cmsedi.or.kr/edi" target="_blank" title="새창으로 열기">지로EDI</a></li>
+                        <li><a href="http://www.kftcvan.or.kr" target="_blank" title="새창으로 열기">카드VAN</a></li>
+                        <li><a href="http://www.trusbill.kr" target="_blank" title="새창으로 열기">트러스빌(전자세금계산서)</a></li>
+                        <li><a href="https://www.cmsedi.or.kr/cms" target="_blank" title="새창으로 열기">CMS</a></li>
+                        <li><a href="https://www.cashcard.or.kr" target="_blank" title="새창으로 열기">현금카드</a></li>
+                        <!-- 2019-11-02 현금카드 추가 -->
+                    </ul>
+                    <!-- /// 2018-11-19 푸터 패밀리사이트 수정 -->
+                </div>
+            </nav>
+            <!-- //footer_menu -->
+            <!-- footer_bottom -->
+            <div class="footer_bottom">
+                <div class="footer_in">
+                    <h2><img src="/images/common/logo_footer.gif" alt="금융결제원"></h2>
+                    <address>
+					<p><span class="tit">본 관</span> : (우)06220 서울특별시 강남구 논현로 432(역삼동 717번지)</p>
+					<p>분당센터 : (우)13556 경기도 성남시 분당구 정자일로213번길 9 (정자동 10-3)</p>
+				</address>
+                    <p class="copyright">Copyright 2018. KFTC (Korea Financial Telecommunications & Clearings Institute) All rights reserved.</p>
+                    <ul class="footer_customer">
+                        <li>고객센터 1577-5500(평일 09:00 - 17:45)</li>
+                        <li>
+                            <a href="http://callcenter.kftc.or.kr/qna/qna_form.jsp" class="fc_menu1">이메일문의</a>
+                            <a href="http://callcenter.kftc.or.kr/customer/custom_list.jsp" class="fc_menu2">고객제안</a>
+                            <a href="#" class="fc_menu3" onclick="ivr_popopen(); return false;">단축번호안내</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- //footer_bottom -->
+
+            <!-- ps방지삽입  -->
+            <img src="//ps.kftc.or.kr/logo.jpg" width="0" height="0">
+        </footer>
+        <!-- //footer -->
+
+
+        <div class="layer_wrap3">
+            <div class="layer3">
+                <div class="layer_header3">
+                    <h1>요금청구기관 문의방법 안내</h1>
+                    <a href="#" class="btn_close_lay"><img src="/images/common/btn_close_pop.png" alt="레이어 창 닫기"></a>
+                </div>
+                <div class="layer_body3">
+                    <ul class="que_guide">
+                        <li>
+                            자동이체조회 메뉴 내 <span>요금청구기관 연락처</span>를 확인하여, 동 연락처로 자동납부 상세정보(출금사유 등)에 대한 안내를 요청하실 수 있습니다.
+                        </li>
+                        <li>
+                            요금청구기관 연락처가 없을 경우 서비스 안내 메뉴 내 <span>참가금융회사 고객센터 연락처</span>로 연락하시어 해당 정보의 상세내역을 안내 받으실 수 있습니다.
+                            <a href="/guide/prtporg.do" class="link">(참가금융회사 메뉴로 가기)</a>
+                        </li>
+                        <li>
+                            자동납부 문의 시 <span>자동납부 종류</span>와 <span>납부자번호</span>를 해당 요금청구기관 및 금융회사 고객센터에 알려주시면 더 편리하게 안내 받으실 수 있습니다. (자동납부 메뉴 상세정보 조회 시 확인 가능합니다. )
+                        </li>
+                    </ul>
+                    <div class="img_que_guide">
+                        <img src="/images/common/img_que_guide.gif" alt="자동납부 상세조회">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- layer_que_background -->
+        <div class="layer_que_background"></div>
+        <!-- layer_que_background -->
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+
+                //열기
+                $(".btn_que_guide").click(function(event) {
+                    $(".layer_wrap3").css('display', 'block');
+                    $(".layer_que_background").css('display', 'block');
+
+                    return false;
+                });
+
+                //닫기
+                $(".btn_close_lay").click(function(event) {
+                    $(".layer_wrap3").css('display', 'none');
+                    $(".layer_que_background").css('display', 'none');
+                    return false;
+                });
+
+            });
+        </script>
+
+
+    </div>
+    <!-- //wrap -->
+
+    <script type="text/javascript">
+        if (parent.frames.length == 0) {
+            window.location.replace('/account.html');
+        }
+    </script>
+
+</html>

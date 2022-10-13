@@ -1,0 +1,453 @@
+@charset "euc-kr";
+
+.yessign_base div,.yessign_base p,.yessign_base dl,.yessign_base dt,.yessign_base dd,.yessign_base ul,.yessign_base ol,
+.yessign_base li,.yessign_base h1,.yessign_base h2,.yessign_base h3,.yessign_base h4,.yessign_base h5,.yessign_base h6,
+.yessign_base table,.yessign_base th,.yessign_base td,.yessign_base form,.yessign_base fieldset,.yessign_base legend,.yessign_base textarea,
+.yessign_base input,.yessign_base select,.yessign_base button,.yessign_base address,.yessign_base small {margin:0;padding:0}
+.yessign_base header,.yessign_base footer,.yessign_base nav,.yessign_base section,.yessign_base article,.yessign_base small {display:block;margin:0;padding:0}
+.yessign_base div,.yessign_base p,.yessign_base dl,.yessign_base dt,.yessign_base dd,.yessign_base ul,.yessign_base ol,.yessign_base li,
+.yessign_base h1,.yessign_base h2,.yessign_base h3,.yessign_base h4,.yessign_base h5,.yessign_base h6,.yessign_base table,.yessign_base th,.yessign_base td,
+.yessign_base form,.yessign_base fieldset,.yessign_base legend,.yessign_base address,.yessign_base small,.yessign_base label,.yessign_base strong
+{font-family:'맑은 고딕','Malgun Gothic','돋움',Dotum,sans-serif;font-size:12px;line-height:1.5;color:#333;letter-spacing:normal;text-align:left}
+.yessign_mobile_wrap div,.yessign_mobile_wrap p,.yessign_mobile_wrap dl,.yessign_mobile_wrap dt,.yessign_mobile_wrap dd,.yessign_mobile_wrap ul,.yessign_mobile_wrap ol,.yessign_mobile_wrap li,
+.yessign_mobile_wrap h1,.yessign_mobile_wrap h2,.yessign_mobile_wrap h3,.yessign_mobile_wrap h4,.yessign_mobile_wrap h5,.yessign_mobile_wrap h6,.yessign_mobile_wrap table,.yessign_mobile_wrap th,.yessign_mobile_wrap td,
+.yessign_mobile_wrap form,.yessign_mobile_wrap fieldset,.yessign_mobile_wrap legend,.yessign_mobile_wrap address,.yessign_mobile_wrap small,.yessign_mobile_wrap label,.yessign_mobile_wrap strong
+{font-family:"Noto Sans KR","돋움",Dotum,"굴림",Gulim,AppleGothic,Sans-serif;font-size:12px;line-height:1.5;color:#333;letter-spacing:normal;text-align:left}
+.yessign_base input,.yessign_base select,.yessign_base textarea,.yessign_base button,.yessign_base pre.yessign_textarea{font-family:'돋움',Dotum,sans-serif;font-size:12px;line-height:1.5;color:#333;}
+.yessign_base span.yessign_img,fieldset,iframe {border:0 none}
+.yessign_base ul,.yessign_baseol,.yessign_baseli {list-style:none}
+.yessign_base input,.yessign_base select,.yessign_base button {vertical-align:middle;cursor:pointer}
+.yessign_base button {border:0 none;background-color:transparent;cursor:pointer;font-family:'맑은 고딕','Malgun Gothic','돋움',Dotum,sans-serif;}
+.yessign_base button::-moz-focus-inner {padding:0;border:0 none;} /* FireFox */
+.yessign_base button {overflow:visible;}
+.yessign_base label {cursor:pointer;width:auto;}
+.yessign_base em, .yessign_base address{font-style:normal}
+.yessign_base a {color:#333;text-decoration:none;font-family:'맑은 고딕','Malgun Gothic','돋움',Dotum,sans-serif;}
+.yessign_base hr {display:none}
+.yessign_base h1,.yessign_base h2,.yessign_base h3,.yessign_base h4,.yessign_base h5,.yessign_base h6,.yessign_base th {font-weight:bold}
+
+.yessign_base table {border-collapse:collapse;border-spacing:0;}
+.yessign_base caption {overflow:hidden;height:0;font-size:0;line-height:0;visibility:hidden;}
+.yessign_base legend, div.yessign_base .yessign_hide {display:block;overflow:hidden;position:absolute;left:-9999px;width:1px;height:1px;font-size:0;line-height:0;text-indent:-9999px}
+
+.yessign_clearfix {display:block;clear:both;zoom:1;}
+.yessign_clearfix:after {content:" ";display:block;visibility:hidden;height:0;font-size:0;line-height:0;clear:both}
+
+/* common */
+input.yessign_inp_chk, {width:13px;height:13px}
+input.yessign_inp_text {height:18px;padding:3px 4px;line-height:18px;border:1px solid #008dcc;}
+textarea.yessign_tf {overflow:auto;padding:13px;border:1px solid #aaa;}
+
+/* 간격조절 */
+.yessign_mt_0 {margin-top:0px !important}
+.yessign_mt_5 {margin-top:5px !important}
+.yessign_mt_15 {margin-top:15px !important}
+.yessign_mt_20 {margin-top:20px !important}
+.yessign_mt_10 {margin-top:10px !important}
+.yessign_ml_16 {margin-left:16px !important}
+.yessign_mb_0 {margin-bottom:0px !important}
+
+.yessign_f_l {float:left !important}
+.yessign_f_r {float:right !important}
+
+/* 텍스트 정렬 */
+.yessign_t_c {text-align:center !important}
+.yessign_t_l {text-align:left !important}
+.yessign_t_r {text-align:right !important}
+
+/* 폰트 */
+em.yessign_fc_r {color:#db0101;}
+em.yessign_fc_g {color:#aaaaaa;}
+
+a.yessign_link {color:#008dcc;text-decoration:underline;}
+
+/* layout */
+div.yessign_section_sign {position:relative;z-index:101;width:525px;border:1px solid #008dcc;background-color:#fff;box-shadow:2px 2px 10px rgba(0,0,0,0.3);}
+div.yessign_section_sign .yessign_header {height:40px;background-color:#008dcc;}
+div.yessign_section_sign h1 {padding:8px 18px 0;font-size:16px;color:#fff;}
+div.yessign_section_sign .yessign_btn_close {position:absolute;right:19px;top:11px;width:18px;height:18px;font-size:0;line-height:0;background-image:url(yessign-1.5.0.png);background-position:-98px -5px;}
+div.yessign_section_sign div.yessign_contents {position:relative;padding:20px 19px;}
+div.yessign_section_sign div.yessign_contents02 {position:relative;padding:27px 19px 20px;}
+div.yessign_section_sign02 {width:698px}
+div.yessign_section_network {width:400px}
+
+div.yessign_wrap_banner {margin:-6px 0 17px;font-size:0;line-height:0;}
+div.yessign_wrap_banner span.yessign_img {display:block;border:1px solid #cfcfcf;}
+
+/*.yessign_txt_info01 {margin-top:14px;padding-top:4px;background-image:url(yessign-1.5.0.png);background-position:-164px -5px;width:11px;height:3px;}*/
+p.yessign_txt_info01 {margin-bottom:14px}
+div.yessign_txt_caution div {font-size:13px;}
+div.yessign_txt_caution02 div {font-size:12px;}
+div.yessign_txt_caution span, .yessign_txt_caution02 span.yessign_ico {background-image:url(yessign-1.5.0.png);background-position:-185px -5px;width:17px;height:15px;margin:3px 4px 0 0;float:left;}
+div.yessign_txt_caution div {max-width:460px;float:left}
+div.yessign_txt_caution02 div {float:left}
+
+.yessign_txt_check {padding-left:30px;font-size:13px;background-image:url(yessign-1.5.0.png);background-position:-359px -5px;width:19px;height:18px;}
+
+div.yessign_wrap_info {overflow:hidden;width:100%;margin:0 0 5px;background-color:#fff;}
+div.yessign_wrap_info p.yessign_txt_info {font-size:13px;}
+div.yessign_wrap_info ol {list-style-position:outside;padding-left:25px;}
+div.yessign_wrap_info li.yessign_txt_info {font-size:13px;margin-top:5px;}
+div.yessign_wrap_info02 {overflow:hidden;padding:18px 20px;border:1px solid #aaa;background-color:#fff;}
+div.yessign_wrap_info03 {padding:18px 20px;border:1px solid #aaa;background-color:#fff;width:90%;}
+
+/* 저장매체 */
+div.yessign_wrap_media {position:relative;width:485px;border:1px solid #c9c9c9;clear:both;zoom:1;}
+div.yessign_wrap_media:after {content:" ";display:block;visibility:hidden;height:0;font-size:0;line-height:0;clear:both} 
+ul.yessign_list_media {width:100%;height:112px;}
+ul.yessign_list_media li {float:left;position:relative;width:80px;padding-top:10px;}
+ul.yessign_list_media li:first-child {margin-left:5px;}
+ul.yessign_list_media li.yessign_on{z-index:2;}
+ul.yessign_list_media .yessign_media {float:left;width:74px;height:92px;font-size:12px;color:#333;text-align:center;}
+ul.yessign_list_media .yessign_on .yessign_media, .yessign_list_media .yessign_media:hover {background-image:url(yessign-1.5.0.png);background-position:-5px -5px;width:74px;/* height 생략 */}
+ul.yessign_list_media .yessign_ico {display:block;width:81px;height:66px;padding:0;vertical-align:top;font-size:0;line-height:0;}
+ul.yessign_list_media .yessign_ico01 {background-image:url(yessign-1.5.0.png);background-position:-411px -5px;width:44px;height:43px;margin:17px auto 18px 16px}
+ul.yessign_list_media .yessign_ico02 {background-image:url(yessign-1.5.0.png);background-position:-98px -58px;width:48px;height:35px;margin:18px auto 25px 14px}
+ul.yessign_list_media .yessign_ico03 {background-image:url(yessign-1.5.0.png);background-position:-156px -58px;width:30px;height:48px;margin:12px auto 18px 22px}
+ul.yessign_list_media .yessign_ico04 {background-image:url(yessign-1.5.0.png);background-position:-196px -58px;width:50px;height:43px;margin:16px auto 19px 13px}
+ul.yessign_list_media .yessign_ico05 {background-image:url(yessign-1.5.0.png);background-position:-256px -58px;width:37px;height:51px;}
+ul.yessign_list_media .yessign_ico06 {background-image:url(yessign-1.5.0.png);background-position:-286px -197px;width:52px;height:43px;margin:18px auto 17px 12px}
+ul.yessign_list_media .yessign_ico07 {background-image:url(yessign-1.5.0.png);background-position:-356px -58px;width:29px;height:51px;margin:12px auto 15px 23px}
+ul.yessign_list_media .yessign_ico08 {background-image:url(yessign-1.5.0.png);background-position:-11px -260px;width:52px;height:43px;margin:18px auto 17px 12px}
+ul.yessign_list_media .yessign_txt {line-height:14px;vertical-align:top;}
+ul.yessign_wrap_media02 {width:485px;padding:0;}
+
+/* layer */
+.yessign_layer_modal {position:absolute;left:0;top:0;bottom:0;right:0;z-index:100;width:100%;height:100%;background-color:#000;visibility:hidden;opacity:0.3;filter:alpha(opacity=30);}
+
+div.yessign_layer_menu {position:absolute;border:1px solid #aaa;background-color:#f4f4f4;box-shadow:1px 1px 3px rgba(170,170,170,0.7);}
+div.yessign_layer_menu li {width:100%;margin:0;padding:6px 0;border-bottom:1px solid #d6d6d6;}
+div.yessign_layer_menu li:last-child {border-bottom:0 none;}
+div.yessign_layer_menu li:first-child {margin-left:0;}
+div.yessign_layer_menu a.yessign_menu {display:block;padding:0 16px;white-space:nowrap;text-align:left;}
+div.yessign_layer_menu .yessign_on .yessign_menu, .yessign_menu_sub .yessign_menu:hover {background-color:#cfe4f8;}
+div.yessign_layer, div.yessign_layer03 {position:absolute;left:88px;top:45px;width:226px;padding:10px 14px;border:1px solid #aaa;background-color:#f4f4f4;box-shadow:1px 1px 3px rgba(170,170,170,0.7);}
+div.yessign_layer02 {position:absolute;left:0;top:0;z-index:10;width:259px;padding-bottom:59px;border:1px solid #aaa;background-color:#fff;box-shadow:1px 1px 3px rgba(170,170,170,0.7);}
+div.yessign_layer02 .yessign_header {display:block;width:100%;height:30px;padding:13px 0 0;background-color:#f4f4f4;text-align:center;}
+div.yessign_layer02 .yessign_header strong {font-size:16px;}
+div.yessign_layer02 .yessign_content {padding:21px;}
+div.yessign_layer02 .yessign_logo {position:absolute;right:5px;bottom:22px;margin:8px 18px 0}
+div.yessign_layer03 {width:360px;padding:20px 19px;}
+
+/* table */
+table.yessign_tbl {width:100%;border-spacing:0;table-layout:fixed;}
+table.yessign_tbl th {height:23px;padding:2px 0 2px 10px;background-color:#f0f0f0;text-align:left;cursor:pointer}
+table.yessign_tbl td {height:16px;padding:4px 0 1px 10px;line-height:16px;text-align:left;}
+table.yessign_tbl td, table.yessign_tbl td div {font-weight:normal;font-family:'돋움',Dotum,sans-serif;color:#010101}
+table.yessign_tbl tr {empty-cells:show;overflow:visible;}
+table.yessign_tbl tr.yessign_on, .yessign_tbl tr:hover {background-color:#cfe4f8;}
+table.yessign_tbl th .yessign_inner, table.yessign_tbl td .yessign_inner {overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+table.yessign_tbl .yessign_icon {margin-right:1px}
+table.yessign_tbl tr.yessign_empty:hover {background-color:#ffffff}
+table.yessign_tbl tr.yessign_empty td {padding:0 0 5px 0;height:100px;line-height:16px;font-weight:normal;font-family:'돋움',Dotum,sans-serif;color:#010101;text-align:center;vertical-align:middle}
+table.yessign_tbl tr.yessign_blank_row:hover {background-color:#ffffff}
+table.yessign_tbl tr.yessign_blank_row td {padding:0 0 5px 0; height: 45px;}
+
+div.yessign_box_scroll {overflow:hidden;overflow-y:auto;height:132px;margin-top:15px;border:1px solid #aaa;background-color:#fff;}
+
+/* button */
+span.yessign_btn, span.yessign_btn02 {display:inline-block;overflow:hidden;height:28px;border:1px solid #cfcfcf;background-color:#f4f4f4;text-align:center;padding: 0 2px;}
+span.yessign_btn_active {background-color: lemonchiffon; }
+span.yessign_move_label {display:inline-block;overflow:hidden;height:28px;margin-right: 10px;text-align:center;padding: 0 2px;}
+span.yessign_btn .yessign_in, span.yessign_btn02 .yessign_in {display:inline-block;height:28px;padding:0 18px;font-size:13px;line-height:28px;vertical-align:top;text-align:center;}
+span.yessign_move_label .yessign_in {display:inline-block;height:28px;padding:0 18px;font-size:13px;line-height:28px;vertical-align:top;text-align:center; width: 130px;}
+span.yessign_btn .yessign_in.yessign_narrow, span.yessign_btn02 .yessign_in.yessign_narrow {padding-left:5px;padding-right:5px;}
+
+/*span.yessign_btn .yessign_in, span.yessign_btn02 .yessign_in {min-width:52px;}*/
+span.yessign_btn02 {border-color:#005d9d;background-color:#008dcc;}
+span.yessign_btn02:active {border-color:#005d9d;background-color:#008dcc;}
+span.yessign_btn02 .yessign_in {color:#fff;}
+span.yessign_btn_off .yessign_in {color:#909090;}
+span.yessign_btn02.yessign_btn_off .yessign_in {color:#072c3c;}
+span.yessign_bul_prev {margin:0 14px 0 -8px;display:inline}
+span.yessign_bul_next {margin:0 -8px 0 14px;display:inline}
+div.yessign_wrap_btn, div.yessign_wrap_btn02, div.yessign_wrap_btn03 {width:100%;height:30px;padding-top:20px;text-align:right;clear:both; box-sizing: content-box; }
+div.yessign_wrap_btn02 {text-align:center;}
+div.yessign_wrap_btn03 {padding-top:0}
+
+div.yessign_section_sign .yessign_inp_text {width:236px;}
+div.yessign_section_sign label {display:inline-block;vertical-align:middle;}
+div.yessign_section_sign .yessign_txt_em {margin-top:20px;padding:0 0 0 9px;color:#ff0101;text-indent:-9px}
+
+div.yessign_wrap_input {margin-top:15px;padding:9px;border:1px solid #c9c9c9;}
+div.yessign_wrap_input div {display:none;width:348px;}
+div.yessign_wrap_input div.yessign_on {display:inline-block;*display:inline;zoom:1;width:350px;}
+div.yessign_wrap_input .yessign_inp_text {width:239px;}
+div.yessign_wrap_input .yessign_guide_text {color:#bd0021;}
+div.yessign_wrap_input .yessign_logo {display:inline-block;margin-left:14px;vertical-align:middle;line-height:1px;}
+div.yessign_wrap_input02 {padding:0 5px 19px;margin-top:11px;border:1px solid #c9c9c9;text-align:center;}
+div.yessign_wrap_input02 .yessign_lab_pw {display:inline-block;padding:0 5px;margin-top:-11px;font-size:13px;line-height:15px;vertical-align:top;background-color:#fff;}
+div.yessign_wrap_input02 .yessign_inp_text {width:240px;}
+div.yessign_wrap_input03 {float:left;width:341px;padding:2px 0 0 10px;}
+div.yessign_wrap_input03 .yessign_input {margin-top:10px;}
+div.yessign_wrap_input03 .yessign_inp_text {width:269px;}
+div.yessign_wrap_input03 .yessign_inp_pw02 {width:228px;}
+/* 영문인 경우 너비 조절 */
+div.yessign_wrap_input03 .eng_issue_label {width:120px;}
+div.yessign_wrap_input03 .eng_issue_input {width:205px;}
+div.yessign_wrap_input03 .eng_pw_label {width:110px;}
+div.yessign_wrap_input03 .eng_pw_input {width:193px;}
+div.yessign_wrap_input04 {float:left;padding:20px 40px;border:1px solid #aaa;margin-left:55px;background-color:#dfedfa;}
+div.yessign_wrap_input04 .yessign_input {margin:0 5px;float:left;font-size:13px;}
+div.yessign_wrap_input04 .yessign_inp_text {margin:0 10px 0 10px;width:70px;text-align:center;}
+div.yessign_wrap_input04 .yessign_inp_split {vertical-align:middle;text-align:center;}
+
+div.yessign_wrap_network_cat {padding:0 5px 5px;margin-top:11px;margin-bottom:20px;border:1px solid #c9c9c9;text-align:left;}
+div.yessign_wrap_network_cat .yessign_lab_text {display:inline-block;padding:0 5px;margin-top:-11px;font-size:13px;line-height:15px;vertical-align:top;background-color:#fff;}
+div.yessign_wrap_network_svc {clear:both;height:30px;padding:0 5px;}
+div.yessign_wrap_network_svc span {vertical-align:middle;padding:0 2px;font-size:13px;}
+
+div.yessign_box_info, div.yessign_box_info02, div.yessign_box_info03 {float:right;width:263px;padding:12px 15px 15px;border:1px solid #cfcfcf;}
+/*.yessign_box_info02 {width:129px;height:105px;}*/
+div.yessign_box_info02 {width:129px;height:85px;}
+div.yessign_box_info03 {position:relative;width:263px;height:85px;}
+div.yessign_box_info03 .yessign_tit {position:absolute;left:12px;top:-11px;padding:0 5px;font-weight:normal;background-color:#fff;}
+
+ul.yessign_list_txt li {padding-left:17px;text-indent:-17px;}
+ul.yessign_list_txt .yessign_ico {vertical-align:top;} /* 수정 */
+ul.yessign_list_txt02 {margin:0 0 -14px 11px;}
+ul.yessign_list_txt02 li {padding:0 0 10px 21px;font-size:13px;color:#aaa;}
+ul.yessign_list_txt02 .yessign_on {color:#333;}
+ul.yessign_list_txt02 .yessign_ico {display:inline-block;width:13px;height:14px;margin:0 8px 0 -21px;vertical-align:middle;font-size:0;line-height:0;}
+ul.yessign_list_txt03 li {clear:left}
+ul.yessign_list_txt03 .yessign_ico {vertical-align:-1px;width:13px;height:15px;float:left}
+ul.yessign_list_txt03 div {float:left;padding-left:4px}
+
+/* Tab */
+ul.yessign_tab_comm {overflow:hidden;width:100%;height:28px;}
+ul.yessign_tab_comm li {float:left;position:relative;width:110px;height:28px;font-size:12px;line-height:28px;text-align:center;background-image:url(yessign-1.5.0.png);background-position:-162px -225px /* -197px-28px */;}
+ul.yessign_tab_comm li a {display:block;}
+ul.yessign_tab_comm li.yessign_on {z-index:2;background-position:-162px -197px;/* yessign-1.5.0.png */}
+ul.yessign_tab_comm li.yessign_on a {color:#fff;}
+div.yessign_tab_cont {display:none;position:relative;height:292px;margin-top:-1px;padding:30px 20px 30px;border:1px solid #aaa;}
+div.yessign_tab_cont .yessign_title {position:absolute;left:32px;top:21px;z-index:2;padding:0 5px;font-size:12px;background-color:#fff;}
+div.yessign_tab_cont .yessign_cont {position:relative;height:250px;padding:20px 17px;border:1px solid #cfcfcf;}
+div.yessign_tab_cont02 {height:312px;padding:20px}
+div.yessign_tab_cont02 .yessign_cont {position:relative;height:292px;padding:0;border:0 none;}
+div.yessign_tab_cont02 .yessign_box_scroll {height:174px;margin-top:0;}
+div.yessign_tab_cont02 .yessign_tf {width:417px;height:98px;margin-top:10px;}
+div.yessign_tab_cont_mobile {display: none; }
+div.yessign_tab_on {display:block;}
+
+select.yessign_sel_cert {position:absolute;right:19px;top:20px;width:163px;height:24px;line-height:20px;}
+p.yessign_info_cert .yessign_img {margin-right:6px;vertical-align:middle;}
+p.yessign_info_cert .yessign_txt {display:inline-block;vertical-align:middle;}
+
+div.yessign_section_tab {overflow:hidden;width:100%;}
+div.yessign_section_tab .yessign_info_cert {margin-top:5px;}
+div.yessign_section_tab .yessign_btn_msg {position:absolute;right:20px;top:31px;}
+div.yessign_section_tab .yessign_textarea {margin-top:20px;line-height:24px;}
+div.yessign_section_tab .yessign_txt_info {margin-top:18px;text-align:center;}
+div.yessign_section_tab02 {margin-top:19px;}
+div.yessign_section_tab02 .yessign_tab_cont {height:270px;padding:10px;}
+div.yessign_section_tab02 .yessign_tab_cont .yessign_cont {height:241px;padding:12px 15px 15px;}
+div.yessign_section_tab02 .yessign_textarea {margin-top:0;line-height:18px;}
+
+span.yessign_img_kftc {background-image:url(yessign-1.5.0.png);background-position:-5px -119px;width:485px;height:68px;display:inline-block;margin-left:auto;margin-right:auto}
+span.yessign_img_icon_cert {background-image:url(yessign-1.5.0.png);background-position:-212px -5px;width:16px;height:13px;display:inline-block;font-size:0;line-height:0;vertical-align:-3px}
+span.yessign_img_icon_invalid {background-image:url(yessign-1.5.0.png);background-position:-212px -21px;width:16px;height:13px;display:inline-block;font-size:0;line-height:0;vertical-align:-3px}
+span.yessign_img_icon_cloud {background-image:url(yessign-1.5.0.png);background-position:-212px -38px;width:16px;height:13px;display:inline-block;font-size:0;line-height:0;vertical-align:-3px}
+span.yessign_img_logo {background-image:url(yessign-1.5.0.png);background-position:-395px -58px;width:95px;height:27px;display:inline-block;}
+span.yessign_img_close {background-image:url(yessign-1.5.0.png);background-position:-98px -5px;width:18px;height:18px;display:inline-block}
+span.yessign_img_cert02 {background-image:url(yessign-1.5.0.png);background-position:-236px -5px;width:40px;height:42px;display:inline-block;vertical-align:middle;}
+span.yessign_img_cert02_m {background-image:url(yessign-1.5.0.png);background-position:-207px -3px;background-size:434px 274px;width:35px;height:36px;display:inline-block;vertical-align:middle;}
+span.yessign_img_cert03 {background-image:url(yessign-1.5.0.png);background-position:-286px -5px;width:40px;height:42px;display:inline-block;vertical-align:middle;}
+span.yessign_img_cert03_m {background-image:url(yessign-1.5.0.png);background-position:-251px -3px;background-size:434px 274px;width:35px;height:36px;display:inline-block;vertical-align:middle;}
+span.yessign_img_cert04 {background-image:url(yessign-1.5.0.png);background-position:-73px -257px;width:40px;height:46px;display:inline-block;vertical-align:middle;}
+span.yessign_img_cert04_m {background-image:url(yessign-1.5.0.png);background-position:-66px -217px;background-size:434px 274px;width:34px;height:41px;display:inline-block;vertical-align:middle;}
+span.yessign_img_error {background-image:url(yessign-1.5.0.png);background-position:-388px -3px/* -5px+2px */;width:13px;height:14px;display:inline-block;font-size:0;line-height:0;vertical-align:middle;}
+span.yessign_img_check {background-image:url(yessign-1.5.0.png);background-position:-336px -3px/* -5px+2px */;width:13px;height:14px;display:inline-block;font-size:0;line-height:0;vertical-align:middle;}
+span.yessign_img_bar {background-image:url(yessign-1.5.0.png);background-position:-164px -5px;width:11px;height:3px;display:block}
+span.yessign_img_mobisign {background-image:url(yessign-1.5.0.png);background-position:-5px -197px;width:147px;height:39px;display:inline-block;font-size:0;line-height:0;vertical-align:middle;}
+ul.yessign_list_txt.yessign_password li{text-indent:0}
+
+pre.yessign_textarea {white-space:pre-wrap;/* css-3 */
+white-space:-moz-pre-wrap;/* Mozilla, since 1999 */
+white-space:-pre-wrap;/* Opera 4-6 */
+white-space:-o-pre-wrap;/* Opera 7 */
+word-wrap:break-word;/* Internet Explorer 5.5+ */}
+
+div.yessign_overlay {background-color:#000;bottom:0;left:0;opacity:0.35;filter:alpha(opacity = 35);/* IE7 & 8 */ position:fixed;right:0;top:0;display:none;z-index:99}  
+div.yessign_dialog {background:#fff;position:absolute;display:none;}
+div.yessign_balloon {}
+div.yessign_guide {}
+div.yessign_waiting {background-color:#000;bottom:0;left:0;opacity:0;filter:alpha(opacity = 0);/* IE7 & 8 */ position:fixed;right:0;top:0;display:none;}
+img.yessign_waiting_img {position:fixed;margin:auto;top:0;left:0;right:0;bottom:0}
+
+span.yessign_ico2 {display:inline-block;overflow:hidden;background:url(yessign-1.5.0.png) no-repeat 0 0;font-size:0;line-height:0;vertical-align:middle;text-indent:-9999px;*text-indent:0;}/* IE7 & 6 */
+span.yessign_folder2 {width:15px;height:17px;background-position:-365px -200px;}
+span.yessign_pro {width:11px;height:14px;margin-right:7px;background-position:-345px -200px;vertical-align:top;}
+span.yessign_folder {width:17px;height:14px;margin-right:5px;margin-top:-2px;background-position:-385px -200px;}
+span.yessign_disk {width:17px;height:14px;margin-right:5px;background-position:-405px -200px;}
+span.yessign_cert {width:17px;height:14px;margin-right:5px;background-position:-425px -200px;}
+span.yessign_etc {width:17px;height:14px;margin-right:5px;margin-top:-2px;background-position:-445px -200px;}
+
+div.yessign_box_program {overflow:hidden;width:485px;border:1px solid #aaa;}
+ul.yessign_list_program {overflow-y:auto;width:100%;height:229px;margin:6px 0;}
+ul.yessign_list_program li {overflow:hidden;padding:4px 11px 1px;font-family:'돋움',Dotum,sans-serif;line-height:16px;}
+ul.yessign_list_program li:hover, .yessign_list_program li.yessign_on {background-color:#dfedfa;}
+ul.yessign_list_program a {display:block;overflow:hidden;font-family:'돋움',Dotum,sans-serif;white-space:nowrap;text-overflow:ellipsis;}
+
+div.yessign_input02 {overflow:hidden;width:100%;}
+div.yessign_input02 .yessign_btn_folder {display:inline-block;border:1px solid #aaa;text-align:center;vertical-align:middle;}
+div.yessign_input02 .yessign_btn_folder button {display:inline-block;width:25px;height:25px;vertical-align:middle;}
+div.yessign_input02 .yessign_inp_text {width:376px;padding:6px 8px 3px;border:0 none;background-color:#f4f4f4;}
+div.yessign_input03 {padding:6px 6px 6px 9px;border:1px solid #c9c9c9;}
+div.yessign_input03 .yessign_inp_text {width:389px;margin-left:1px;padding:6px 8px 3px;border:0 none;background-color:#f4f4f4;}
+/* 영문인 경우 너비 조절 */
+div.yessign_input02 .eng_input {width:366px;}
+div.yessign_input03 .eng_input {width:385px;}
+
+div.yessign_box_directory {overflow:hidden;width:100%;margin:10px 0;}
+div.yessign_directory {float:left;overflow:auto;width:169px;height:291px;border:1px solid #aaa;}
+div.yessign_directory02 {float:right;overflow:auto;width:303px;height:291px;border:1px solid #aaa;}
+ul.yessign_list_directory {margin:9px 0;}
+ul.yessign_list_directory li {padding:4px 10px 1px;font-family:'돋움',Dotum,sans-serif;line-height:16px;white-space:nowrap;cursor:pointer}
+ul.yessign_list_directory li:hover, .yessign_list_directory li.yessign_on {background-color:#dfedfa;}
+
+div.yessign_wrap_progress_bar {overflow:hidden;width:100%;margin:10px 0;}
+div.yessign_progress_bar {width:0%;margin:5px 0;background-color:#008dcc;text-align:center;}
+
+span.yessign_relay_status_img {margin:2px 6px 0 0;float:left;}
+div.yessign_wrap_relay_detail {height:90px;padding:9px;border:1px solid #aaa;}
+div.yessign_wrap_relay_detail p.yessign_txt_info {font-size:13px;}
+
+img.yessign_keypad_toggle {vertical-align: middle; margin-left: 2px; }
+
+div.yessign_mobile_wrap {width: 100%; height: 100%; box-sizing: border-box; }
+div.yessign_certselect_main_mobile {background-color: #ececec; }
+div.yessign_certselect_sub_mobile {display: none; }
+div.yessign_certselect_sub2_mobile {display: none; padding: 0 15px; }
+span.yessign_img_back {background: url(yessign-1.5.0.png) -7px -86px/173px 116px no-repeat; width: 15px; height: 13px; display: inline-block; vertical-align: middle; position: absolute; padding: 8px 35px 16px 33px; background-clip: content-box; box-sizing: content-box; }
+span.yessign_img_plus {background-image:url(yessign-1.5.0.png);background-position:-164px -21px;width:10px;height:10px;display:inline-block;vertical-align:middle;margin:auto;margin-bottom: 5px;}
+div.yessign_section_sign .yessign_btn_close_mobile {position:absolute;right:19px;top:-30px;width:18px;height:18px;font-size:0;line-height:0;background-image:url(yessign-1.5.0.png);background-position:-98px -5px;}
+table.yessign_tbl td .yessign_inner_mobile {overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: flex; min-width: 50px; font-family:"Noto Sans KR","돋움",Dotum,"굴림",Gulim,AppleGothic,Sans-serif; font-weight: 400; font-size: 12px; line-height: 1.4; }
+.yessign_inner_cert {flex: 0 1 auto; }
+table.yessign_tbl td .yessign_inner_info {flex: 5 3 auto; padding-top: 8px; }
+.yessign_mobile_footer .yessign_inner_info_item {text-align: center; padding-top: 12px; font-size: 16px; font-weight: 500; color: #fff; height: 100%; }
+table.yessign_mobile_tbl tr {border-bottom: 1px solid #cacaca; background-color: #fff; }
+table.yessign_mobile_tbl.yessign_certselect_sub_mobile tr {border-bottom: none; }
+table.yessign_mobile_tbl td.yessign_cert_item_mobile {height: 70px; display: flex; box-sizing: border-box; padding: 0; }
+table.yessign_tbl .yessign_icon_mobile {margin: auto 23px; margin-right: 14px; }
+div.yessign_wrap_input_mobile {margin-top: 3px; padding: 0 15px; }
+div.yessign_wrap_input_mobile div {display:none;width:100%;}
+div.yessign_wrap_input_mobile div.yessign_on {display: inline-block; *display: inline; zoom: 1; width: 100%; box-sizing: border-box; border: 1px solid #cdcdcd; border-radius: 5px 5px 0 0; }
+div.yessign_wrap_input_mobile .yessign_inp_text {width: 100%; height: 54px; color: #666; font-size: 16px; padding: 0 15px; border: none; background: none; box-sizing: border-box; font-family:"Noto Sans KR","돋움",Dotum,"굴림",Gulim,AppleGothic,Sans-serif; }
+div.yessign_wrap_input_mobile .yessign_inp_text::placeholder {color: #666; }
+div.yessign_box_scroll_detail_mobile {overflow: hidden; overflow-y: auto; margin-top: 0; background-color: #fff;}
+div.yessign_detail_content_mobile {margin-top: 10px; padding: 10px; box-sizing: border-box; height: 60px; border: 1px solid #cdcdcd; }
+.yessign_text_break_all {word-break: break-all; }
+.yessign_full_width {width: 100%; }
+.yessign_media_disabled {opacity: 0.3; }
+
+div.yessign_drag_overlay {position: absolute; background-color: black; width: 525px; height: 511px; top: 0px; left: 0px; opacity: 0.75; z-index: 3; display: none; }
+div.yessign_drag_overlay_import {position: absolute; background-color: black; width: 360px; height: 127px; top: 0px; left: 0px; opacity: 0.75; z-index: 3; padding: 20px; display: none; }
+div.yessign_drag_message {color: silver; margin: 190px auto; width: 300px; height: 20px; border: 1px dashed silver; padding: 40px; text-align: center; }
+div.yessign_drag_message_import {color: silver; margin-top: 10px; border: 1px dashed silver; padding: 20px; text-align: center; }
+
+/* mobile 201912 */
+div.yessign_mobile_wrap .yessign_header {height: 51px; background-color: #fff; text-align: center; padding-top: 12px; border-bottom: 1px solid #cacaca; box-sizing: border-box; }
+div.yessign_mobile_wrap h1 {font-size: 16px; font-weight: 700; color: #395165; padding: 0; text-align: center; display: inline-block; width: 100%; }
+div.yessign_mobile_wrap .yessign_mobile_back_div {display: inline-block; width: 20px; height: 13px; position: absolute; }
+div.yessign_mobile_wrap div.yessign_contents {height: calc(100% - 51px); padding: 0; }
+div.yessign_mobile_footer {position: absolute; width: 100%; bottom: 0; height: 52px; background-color: #395165; }
+div.yessign_certselect_sub_mobile.yessign_wrap_btn {box-sizing: border-box; border: 1px solid #cdcdcd; border-radius: 0 0 5px 5px; border-top: none; height: 37px; padding: 5px 20px 0 0; width: auto; margin: 0 15px; }
+div.yessign_certselect_sub_mobile span.yessign_btn:first-child:after {content: '|'; margin: 0 15px; }
+div.yessign_certselect_sub_mobile span.yessign_btn {border: none; background: none; padding: 0; }
+div.yessign_certselect_sub_mobile span.yessign_btn .yessign_in {vertical-align: middle; padding: 0; font-size: 13px; font-family:"Noto Sans KR","돋움",Dotum,"굴림",Gulim,AppleGothic,Sans-serif; }
+div.yessign_mobile_footer .yessign_in {width: 50%; height: 100%; vertical-align: middle; padding: 0; font-family:"Noto Sans KR","돋움",Dotum,"굴림",Gulim,AppleGothic,Sans-serif; }
+div.yessign_mobile_footer .yessign_btn_white {color: #395165; background-color: #fff; border-top: 1px solid #d0d0d0; }
+div.yessign_certselect_sub_mobile div.yessign_certselect_menu {text-align: right; }
+div.yessign_mobile_wrap div.yessign_section_tab {box-sizing: border-box; margin: 88px 0; border: 1px solid #cdcdcd; border-radius: 3px; }
+div.yessign_mobile_wrap div.yessign_section_tab02 {margin-top: 15px; }
+div.yessign_mobile_subwindow div.yessign_contents {padding: 0 15px; }
+ul.yessign_tab_mobile {height: 43px; }
+ul.yessign_tab_mobile li a {display: block; width: 50%; float: left; background-color: #fafafa; text-align: center; border-bottom: 1px solid #cacaca; color: #cdcdcd; font-size: 14px; padding-top: 11px; box-sizing: border-box; height: 43px; }
+ul.yessign_tab_mobile li.yessign_on a {background-color: #fff; border-bottom: none; color: #3c5468; }
+ul.yessign_tab_mobile li:last-child a {border-left: 1px solid #cdcdcd; }
+div.yessign_mobile_wrap div.yessign_cont {padding: 40px 16px 21px 16px; }
+div.yessign_tab_cont_mobile .yessign_textarea {color: #666; font-size: 13px; margin-top: 13px; }
+div.yessign_tab_cont_mobile .yessign_info_cert {margin-top: 0; }
+div.yessign_mobile_wrap button.yessign_long {width: 100%; border-top: 1px solid #cdcdcd; font-size: 16px; height: 41px; font-family:"Noto Sans KR","돋움",Dotum,"굴림",Gulim,AppleGothic,Sans-serif; }
+div.yessign_mobile_wrap div.yessign_section_tab table.yessign_tbl {border-top: 1px solid #3c5468; }
+div.yessign_mobile_wrap div.yessign_section_tab table.yessign_tbl th {height: auto; background-color: #fff; padding: 6px 0 6px 18px; color: #666; border-bottom: 1px solid #cdcdcd; }
+div.yessign_mobile_wrap div.yessign_section_tab table.yessign_tbl th:last-child {border-left: 1px solid #cdcdcd; }
+div.yessign_mobile_wrap div.yessign_section_tab table.yessign_tbl td {height: auto; padding: 6px 0 6px 18px; color: #666; border-bottom: 1px solid #cdcdcd; }
+div.yessign_mobile_wrap div.yessign_section_tab table.yessign_tbl td:last-child {border-left: 1px solid #cdcdcd; }
+div.yessign_mobile_wrap div.yessign_wrap_root_mobile {box-sizing: border-box; margin: 88px 0; border: 1px solid #cdcdcd; border-radius: 3px; }
+div.yessign_wrap_root_mobile h2 {font-size: 16px; font-weight: 700; }
+div.yessign_wrap_root_mobile p.yessign_txt_info {font-size: 14px; margin-top: 18px; }
+div.yessign_wrap_root_mobile div.yessign_mobile_box {font-size: 14px; border: 1px solid #cdcdcd; padding: 10px 14px; background-color: #efefef; color: #666; }
+div.yessign_wrap_root_mobile div.yessign_cont {padding: 0 16px 21px 16px; }
+div.yessign_wrap_move_mobile {margin-top: 20px; border: 1px solid #395165; }
+div.yessign_wrap_move_mobile div.yessign_move_text {border-bottom: 1px solid #cdcdcd; padding: 8px 15px; }
+div.yessign_wrap_move_mobile div.yessign_move_text h2 {font-size: 16px; }
+div.yessign_wrap_move_mobile div.yessign_move_text p {font-size: 14px; }
+div.yessign_wrap_move_mobile div.yessign_move_check {padding: 15px; }
+div.yessign_wrap_move_mobile button.yessign_move_btn {text-decoration: underline; float: right; font-size: 16px; color: #395165; font-family:"Noto Sans KR","돋움",Dotum,"굴림",Gulim,AppleGothic,Sans-serif; box-sizing: content-box; }
+div.yessign_wrap_move_mobile li input {position: absolute; visibility: hidden; width: 1px; height: 1px; }
+div.yessign_wrap_move_mobile li label {color: #cdcdcd; font-size: 16px; height: 24px; width: auto; }
+span.yessign_img_check_move {background: url(yessign-1.5.0.png) no-repeat -73.67px -88px/165px 109.33px; background-clip: content-box; width: 19px; height: 24px; display: inline-block; font-size: 0; line-height: 0; vertical-align: middle; padding-right: 13px; box-sizing: content-box; }
+div.yessign_wrap_move_mobile li label.yessign_on {color: #395165; }
+div.yessign_wrap_move_mobile li label.yessign_on span.yessign_img_check_move {background: url(yessign-1.5.0.png) no-repeat -52.67px -88px/165px 109.33px; background-clip: content-box; }
+div.yessign_wrap_move_pw_mobile {display: none; }
+div.yessign_wrap_move_pw_mobile div.yessign_move_input {margin-top: 13px; border: 1px solid #cdcdcd; border-radius: 5px; padding: 0; }
+div.yessign_mobile_subwindow div.yessign_mobile_footer {left: 0; bottom: -5px; padding: 0; }
+div.yessign_wrap_move_pw_mobile div.yessign_mobile_footer {bottom: 20px; left: 0; padding: 0; }
+div.yessign_mobile_subwindow div.yessign_wrap_info {padding: 16px 0 70px; }
+div.yessign_mobile_footer .yessign_full {width: 100%; }
+table.yessign_mobile_tbl {margin-bottom: 52px; }
+table.yessign_mobile_tbl.yessign_certselect_sub_mobile {margin-bottom: 0; }
+table.yessign_mobile_tbl.yessign_empty {height: 94%; }
+table.yessign_mobile_tbl tr.yessign_empty td {height: 94%; font-size: 16px; font-weight: 400; color: #333; font-family:"Noto Sans KR","돋움",Dotum,"굴림",Gulim,AppleGothic,Sans-serif; }
+.yessign_mobile_move_hide {display: none; }
+.yessign_info_browser {position: absolute; left: 526px; top: 20px;}
+
+@font-face { 
+  font-family: 'Noto Sans KR'; 
+  font-style: normal; 
+  font-weight: 100; 
+  src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Thin.woff2) format('woff2'), 
+      url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Thin.woff) format('woff'), 
+      url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Thin.otf) format('opentype'); 
+} 
+@font-face { 
+  font-family: 'Noto Sans KR'; 
+  font-style: normal; 
+  font-weight: 300; 
+  src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Light.woff2) format('woff2'), 
+      url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Light.woff) format('woff'), 
+      url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Light.otf) format('opentype'); 
+} 
+@font-face { 
+  font-family: 'Noto Sans KR'; 
+  font-style: normal; 
+  font-weight: 400; 
+  src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Regular.woff2) format('woff2'), 
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Regular.woff) format('woff'), 
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Regular.otf) format('opentype'); 
+ } 
+@font-face { 
+  font-family: 'Noto Sans KR'; 
+  font-style: normal; 
+  font-weight: 500; 
+  src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Medium.woff2) format('woff2'), 
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Medium.woff) format('woff'), 
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Medium.otf) format('opentype'); 
+ } 
+@font-face { 
+  font-family: 'Noto Sans KR'; 
+  font-style: normal; 
+  font-weight: 700; 
+  src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Bold.woff2) format('woff2'), 
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Bold.woff) format('woff'), 
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Bold.otf) format('opentype'); 
+ } 
+@font-face { 
+  font-family: 'Noto Sans KR'; 
+  font-style: normal; 
+  font-weight: 900; 
+  src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Black.woff2) format('woff2'), 
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Black.woff) format('woff'), 
+        url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Black.otf) format('opentype'); 
+ } 
