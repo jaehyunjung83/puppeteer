@@ -9,11 +9,10 @@ require("dayjs/locale/ko");
 const localizedFormat = require("dayjs/plugin/localizedFormat");
 dayjs.extend(localizedFormat);
 const download = require("image-downloader");
-const cheerio = require('cheerio');
-const axios = require('axios');
-var qs = require("qs");
 const vision = require('@google-cloud/vision');
 const tabletojson = require('tabletojson').Tabletojson;
+const SQLiteMessagesDB = `${process.env.HOME}/Library/Messages/chat.db`
+const sqlite3 = require('sqlite3').verbose()
 
 
 const stealthPlugin = StealthPlugin();
@@ -242,6 +241,8 @@ puppeteer.use(pluginUserAgentOverride);
   await finCertSdkIframe.waitForSelector('#__fincert_root__ > div > div > div.cf_layout > div.cf_container > div.cf_contents > div.code_info_area')
 
   await finCertSdkIframe.evaluate(() => {
+    // puppeteer text -> mac client[clipboard]
+    // 화면에 표시된 인증 2자리 숫자를 browser clipboard에 넣어서 mac client clipboard에서도 동시에 접근 paste 할 수 있도록
     navigator.clipboard.writeText($('#__fincert_root__ > div > div > div.cf_layout > div.cf_container > div.cf_contents > div.code_info_area > div.code_confirm_number')[0].textContent)
   })
   // 핸드폰 YesKey인증 번호 문자 발송 후
@@ -296,7 +297,7 @@ puppeteer.use(pluginUserAgentOverride);
   
   const captchaGCV = async() => {
     var captchaSolveText = '';
-    console.log("🚀 ~ file: payinfo.js ~ line 293 ~ captchaGCV ~ captchaSolveText", captchaSolveText)
+    console.log('--캡챠solve시작--')
     console.log('captchaGCV')
     // await frameset.waitForTimeout(100)
     
@@ -342,7 +343,7 @@ puppeteer.use(pluginUserAgentOverride);
   try {
   const solvedCaptcha = await captchaGCV();
   console.log("🚀 ~ file: payinfo.js ~ line 395 ~ solvedCaptcha", solvedCaptcha)
-  } catch { console.log('GCV인식오류로 재실행');const solvedCaptcha = await captchaGCV(); }
+  } catch { await frameset.click('#reLoad') + captchaGCV() + console.log('GCV인식오류로 재실행'); }
   
   await frameset.evaluate(() => {
     $('#fncOrgCode > option:nth-child(2)').prop('selected', true)
@@ -354,14 +355,106 @@ puppeteer.use(pluginUserAgentOverride);
   await frameset.waitForSelector('#contents > div.section > div.tbl_list_inquiry3.mg_b50 > table > tbody > tr:nth-child(2) > td > form > p.pd_b15.wrapSty1 > a', { waitUntil: 'load'});
   await frameset.click('#contents > div.section > div.tbl_list_inquiry3.mg_b50 > table > tbody > tr:nth-child(2) > td > form > p.pd_b15.wrapSty1 > a');
 
+  
   await frameset.waitForNavigation();
 
   await frameset.waitForSelector('#smsNum')
 
+
+  var nowTime = new Date();
+  nowTime.setHours(nowTime.getHours() + 9);
+  const sentTimeISO = nowTime.toISOString().replace('T', ' ').substring(0, 19);
+  console.log("🚀 ~ file: payinfo.js ~ line 375 ~ sentTimeISO", sentTimeISO)
+
+
+  const db = new sqlite3.Database(SQLiteMessagesDB)
+
+  // let lastmessage = {};
+  // const messageResult = new Promise((resolve) => {
+  //   db.serialize(() => {
+  //     return db.each(
+  //     `
+  //     SELECT
+  //       message.date,
+  //       datetime (message.date / 1000000000 + strftime ("%s", "2001-01-01"), "unixepoch", "localtime") AS message_date,
+  //       message.text,
+  //       chat.chat_identifier,
+  //     FROM
+  //       chat
+  //       JOIN chat_message_join ON chat. "ROWID" = chat_message_join.chat_id
+  //       JOIN message ON chat_message_join.message_id = message. "ROWID"
+  //     WHERE
+  //       chat_identifier = '+82220338500'
+  //     ORDER BY message_date DESC LIMIT 1
+  //     `, (err, row) => {
+  //       if (err) {
+  //         console.error(err.message);
+  //       }
+  //       // console.log('row: ', row);
+  //     // lastmessage = row;
+  //       // console.log('lastmessage: ', lastmessage);
+  //     return resolve(row) ;
+  //     });
+  //   });
+  // });
+  
+  // messageResult
+  // .then((res) => lastmessage = res)
+  // .then(() => console.log('lastmessage: ', lastmessage))
+  // .then(async() => {
+  //   const onlyNumber = lastmessage.text.replace(/[^0-9]/g, "")
+  //   console.log("🚀 ~ file: payinfo.js ~ line 414 ~ .then ~ onlyNumber", onlyNumber)
+  //   lastmessage.message_date > sentTimeISO 
+  //   ? await frameset.type('#smsNum', onlyNumber)
+  //   : messageResult
+    
+  //   });
+
+
+  let sql = `
+    SELECT
+        datetime (message.date / 1000000000 + strftime ("%s", "2001-01-01"), "unixepoch", "localtime") AS message_date,
+        message.text
+    FROM
+        chat
+        JOIN chat_message_join ON chat. "ROWID" = chat_message_join.chat_id
+        JOIN message ON chat_message_join.message_id = message. "ROWID"
+    WHERE
+        chat_identifier = '+82220338500'
+        and
+        datetime (message.date / 1000000000 + strftime ("%s", "2001-01-01"), "unixepoch", "localtime") > '${sentTimeISO}'
+    ORDER BY message_date DESC
+    `;
+
+let result = {}
+const get = async () => {
+    db.get(sql, [], (err, row) => {
+        if (err) {
+            throw err;
+        }
+        if (row) { return result = row, resultOut(result) }
+        else { return setTimeout(() => { get(), console.log('다시') }, 1000) }
+    })
+};
+get();
+const resultOut = async(resultoutreturn) => { console.log('resultoutreturn: ', resultoutreturn), await frameset.type('#smsNum', resultoutreturn.text.replace(/[^0-9]/g, "")) }
+
+
   await frameset.waitForFunction(() => {
     const smsConfirmNum = document.getElementById('smsNum').value;
+
     return smsConfirmNum.length == 6
   },{ timeout: 0 })
+
+
+
+
+  
+  
+
+
+
+  
 
 
   await frameset.waitForSelector('#contents > div.section > div.tbl_list_inquiry3.mg_b50 > table > tbody > tr:nth-child(2) > td > form > p:nth-child(2) > a')
@@ -396,34 +489,43 @@ puppeteer.use(pluginUserAgentOverride);
   const converted = tabletojson.convert(qryAcntSum);
   fs.writeFileSync('converted.json', JSON.stringify(converted))
   
-  await frameset.$$eval('a.btn_policy', (button) => button[0].click())
+  const detailLength = await frameset.$$eval('a.btn_policy', (button) => button.length)
+  console.log("🚀 ~ file: payinfo.js ~ line 400 ~ detailLength", detailLength)
   
-  console.log(page.frames())
+  const detail = {}
+  
+  for (let i = 0; i < detailLength; i++) {
+    await frameset.$$eval('a.btn_policy', (button, i) => button[i].click(), i)
+  
+    console.log(page.frames())
+    
+    await frameset.waitForNavigation();
+    await frameset.waitForSelector('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
+    
+    eval("(async () => {" + 'var detail_' + i + '=' + 'await frameset.content();' + 'console.log(detail_' + i + ')' + "})();");
+    console.log(eval('detail_' + i))
+    await frameset.waitForSelector('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
+    fs.writeFileSync(`detail_${i}.html`, eval('detail_' + i));
+    eval('var converted_' + i + '=' + 'tabletojson.convert(detail_' + i + ');');
+    fs.writeFileSync(`detail_${i}.json`, JSON.stringify(converted_[i]))
+    await frameset.click('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
+  
+    await frameset.waitForNavigation();
 
-  // const [ , , , , , acntDetail] = page.frames()
+  };
   
-  await frameset.waitForNavigation();
-  await frameset.waitForSelector('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
-  const detail_0 = await frameset.content();
-  await frameset.waitForSelector('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
-  fs.writeFileSync('detail_0.html', detail_0);
-  const converted_0 = tabletojson.convert(detail_0);
-  fs.writeFileSync('detail_0.json', JSON.stringify(converted_0))
-  await frameset.click('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
-  // await frameset.evaluate(() => window.location.href = '/qryAcntSummary.do?menu=1');
+  
+  
+  // await frameset.$$eval('a.btn_policy', (button) => button[1].click())
+  // await frameset.waitForNavigation();
+  // await frameset.waitForSelector('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
+  // const detail_1 = await frameset.content();
+  // fs.writeFileSync('detail_1.html', detail_1);
+  // const converted_1 = tabletojson.convert(detail_1);
+  // fs.writeFileSync('detail_1.json', JSON.stringify(converted_1))
+  // await frameset.click('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
+  
+  // await frameset.waitForNavigation()
 
-  await frameset.waitForNavigation();
-  
-  await frameset.$$eval('a.btn_policy', (button) => button[1].click())
-  await frameset.waitForNavigation();
-  await frameset.waitForSelector('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
-  const detail_1 = await frameset.content();
-  fs.writeFileSync('detail_1.html', detail_1);
-  const converted_1 = tabletojson.convert(detail_1);
-  fs.writeFileSync('detail_1.json', JSON.stringify(converted_1))
-  await frameset.click('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
-  // await frameset.evaluate(() => window.location.href = '/qryAcntSummary.do?menu=1');
-  
-  
-  await frameset.waitForNavigation()
+
 })();
