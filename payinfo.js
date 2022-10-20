@@ -487,27 +487,32 @@ const resultOut = async(resultoutreturn) => { console.log('resultoutreturn: ', r
 
   // const html = fs.readFileSync(path.resolve(__dirname, 'qryAcntSum.html'), {encoding: 'UTF-8'});
   const converted = tabletojson.convert(qryAcntSum);
-  fs.writeFileSync('converted.json', JSON.stringify(converted))
+  fs.writeFileSync('convertedWhole.json', JSON.stringify(converted))
   
   const detailLength = await frameset.$$eval('a.btn_policy', (button) => button.length)
+  const detailBottons = await frameset.$$eval('a.btn_policy', (buttons) => buttons)
+  console.log("🚀 ~ file: payinfo.js ~ line 494 ~ detailBottons", detailBottons)
   console.log("🚀 ~ file: payinfo.js ~ line 400 ~ detailLength", detailLength)
   
-  const detail = {}
+  // const detail = {}
   
   for (let i = 0; i < detailLength; i++) {
     await frameset.$$eval('a.btn_policy', (button, i) => button[i].click(), i)
-  
+    // await detailBottons[i].click();
     console.log(page.frames())
     
     await frameset.waitForNavigation();
     await frameset.waitForSelector('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
     
-    eval("(async () => {" + 'var detail_' + i + '=' + 'await frameset.content();' + 'console.log(detail_' + i + ')' + "})();");
-    console.log(eval('detail_' + i))
+    // eval("(async () => {" + 'var detail_' + i + '=' + 'await frameset.content();' + 'console.log(detail_' + i + ')' + "})();");
+    const detailView = await frameset.content();
+    // console.log(eval('detail_' + i))
     await frameset.waitForSelector('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
-    fs.writeFileSync(`detail_${i}.html`, eval('detail_' + i));
-    eval('var converted_' + i + '=' + 'tabletojson.convert(detail_' + i + ');');
-    fs.writeFileSync(`detail_${i}.json`, JSON.stringify(converted_[i]))
+    // fs.writeFileSync(`detail_${i}.html`, eval('detail_' + i));
+    fs.writeFileSync(`detail_${i}.html`, detailView);
+    // eval('var converted_' + i + '=' + 'tabletojson.convert(detail_' + i + ');');
+    const detailJson = tabletojson.convert(detailView);
+    fs.writeFileSync(`detail_${i}.json`, JSON.stringify(detailJson))
     await frameset.click('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
   
     await frameset.waitForNavigation();
