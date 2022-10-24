@@ -393,19 +393,19 @@ function OnCaclPsbInqr(listNum, acntKindCode) {
 
 	//2019-10-01 대고객 서비스 개선  (해지 및 잔고이전 시간 / 공휴일 체크)
 	//구개인연금
-	if((acntKindCode == "A") && ((2044 >= 1600 || 2044 < 0900) || ('' == 'H' && 'Y' == 'Y'))) {
+	if((acntKindCode == "A") && ((2100 >= 1600 || 2100 < 0900) || ('' == 'H' && 'Y' == 'Y'))) {
 	 alert("현재는 서비스 이용시간이 아닙니다. \n\n은행권 구개인연금저축계좌 해지서비스 이용시간 \n\n영업일 : 09:00~16:00");
 	 return;
 	}
 	
 	//증권사
-	if((acntKindCode == "Z") && ((2044 >= 1600 || 2044 < 0900) || ('' == 'H' && 'Y' == 'Y'))) {
+	if((acntKindCode == "Z") && ((2100 >= 1600 || 2100 < 0900) || ('' == 'H' && 'Y' == 'Y'))) {
 	 alert("현재는 서비스 이용시간이 아닙니다. \n(서비스 시간 : 영업일 09:00 ~ 16:00)");
 	 return;
 	}
 	
 	//은행권 및 제 2금융권 (해지 마감시간 동일)
-	if((2044 >= 2200) || (2044 < 0900) || ('' == 'H' && 'Y' == 'Y')) {
+	if((2100 >= 2200) || (2100 < 0900) || ('' == 'H' && 'Y' == 'Y')) {
 	 alert("현재는 서비스 이용시간이 아닙니다. \n(서비스 시간 : 영업일 09:00 ~ 22:00)");
 	 return; 
 	}  
@@ -556,18 +556,18 @@ $(document).ready(function() {
 			<!-- section -->
 			<div class="section">
 				<form name="frmReq" method="post">
-					<input type="hidden" name="dtlTlgrMngtNum" id="dtlTlgrMngtNum" value="099914297701">
+					<input type="hidden" name="dtlTlgrMngtNum" id="dtlTlgrMngtNum" value="099914105006">
 					<input type="hidden" name="listNum" id="listNum" value="">
 					<input type="hidden" name="menu" id="menu" value="1">
 				</form>				
 				<form method="post" name="frmDetail" action="pop_qryAcntDetail.do">
-					<input id="reqDt" name="reqDt" type="hidden" value="20221024">
-					<input id="reqDt" name="reqTm" type="hidden" value="204400">
-					<input id="dtlTlgrMngtNum" name="dtlTlgrMngtNum" type="hidden" value="099914297701">
+					<input id="reqDt" name="reqDt" type="hidden" value="20221020">
+					<input id="reqDt" name="reqTm" type="hidden" value="210005">
+					<input id="dtlTlgrMngtNum" name="dtlTlgrMngtNum" type="hidden" value="099914105006">
 				</form>			
 				<h4 class="h4_section_tit">계좌 상세내역</h4>
 				<h5 class="h5_tit position_right">(조회기준일 : 
-				2022.10.24)</h5>				
+				2022.10.20)</h5>				
 				<div class="tbl_list_inquiry2">
 					<table>
 						<caption>계좌 상세내역</caption>
@@ -610,12 +610,10 @@ $(document).ready(function() {
 						</thead>
 						<tbody>
 							
-
-							
-							<!-- 활동성계좌 -->
+							<!-- 비활동성계좌 -->
 							<tr>
 								<td colspan="8" class="position_left last">
-									<p class="bul_check_on"><img src="/images/common/bul_round_on.gif" alt="" title="">활동성계좌</p>
+									<p class="bul_check_off"><img src="/images/common/bul_round_off.gif" alt="" title="">비활동성계좌</p>
 								</td>
 							</tr>
 							
@@ -623,27 +621,19 @@ $(document).ready(function() {
 							<tr>
 								<td>1</td>
 								<td>
-									<p class="tit">케이뱅크</p>
-									<p>1001113***97
+									<p class="tit">NH농협은행</p>
+									<p>30204449***71
 									</p>
 								</td>
 								<td>
-									<p class="tit" title="인터넷점">인터넷점</p>
-									
-										
-										
-											<p class="txtCut" title="MY 입출금통장">MY 입출금통장</p>
-										
-																		
+									<p class="tit" title="강남역금융센터">강남역금융센터</p>
+									<p class="txtCut" title="샐러리맨특급통장">샐러리맨특급통장</p>
 								</td>
 								<td>
-									<p class="tit">2020.11.17</p>
-									<p>2021.11.04</p>
+									<p class="tit">2011.09.06</p>
+									<p>2021.04.06</p>
 								</td>
-								<td>
-									0
-									
-								</td>
+								<td>55</td>
 								<td>
 									<p class="tit">-</p>
 									<p>-</p>
@@ -652,22 +642,25 @@ $(document).ready(function() {
 									<p class="tit">-</p>
 									<p>
 										
-										
-											
-												
-												
-												-
-											
-										
+										-
 									</p>
 								</td>
 								<td class="last">
-									대상아님<br>
-									(활동성계좌)
+									           
+									
+										
+										
+											<!--  <a href="#" class="btn_red btn_policy" onclick="OnReq(1);return false;">신청</a>  -->
+											<a href="#none" id="frmSend" class="btn_red btn_policy" onclick="OnCaclPsbInqr(1,'1');return false;">신청</a>
+										
+									
+									
 								</td>
 							</tr>
 							
 							<!-- //row -->
+							
+
 							
 
 						</tbody>
@@ -677,7 +670,7 @@ $(document).ready(function() {
 									합계
 								</th>
 								<td>
-									0
+									55
 								</td>
 								<td colspan="3">
 									

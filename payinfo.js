@@ -488,6 +488,31 @@ const resultOut = async(resultoutreturn) => { console.log('resultoutreturn: ', r
   // const html = fs.readFileSync(path.resolve(__dirname, 'qryAcntSum.html'), {encoding: 'UTF-8'});
   const converted = tabletojson.convert(qryAcntSum);
   fs.writeFileSync('convertedWhole.json', JSON.stringify(converted))
+
+  const tableToObj = await frameset.evaluate(() => {
+    var cols = [];
+    var result = [];
+    $('#contents > div:nth-child(3) > div.tbl_list_inquiry2.stripes > table > thead > tr > th ').each(function(){
+        cols.push($(this).text().toLowerCase());
+    });
+    $('#contents > div:nth-child(3) > div.tbl_list_inquiry2.stripes > table > tbody > tr').each(function(id){
+        var row = {'id': id+1};
+        $(this).find('td').each(function(index){
+            if (index > 0 && index < 7) {
+            row[cols[index]+'_비활동'] = $(this).find('p:eq(0)').text().replaceAll('\t','').replaceAll('\n','')
+            row[cols[index]+'_활동'] = $(this).find('p:eq(1)').text().replaceAll('\t','').replaceAll('\n','');
+            } else {
+                        row[cols[index]] = $(this).text().replaceAll('\t','').replaceAll('\n','');
+
+            }
+        });
+        result.push(row);
+    });
+    return result
+  })
+  console.log("🚀 ~ file: payinfo.js ~ line 513 ~ tableToObj ~ tableToObj", tableToObj)
+
+
   
   const detailLength = await frameset.$$eval('a.btn_policy', (button) => button.length)
   const detailBottons = await frameset.$$eval('a.btn_policy', (buttons) => buttons)
@@ -498,21 +523,55 @@ const resultOut = async(resultoutreturn) => { console.log('resultoutreturn: ', r
   
   for (let i = 0; i < detailLength; i++) {
     await frameset.$$eval('a.btn_policy', (button, i) => button[i].click(), i)
-    // await detailBottons[i].click();
+    
     console.log(page.frames())
     
     await frameset.waitForNavigation();
     await frameset.waitForSelector('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
     
-    // eval("(async () => {" + 'var detail_' + i + '=' + 'await frameset.content();' + 'console.log(detail_' + i + ')' + "})();");
+    
     const detailView = await frameset.content();
-    // console.log(eval('detail_' + i))
+    
     await frameset.waitForSelector('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
-    // fs.writeFileSync(`detail_${i}.html`, eval('detail_' + i));
+    
     fs.writeFileSync(`detail_${i}.html`, detailView);
-    // eval('var converted_' + i + '=' + 'tabletojson.convert(detail_' + i + ');');
+    
     const detailJson = tabletojson.convert(detailView);
-    fs.writeFileSync(`detail_${i}.json`, JSON.stringify(detailJson))
+
+    const detailObj = await frameset.evaluate(() => {
+      var cols = [];
+      var result = [];
+      $('#contents > div:nth-child(3) > div.tbl_list_inquiry2 > table > thead > tr > th').each(function(index){
+          if (index < 7 && index != 4) {
+      cols.push($(this).find('p:eq(0)').text().replaceAll('\t','').replaceAll('\n','')); cols.push($(this).find('p:eq(1)').text().replaceAll('\t','').replaceAll('\n',''));
+          } else { cols.push($(this).text().replaceAll('\t','').replaceAll('\n',''));
+                }
+      });
+      console.log(cols)
+      $('#contents > div:nth-child(3) > div.tbl_list_inquiry2 > table > tbody > tr').each(function(id){
+          var row = {'id': id+1};
+          $(this).find('td').each(function(index){
+              if (index < 7 && index != 4) {
+              row[cols[index*2]] = $(this).find('p:eq(0)').text().replaceAll('\t','').replaceAll('\n','');
+              row[cols[index*2+1]] = $(this).find('p:eq(1)').text().replaceAll('\t','').replaceAll('\n','');
+              } else if (index == 4) { row[cols[index*2]] = $(this).text().replaceAll('\t','').replaceAll('\n','');
+                    } else { row[cols[index*2-1]] = $(this).text().replaceAll('\t','').replaceAll('\n','').trim();
+                    } 
+          });
+          result.push(row);
+      });
+
+      result.push({"합계": $('#contents > div:nth-child(3) > div.tbl_list_inquiry2 > table > tfoot > tr > td').text().replaceAll('\t','').replaceAll('\n','')})
+
+      return result
+    });
+    console.log("🚀 ~ file: payinfo.js ~ line 568 ~ detailObj ~ detailObj", detailObj)
+    
+
+    i == 0 ? 
+    fs.writeFileSync('detail.json', JSON.stringify(detailJson))
+    : fs.appendFileSync('detail.json', ',' + JSON.stringify(detailJson))
+
     await frameset.click('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
   
     await frameset.waitForNavigation();
@@ -520,17 +579,7 @@ const resultOut = async(resultoutreturn) => { console.log('resultoutreturn: ', r
   };
   
   
-  
-  // await frameset.$$eval('a.btn_policy', (button) => button[1].click())
-  // await frameset.waitForNavigation();
-  // await frameset.waitForSelector('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
-  // const detail_1 = await frameset.content();
-  // fs.writeFileSync('detail_1.html', detail_1);
-  // const converted_1 = tabletojson.convert(detail_1);
-  // fs.writeFileSync('detail_1.json', JSON.stringify(converted_1))
-  // await frameset.click('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
-  
-  // await frameset.waitForNavigation()
+
 
 
 })();

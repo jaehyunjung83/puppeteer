@@ -393,19 +393,19 @@ function OnCaclPsbInqr(listNum, acntKindCode) {
 
 	//2019-10-01 대고객 서비스 개선  (해지 및 잔고이전 시간 / 공휴일 체크)
 	//구개인연금
-	if((acntKindCode == "A") && ((1534 >= 1600 || 1534 < 0900) || ('' == 'H' && 'Y' == 'Y'))) {
+	if((acntKindCode == "A") && ((2044 >= 1600 || 2044 < 0900) || ('' == 'H' && 'Y' == 'Y'))) {
 	 alert("현재는 서비스 이용시간이 아닙니다. \n\n은행권 구개인연금저축계좌 해지서비스 이용시간 \n\n영업일 : 09:00~16:00");
 	 return;
 	}
 	
 	//증권사
-	if((acntKindCode == "Z") && ((1534 >= 1600 || 1534 < 0900) || ('' == 'H' && 'Y' == 'Y'))) {
+	if((acntKindCode == "Z") && ((2044 >= 1600 || 2044 < 0900) || ('' == 'H' && 'Y' == 'Y'))) {
 	 alert("현재는 서비스 이용시간이 아닙니다. \n(서비스 시간 : 영업일 09:00 ~ 16:00)");
 	 return;
 	}
 	
 	//은행권 및 제 2금융권 (해지 마감시간 동일)
-	if((1534 >= 2200) || (1534 < 0900) || ('' == 'H' && 'Y' == 'Y')) {
+	if((2044 >= 2200) || (2044 < 0900) || ('' == 'H' && 'Y' == 'Y')) {
 	 alert("현재는 서비스 이용시간이 아닙니다. \n(서비스 시간 : 영업일 09:00 ~ 22:00)");
 	 return; 
 	}  
@@ -556,18 +556,18 @@ $(document).ready(function() {
 			<!-- section -->
 			<div class="section">
 				<form name="frmReq" method="post">
-					<input type="hidden" name="dtlTlgrMngtNum" id="dtlTlgrMngtNum" value="099914082515">
+					<input type="hidden" name="dtlTlgrMngtNum" id="dtlTlgrMngtNum" value="099914297706">
 					<input type="hidden" name="listNum" id="listNum" value="">
 					<input type="hidden" name="menu" id="menu" value="1">
 				</form>				
 				<form method="post" name="frmDetail" action="pop_qryAcntDetail.do">
-					<input id="reqDt" name="reqDt" type="hidden" value="20221020">
-					<input id="reqDt" name="reqTm" type="hidden" value="153432">
-					<input id="dtlTlgrMngtNum" name="dtlTlgrMngtNum" type="hidden" value="099914082515">
+					<input id="reqDt" name="reqDt" type="hidden" value="20221024">
+					<input id="reqDt" name="reqTm" type="hidden" value="204402">
+					<input id="dtlTlgrMngtNum" name="dtlTlgrMngtNum" type="hidden" value="099914297706">
 				</form>			
 				<h4 class="h4_section_tit">계좌 상세내역</h4>
 				<h5 class="h5_tit position_right">(조회기준일 : 
-				2022.10.20)</h5>				
+				2022.10.24)</h5>				
 				<div class="tbl_list_inquiry2">
 					<table>
 						<caption>계좌 상세내역</caption>

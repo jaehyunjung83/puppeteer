@@ -1,0 +1,54 @@
+[
+    [
+        {
+            "합계": "비활동성계좌"
+        },
+        {
+            "합계": "1",
+            "은행명\n\t\t\t\t\t\t\t\t\t계좌번호": "하나은행\n\t\t\t\t\t\t\t\t\t157910055***07",
+            "지점명\n\t\t\t\t\t\t\t\t\t상품명": "삼선교\n\t\t\t\t\t\t\t\t\t저축예금",
+            "개설일\n\t\t\t\t\t\t\t\t\t최종입출금일": "2002.12.06\n\t\t\t\t\t\t\t\t\t2012.06.04",
+            "잔고": "2,305",
+            "만기일\n\t\t\t\t\t\t\t\t\t회차": "-\n\t\t\t\t\t\t\t\t\t-",
+            "부기명\n\t\t\t\t\t\t\t\t\t비고": "-\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t-",
+            "계좌해지잔고이전": "신청"
+        },
+        {
+            "합계": "2",
+            "은행명\n\t\t\t\t\t\t\t\t\t계좌번호": "하나은행\n\t\t\t\t\t\t\t\t\t359910311***07",
+            "지점명\n\t\t\t\t\t\t\t\t\t상품명": "６３빌딩\n\t\t\t\t\t\t\t\t\t저축예금",
+            "개설일\n\t\t\t\t\t\t\t\t\t최종입출금일": "2020.03.02\n\t\t\t\t\t\t\t\t\t2021.03.11",
+            "잔고": "5,263,480",
+            "만기일\n\t\t\t\t\t\t\t\t\t회차": "-\n\t\t\t\t\t\t\t\t\t-",
+            "부기명\n\t\t\t\t\t\t\t\t\t비고": "-\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t-",
+            "계좌해지잔고이전": "대상아님"
+        },
+        {
+            "합계": "활동성계좌"
+        },
+        {
+            "합계": "1",
+            "은행명\n\t\t\t\t\t\t\t\t\t계좌번호": "하나은행\n\t\t\t\t\t\t\t\t\t777910162***21",
+            "지점명\n\t\t\t\t\t\t\t\t\t상품명": "여의도광장\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t하나 타이밍 적금",
+            "개설일\n\t\t\t\t\t\t\t\t\t최종입출금일": "2022.09.22\n\t\t\t\t\t\t\t\t\t2022.09.22",
+            "잔고": "101,000",
+            "만기일\n\t\t\t\t\t\t\t\t\t회차": "2023.03.22\n\t\t\t\t\t\t\t\t\t-",
+            "부기명\n\t\t\t\t\t\t\t\t\t비고": "-\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t-",
+            "계좌해지잔고이전": "대상아님\n\t\t\t\t\t\t\t\t\t(활동성계좌)"
+        },
+        {
+            "합계": "2",
+            "은행명\n\t\t\t\t\t\t\t\t\t계좌번호": "하나은행\n\t\t\t\t\t\t\t\t\t010889575***07",
+            "지점명\n\t\t\t\t\t\t\t\t\t상품명": "여의도광장\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t하나멤버스 주거래통장",
+            "개설일\n\t\t\t\t\t\t\t\t\t최종입출금일": "2018.01.09\n\t\t\t\t\t\t\t\t\t2022.10.20",
+            "잔고": "20,058,685",
+            "만기일\n\t\t\t\t\t\t\t\t\t회차": "-\n\t\t\t\t\t\t\t\t\t-",
+            "부기명\n\t\t\t\t\t\t\t\t\t비고": "-\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t-",
+            "계좌해지잔고이전": "대상아님\n\t\t\t\t\t\t\t\t\t(활동성계좌)"
+        },
+        {
+            "합계": "25,425,470",
+            "은행명\n\t\t\t\t\t\t\t\t\t계좌번호": ""
+        }
+    ]
+]
