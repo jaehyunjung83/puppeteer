@@ -1,18 +1,22 @@
 // const puppeteer = require("puppeteer");
-const puppeteer = require("puppeteer-extra");
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-const puppeteerExtraPluginUserAgentOverride = require("puppeteer-extra-plugin-stealth/evasions/user-agent-override");
-const fs = require("fs");
-const path = require('path');
-const dayjs = require("dayjs");
-require("dayjs/locale/ko");
-const localizedFormat = require("dayjs/plugin/localizedFormat");
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import puppeteerExtraPluginUserAgentOverride from "puppeteer-extra-plugin-stealth/evasions/user-agent-override/index.js";
+import { writeFileSync, appendFileSync } from "fs";
+import path from 'path';
+import dayjs from "dayjs";
+import localizedFormat from "dayjs/plugin/localizedFormat.js";
 dayjs.extend(localizedFormat);
-const download = require("image-downloader");
-const vision = require('@google-cloud/vision');
-const tabletojson = require('tabletojson').Tabletojson;
+import download from "image-downloader";
+import { ImageAnnotatorClient } from '@google-cloud/vision';
+import { Tabletojson as tabletojson } from 'tabletojson';
 const SQLiteMessagesDB = `${process.env.HOME}/Library/Messages/chat.db`
-const sqlite3 = require('sqlite3').verbose()
+// const sqlite3 = require('sqlite3').verbose()
+import verbose from 'sqlite3';
+const sqlite3 = verbose;
+import clipboard from 'clipboardy';
+
+
 
 
 const stealthPlugin = StealthPlugin();
@@ -26,6 +30,10 @@ const pluginUserAgentOverride = puppeteerExtraPluginUserAgentOverride({
 puppeteer.use(pluginUserAgentOverride);
 
 (async () => {
+  const readText0 = clipboard.readSync();
+  console.log("🚀 ~ file: payinfo.js ~ line 51 ~ readText0", readText0)
+
+  
   const browser = await puppeteer.launch(
     { headless: false, devtools: false ,
      args: [
@@ -314,7 +322,7 @@ puppeteer.use(pluginUserAgentOverride);
     } catch (e) { console.log(e); console.log('exception    ')}
 
     
-    const GCVclient = new vision.ImageAnnotatorClient();
+    const GCVclient = new ImageAnnotatorClient();
     const fileName = './payinfoCaptchaImg.png';
 
     // Performs text detection on the local file
@@ -487,7 +495,7 @@ const resultOut = async(resultoutreturn) => { console.log('resultoutreturn: ', r
 
   // const html = fs.readFileSync(path.resolve(__dirname, 'qryAcntSum.html'), {encoding: 'UTF-8'});
   const converted = tabletojson.convert(qryAcntSum);
-  fs.writeFileSync('convertedWhole.json', JSON.stringify(converted))
+  writeFileSync('convertedWhole.json', JSON.stringify(converted))
 
   const tableToObj = await frameset.evaluate(() => {
     var cols = [];
@@ -524,7 +532,7 @@ const resultOut = async(resultoutreturn) => { console.log('resultoutreturn: ', r
   for (let i = 0; i < detailLength; i++) {
     await frameset.$$eval('a.btn_policy', (button, i) => button[i].click(), i)
     
-    console.log(page.frames())
+    // console.log(page.frames())
     
     await frameset.waitForNavigation();
     await frameset.waitForSelector('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
@@ -534,7 +542,7 @@ const resultOut = async(resultoutreturn) => { console.log('resultoutreturn: ', r
     
     await frameset.waitForSelector('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
     
-    fs.writeFileSync(`detail_${i}.html`, detailView);
+    writeFileSync(`detail_${i}.html`, detailView);
     
     const detailJson = tabletojson.convert(detailView);
 
@@ -569,17 +577,54 @@ const resultOut = async(resultoutreturn) => { console.log('resultoutreturn: ', r
     
 
     i == 0 ? 
-    fs.writeFileSync('detail.json', JSON.stringify(detailJson))
-    : fs.appendFileSync('detail.json', ',' + JSON.stringify(detailJson))
+    writeFileSync('detail.json', JSON.stringify(detailJson))
+    : appendFileSync('detail.json', ',' + JSON.stringify(detailJson))
 
+    
+    
     await frameset.click('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)')
   
     await frameset.waitForNavigation();
 
   };
   
+
+  await frameset.click('#lnb > li:nth-child(2) > a');
+
+  await frameset.waitForNavigation();
+
+  const secondFinanceObj = await frameset.evaluate(() => {
+    var cols = [];
+    var result = [];
+    
+    $('#contents > div:nth-child(3) > div.tbl_list_inquiry2.stripes > table > thead > tr > th').each(function(index){
+        if (index < 7 && index != 4) {
+        cols.push($(this).text().replaceAll('\t','').replaceAll('\n',''));
+        } else { cols.push($(this).text().replaceAll('\t','').replaceAll('\n',''));
+              }
+    });
+    console.log(cols)
+    $('#contents > div:nth-child(3) > div.tbl_list_inquiry2 > table > tbody > tr').each(function(id){
+        var row = {'id': id+1};
+        $(this).find('td').each(function(index){
+            if (index < 7 && index != 4) {
+            row[cols[index*2]] = $(this).find('p:eq(0)').text().replaceAll('\t','').replaceAll('\n','');
+            row[cols[index*2+1]] = $(this).find('p:eq(1)').text().replaceAll('\t','').replaceAll('\n','');
+            } else if (index == 4) { row[cols[index*2]] = $(this).text().replaceAll('\t','').replaceAll('\n','');
+                  } else { row[cols[index*2-1]] = $(this).text().replaceAll('\t','').replaceAll('\n','').trim();
+                  } 
+        });
+        result.push(row);
+    });
+
+    result.push({"합계": $('#contents > div:nth-child(3) > div.tbl_list_inquiry2 > table > tfoot > tr > td').text().replaceAll('\t','').replaceAll('\n','')})
+
+    return result
+  });
+
+  console.log(secondFinanceObj);
   
-
-
+  const readText = clipboard.readSync();
+  console.log("🚀 ~ file: payinfo.js ~ line 638 ~ readText", readText)
 
 })();

@@ -393,19 +393,19 @@ function OnCaclPsbInqr(listNum, acntKindCode) {
 
 	//2019-10-01 대고객 서비스 개선  (해지 및 잔고이전 시간 / 공휴일 체크)
 	//구개인연금
-	if((acntKindCode == "A") && ((2043 >= 1600 || 2043 < 0900) || ('' == 'H' && 'Y' == 'Y'))) {
+	if((acntKindCode == "A") && ((2038 >= 1600 || 2038 < 0900) || ('' == 'H' && 'Y' == 'Y'))) {
 	 alert("현재는 서비스 이용시간이 아닙니다. \n\n은행권 구개인연금저축계좌 해지서비스 이용시간 \n\n영업일 : 09:00~16:00");
 	 return;
 	}
 	
 	//증권사
-	if((acntKindCode == "Z") && ((2043 >= 1600 || 2043 < 0900) || ('' == 'H' && 'Y' == 'Y'))) {
+	if((acntKindCode == "Z") && ((2038 >= 1600 || 2038 < 0900) || ('' == 'H' && 'Y' == 'Y'))) {
 	 alert("현재는 서비스 이용시간이 아닙니다. \n(서비스 시간 : 영업일 09:00 ~ 16:00)");
 	 return;
 	}
 	
 	//은행권 및 제 2금융권 (해지 마감시간 동일)
-	if((2043 >= 2200) || (2043 < 0900) || ('' == 'H' && 'Y' == 'Y')) {
+	if((2038 >= 2200) || (2038 < 0900) || ('' == 'H' && 'Y' == 'Y')) {
 	 alert("현재는 서비스 이용시간이 아닙니다. \n(서비스 시간 : 영업일 09:00 ~ 22:00)");
 	 return; 
 	}  
@@ -556,18 +556,18 @@ $(document).ready(function() {
 			<!-- section -->
 			<div class="section">
 				<form name="frmReq" method="post">
-					<input type="hidden" name="dtlTlgrMngtNum" id="dtlTlgrMngtNum" value="099914297688">
+					<input type="hidden" name="dtlTlgrMngtNum" id="dtlTlgrMngtNum" value="099914460411">
 					<input type="hidden" name="listNum" id="listNum" value="">
 					<input type="hidden" name="menu" id="menu" value="1">
 				</form>				
 				<form method="post" name="frmDetail" action="pop_qryAcntDetail.do">
-					<input id="reqDt" name="reqDt" type="hidden" value="20221024">
-					<input id="reqDt" name="reqTm" type="hidden" value="204352">
-					<input id="dtlTlgrMngtNum" name="dtlTlgrMngtNum" type="hidden" value="099914297688">
+					<input id="reqDt" name="reqDt" type="hidden" value="20221026">
+					<input id="reqDt" name="reqTm" type="hidden" value="203850">
+					<input id="dtlTlgrMngtNum" name="dtlTlgrMngtNum" type="hidden" value="099914460411">
 				</form>			
 				<h4 class="h4_section_tit">계좌 상세내역</h4>
 				<h5 class="h5_tit position_right">(조회기준일 : 
-				2022.10.24)</h5>				
+				2022.10.26)</h5>				
 				<div class="tbl_list_inquiry2">
 					<table>
 						<caption>계좌 상세내역</caption>
@@ -709,54 +709,6 @@ $(document).ready(function() {
 								<td>1</td>
 								<td>
 									<p class="tit">하나은행</p>
-									<p>010889575***07
-									</p>
-								</td>
-								<td>
-									<p class="tit" title="여의도광장">여의도광장</p>
-									
-										
-										
-											<p class="txtCut" title="하나멤버스 주거래통장">하나멤버스 주거래통장</p>
-										
-																		
-								</td>
-								<td>
-									<p class="tit">2018.01.09</p>
-									<p>2022.10.24</p>
-								</td>
-								<td>
-									19,896,065
-									
-								</td>
-								<td>
-									<p class="tit">-</p>
-									<p>-</p>
-								</td>
-								<td>
-									<p class="tit">-</p>
-									<p>
-										
-										
-											
-												
-												
-												-
-											
-										
-									</p>
-								</td>
-								<td class="last">
-									대상아님<br>
-									(활동성계좌)
-								</td>
-							</tr>
-							
-							<!-- row -->
-							<tr>
-								<td>2</td>
-								<td>
-									<p class="tit">하나은행</p>
 									<p>777910162***21
 									</p>
 								</td>
@@ -800,6 +752,54 @@ $(document).ready(function() {
 								</td>
 							</tr>
 							
+							<!-- row -->
+							<tr>
+								<td>2</td>
+								<td>
+									<p class="tit">하나은행</p>
+									<p>010889575***07
+									</p>
+								</td>
+								<td>
+									<p class="tit" title="여의도광장">여의도광장</p>
+									
+										
+										
+											<p class="txtCut" title="하나멤버스 주거래통장">하나멤버스 주거래통장</p>
+										
+																		
+								</td>
+								<td>
+									<p class="tit">2018.01.09</p>
+									<p>2022.10.25</p>
+								</td>
+								<td>
+									19,173,750
+									
+								</td>
+								<td>
+									<p class="tit">-</p>
+									<p>-</p>
+								</td>
+								<td>
+									<p class="tit">-</p>
+									<p>
+										
+										
+											
+												
+												
+												-
+											
+										
+									</p>
+								</td>
+								<td class="last">
+									대상아님<br>
+									(활동성계좌)
+								</td>
+							</tr>
+							
 							<!-- //row -->
 							
 
@@ -810,7 +810,7 @@ $(document).ready(function() {
 									합계
 								</th>
 								<td>
-									25,362,850
+									24,640,535
 								</td>
 								<td colspan="3">
 									

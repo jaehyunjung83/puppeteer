@@ -32,6 +32,7 @@ const get = async () => {
         if (row) { return result = row, resultOut(result) }
         else { return setTimeout(() => { get(), console.log('다시') }, 1000) }
     })
+    
 };
 get();
 const resultOut = (resultoutreturn) => { console.log('resultoutreturn: ', resultoutreturn) }
