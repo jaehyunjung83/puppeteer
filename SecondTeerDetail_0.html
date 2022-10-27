@@ -324,14 +324,16 @@ function goCenterJ() {
 
 <br> <!-- 외주디자인에는 없는 것 -->
 
-			<h2 class="h2_lnb_tit">내카드한눈에</h2>
+			<h2 class="h2_lnb_tit">내계좌한눈에</h2>
 			<!-- lnb -->
 			<ul id="lnb">
-				<li><a href="/card/qryCardSumr.do?menu=1" class="on">카드정보조회</a></li>
-				<li><a href="/card/qryCardPnt.do?menu=2">포인트조회</a></li>
-				<li><a href="/card/pntcash/qryCardPntCash.do?menu=4">포인트현금화</a></li>  <!-- 2021-05-18 포인트현금화 -->
-				<li><a href="/card/pntcash/PntCashResultList.do?menu=5">신청결과조회</a></li>  <!-- 2021-05-18 포인트현금화 -->
-				<li><a href="/card/withdrawAtzt.do?menu=3">위임동의철회</a></li>
+			 
+				<li><a href="/acntcb/qryAcntSummary.do?menu=1">은행권</a></li>
+				<li><a href="/acntcb/qryAcntSummarySeo.do?menu=4" class="on">제2금융권</a></li>
+				<li><a href="/acntcb/qryAcntStockSummary.do?menu=5">증권사</a></li>
+				<li><a href="/acntcb/drmnt/drmntSummary.do?menu=6">휴면예금·보험금</a></li>
+				<li><a href="/acntcb/qryCaclResultList.do?menu=3">처리결과 조회</a></li>
+ 
 			</ul>
 			<!-- //lnb -->	
 	
@@ -372,173 +374,418 @@ function goCenterJ() {
 		<h2 class="hidden">현재위치</h2>
 		<div class="location">
 			<p>
-				홈 &gt; 내카드 한눈에
-				 &gt; <span class="text_bold">카드정보조회</span>
+				홈 &gt; 계좌통합관리
+				
+				 &gt; <span class="text_bold">계좌통합조회</span>
+
 			</p>
 		</div>
 		<!-- location -->
 
 <script type="text/javascript">
 
-function OnSetl(){
+<!--2019-03-11 acntKindCode 추가-->
+function OnCaclPsbInqr(listNum,acntKindCode){
 
-	document.frmRetry.action = "qryCardSetlAmt.do";
-	document.frmRetry.target = "_self";
-	document.frmRetry.submit();
+
+	
+
+     
+
+	//2019-10-01 대고객 서비스 개선  (해지 및 잔고이전 시간 / 공휴일 체크)
+	//구개인연금
+	if((acntKindCode == "A") && ((2137 >= 1600 || 2137 < 0900) || ('' == 'H' && 'Y' == 'Y'))) {
+	 alert("현재는 서비스 이용시간이 아닙니다. \n\n은행권 구개인연금저축계좌 해지서비스 이용시간 \n\n영업일 : 09:00~16:00");
+	 return;
+	}
+	
+	//증권사
+	if((acntKindCode == "Z") && ((2137 >= 1600 || 2137 < 0900) || ('' == 'H' && 'Y' == 'Y'))) {
+	 alert("현재는 서비스 이용시간이 아닙니다. \n(서비스 시간 : 영업일 09:00 ~ 16:00)");
+	 return;
+	}
+	
+	//은행권 및 제 2금융권 (해지 마감시간 동일)
+	if((2137 >= 2200) || (2137 < 0900) || ('' == 'H' && 'Y' == 'Y')) {
+	 alert("현재는 서비스 이용시간이 아닙니다. \n(서비스 시간 : 영업일 09:00 ~ 22:00)");
+	 return; 
+	}  
+    // -- // 
+    
+	
+	
+	 
+	
+	
+ 
+	
+	document.getElementById("listNum").value = listNum;
 
 	$(".layer_loading").css('display', 'block');
-	$(".layer_que_background").css('display', 'block');	
-	
+	$(".layer_que_background").css('display', 'block');
+
+	$.ajax({
+		url: '/acntcb/caclPsbInqr.do',
+		type: 'POST',
+		dataType: 'text',
+		data: 'listNum=' + $('#listNum').val(),
+		async: false,  
+		success: function(resp) {   //위의 url 요청이 성공일 때 실행되는 함수 
+
+			var rspCode = resp.substring(resp.indexOf("<<")+2,resp.indexOf(">>"));
+			var rspMsg = resp.substring(resp.indexOf(">>")+2,resp.indexOf("]]"));
+
+			
+			if ( rspCode == "0000" ) OnReq(listNum);  
+			else {
+				alert(rspMsg);           
+			} 
+						
+			$(".layer_loading").css('display', 'none');
+			$(".layer_que_background").css('display', 'none');		
+               
+         }
+	});
+		
 }
 
-function OnUse(){
+function OnReq(listNum){
 
-	document.frmRetry.action = "qryCardUsePram.do";
-	document.frmRetry.target = "_self";
-	document.frmRetry.submit();
+
+	document.getElementById("listNum").value = listNum;
+	document.frmReq.action = "selectRcvAcnt.do?menu=4";     
+	document.frmReq.submit();
 
 	$(".layer_loading").css('display', 'block');
-	$(".layer_que_background").css('display', 'block');	
-	
+	$(".layer_que_background").css('display', 'block');		
 }
 
-function OnList(){
-
-	document.frmRetry.action = "qryCardSumr.do";
-	document.frmRetry.target = "_self";
-	document.frmRetry.submit();
+function OnProc(){
+	alert("                    이미 신청하신 내역입니다. \n\n 처리결과를 익영업일에 확인하신 후 다시 시도해주시기 바랍니다.");
+	return;
 }
 
-function OnPrint() {
+function OnReport() {
 
-	var newWin = window.open("about:blank", "_print", "top=10px,left=10px,width=770px,height=900px,resizable=0,status=0,scrollbars=1,menubar=0");
-	document.frmRetry.action = "pop_qryCardDetail.do";
-	document.frmRetry.target = "_print";
-	document.frmRetry.submit();
+	var newWin = window.open("about:blank", "_print", "top=10px,left=10px,width=750px,height=900px,resizable=0,status=0,scrollbars=1,menubar=0");
+	document.frmDetail.target = "_print";
+	document.frmDetail.submit();
 	
 	return;
 	
 }
+
+//화면 호출시 가장 먼저 호출되는 부분 
+$(document).ready(function() {
+ 
+ //'확인' 버튼 클릭시
+ $('#frmSend1').click(function(){
+	 alert("request " + $('#listNum').val());
+     //if ( !$('#answer').val() ) {
+     if (false) {
+          alert('이미지에 보이는 숫자 또는 스피커를 통해 들리는 숫자를 입력해 주세요.');
+          document.getElementById("answer").focus();
+     } else {
+          $.ajax({
+              url: '/acntcb/caclPsbInqr.do',
+              type: 'POST',
+              dataType: 'text',
+              data: 'listNum=' + $('#listNum').val(),
+              async: false,  
+              success: function(resp) {
+                  	alert(resp.substring(resp.indexOf("^^")));
+                   if ( resp.indexOf("000") > 0 ) {
+                   	//$("#resultImg").val('ok');
+                   	alert("정상 확인되었습니다");
+                   	//if ("0000" != "" && "" == "")
+                    //   	document.getElementById("cellNum").value = "숫자만 입력 가능";
+                    //} else {
+                    //   alert(resp);
+                   //    $('#reLoad').click();
+                    //   $('#answer').val('');
+                    //   document.getElementById("answer").focus();
+                    
+                    } 
+
+					$(".layer_loading").css('display', 'none');
+					$(".layer_que_background").css('display', 'none');		
+                   
+             }
+        });
+     }
+ });
+});
 </script>
 
 	<!-- contents -->
 		
 
-
-
-
 		<div id="contents" class="sub_contents">
-			
-			<h3 class="h3_contents_tit">카드정보조회</h3>
+			<h3 class="h3_contents_tit">계좌통합조회</h3>
 
+			<!-- step -->
+			<ol class="step4 step4_3_on"> <!-- 2019-06-27 서민금융기관해지 스텝4 포맷변경 -->
+				<li>
+					<div>
+						<p class="txt_step">STEP.1</p>
+						<p>개인정보 수집 및 이용동의</p>
+					</div>
+				</li>
+				<li>
+					<div>
+						<p class="txt_step">STEP.2</p>
+						<p>로그인</p>
+					</div>
+				</li>
+				<li>
+					<div>
+						<p class="txt_step">STEP.3</p>
+						<p class="text_bold">계좌통합조회</p>
+					</div>
+				</li>
+				<li>  <!-- 2019-06-27 서민금융기관해지 스텝4 추가 -->
+					<div>
+						<p class="txt_step">STEP.4</p> 
+						<p>잔고이전·해지</p>
+					</div>
+				</li>
+			</ol>
+			<!-- //step -->
+			
 			<!-- section -->
 			<div class="section">
-				<form name="frmRetry" method="post">
-					<input type="hidden" name="cccoCode" id="cccoCode" value="374">
-					<input type="hidden" name="membFncOrgCode" id="membFncOrgCode" value="374">
-					<input type="hidden" name="cccoName" id="cccoName" value="하나카드">
-					<input type="hidden" name="menu" id="menu" value="1">
-					<input type="hidden" id="confirm" name="confirm" value="check">
-				</form>	
-				
-				
-					
-				
-				
-				<h4 class="h4_section_tit">카드정보 상세내역 <span class="sub_txt">하나카드</span></h4>
-				
-				<!-- tab -->
-				<div class="tab">
-					<a href="#" class="on"><span>카드정보</span></a>
-					<a href="#" onclick="OnSetl();return false;"><span>결제예정금액</span></a>
-					<a href="#" onclick="OnUse();return false;"><span>최근 이용대금(명세서기준)</span></a>
-				</div>
-				<!-- //tab -->
-				<h5 class="h5_tit position_right">(조회기준일: 2022.10.27)</h5>
-				<div class="tbl_list_inquiry2 mg_b30">
+				<form name="frmReq" method="post">
+					<input type="hidden" name="dtlTlgrMngtNum" id="dtlTlgrMngtNum" value="099914535074">
+					<input type="hidden" name="listNum" id="listNum" value="">
+					<input type="hidden" name="menu" id="menu" value="4">
+				</form>				
+				<form method="post" name="frmDetail" action="pop_qryAcntDetail.do">
+					<input id="reqDt" name="reqDt" type="hidden" value="20221027">
+					<input id="reqDt" name="reqTm" type="hidden" value="213758">
+					<input id="dtlTlgrMngtNum" name="dtlTlgrMngtNum" type="hidden" value="099914535074">
+					<input type="hidden" name="orgType" id="orgType" value="2">
+				</form>			
+				<h4 class="h4_section_tit">계좌 상세내역</h4>
+				<h5 class="h5_tit position_right">(조회기준일 : 
+				2022.10.27)</h5>				
+				<div class="tbl_list_inquiry2">
 					<table>
-						<caption>카드사별 카드내역</caption>
+						<caption>계좌 상세내역</caption>
 						<colgroup>
-							<col style="width:250px">
-							<col style="width:197px">
-							<col style="width:100px">
-							<col style="width:82px">
-							<col style="width:71px">
-							<col style="width:*">
+							<col style="width:45px;">
+							<col style="width:*;">
+							<col style="width:*;">
+							<col style="width:12%;">
+							<col style="width:*;">
+							<col style="width:13%;">
+							<col style="width:13%;">   <!--  2019-06-27 사이즈변경 -->
+							<col style="width:82px;">  <!--  2019-06-27 사이즈변경 -->
 						</colgroup>
 						<thead>
-							<tr>
-								<th scope="col">카드상품명</th>
-								<th scope="col">카드번호</th>
-								<th scope="col">카드구분</th>
-								<th scope="col">카드종류</th>
-								<th scope="col">휴면여부</th>
-								<th scope="col" class="last">비고</th>
+							<tr>	
+								<th scope="col"></th>
+								<th scope="col">
+									<p class="tit">금융기관명</p>
+									<p class="tit2">계좌번호</p>
+								</th>
+								<th scope="col">
+									<div class="wrap_layer">
+										<p class="tit">지점명 <a href="#" class="btn_tip3"><img src="/images/common/icon_tip.gif" alt="도움말"></a></p>
+										<div class="layer_tooltip3" style="left:-50px; top:30px; min-width: 220px; ">
+											<div class="tooltip_header">
+												<p class="tit">지점명</p>
+												<a href="#" class="btn_tooltip_close"><img src="/images/common/btn_laypop_close.gif" alt="닫기"></a>
+											</div>
+											<div class="tooltip_body">
+												각 계좌의 지점명에 마우스를 올리시면 <br> 해당 지점의 연락처를 조회할 수 있습니다. 
+											</div>
+										</div>
+									</div>	
+									<p class="tit2">상품명</p>
+								</th>
+								<th scope="col">
+									<p class="tit">개설일</p>
+									<p class="tit2">최종입출금일</p>
+								</th>
+								<th scope="col">잔고</th>
+								<th scope="col">
+									<p class="tit">만기일</p>
+									<p class="tit2">회차</p>
+								</th>
+								<th scope="col">
+									<p class="tit">부기명</p>
+									<p class="tit2">비고</p>
+								</th>
+								<th scope="col" class="last">계좌해지<br>잔고이전</th> 	<!--  2019-06-27 서민금융기관계좌해지 -->
 							</tr>
 						</thead>
 						<tbody>
 							
+							<!-- 비활동성계좌 -->
+							<tr>
+								<td colspan="8" class="position_left last">
+									<p class="bul_check_off"><img src="/images/common/bul_round_off.gif" alt="" title="">비활동성계좌</p>
+								</td>
+							</tr>
+							
 							<!-- row -->
 							<tr>
-								<td>1Q My Cafe(원큐 마이 카페)</td>
-								<td>5181-85**-****-1119</td>
-								<td>본인</td>
-								<td>신용</td>
-								<td>-</td>
-								<td class="last">-</td>
+								<td>1</td>
+								<td><!-- 2019-11-26 미지급 출자금/배당금 계좌번호 '-' 출력 -->
+									
+										
+										
+										
+											<p class="tit">저축은행</p>
+											<p>
+											066012104***06
+											</p>
+										
+									
+								</td>
+								<td>
+									<div class="wrap_layer">
+										<p class="tit btn_layer_adress">
+											
+											<a href="#">웰컴        본점</a>
+										</p>
+										<div class="layer_tooltip14">
+											<div class="tooltip_header">
+												<p class="tit text_blue">연락처</p>
+												<a href="#" class="btn_close btn_close2"><img src="/images/common/btn_laypop_close.gif" alt="닫기"></a>
+											</div>
+											<div class="tooltip_body">
+												02-548-1975
+											</div>
+										</div>
+									</div>									
+									<p class="txtCut" title="WELCOME 직장인사랑 보통예금">WELCOME 직장인사랑 보통예금</p>
+								</td>
+								<td>
+									<p class="tit">2019.02.08</p>
+									<p><!-- 2019-11-26 미지급 출자금/배당금  --> 
+										
+										
+										
+										
+											2020.09.09											
+										
+											
+									</p>
+								</td>
+								<td>0</td>
+								<td>
+									<p class="tit">-</p>
+									<p>-</p>
+								</td>
+								<td>									
+									<p class="tit">-</p>
+									<!-- 2019-11-26 미지급 출자금/배당금 '비고'항목 출력조건 추가 --> 
+									
+										
+										
+										
+											<p>
+											
+											-
+											</p>											
+										
+											
+									<!-- 2019-11-26 -->	
+								</td>
+								<!-- 2019-06-27 서민금융기관계좌해지 --> 
+								<td class="last">
+									           
+									
+										
+										
+											<!--  <a href="#" class="btn_red btn_policy" onclick="OnReq(1);return false;">신청</a>  -->
+											<a href="#none" id="frmSend" class="btn_red btn_policy" onclick="OnCaclPsbInqr(1,'1');return false;">신청</a>
+										
+									
+									
+								</td>
+								<!--//2019-06-27 -->
 							</tr>
-													
-						</tbody>						
+							
+							<!-- //row -->
+							
+
+							
+
+						</tbody>
+						<tfoot>
+							<tr>
+								<th colspan="4">
+									합계
+								</th>
+								<td>
+									0
+								</td>
+								<td colspan="3">
+									
+								</td>
+							</tr>
+						</tfoot>
 					</table>
 				</div>
-										
-
-				<!-- btn_group -->
 				<div class="btn_group">
 					<!-- <a href="#" class="btn_gra_gray">엑셀저장</a> -->
-					<a href="#none" class="btn_gra_gray" onclick="OnPrint();return false;">인쇄하기</a>
-					<a href="#" class="btn_gra_gray" onclick="OnList();return false;">목록으로</a>
+					<a href="#" class="btn_gra_gray" onclick="OnReport();return false;">인쇄하기</a>
+					<a href="qryAcntSummarySeo.do?menu=4" class="btn_gra_gray">목록으로</a>
 					<a href="/main/main_logout.do" class="btn_gra_gray">로그아웃</a>
 				</div>
-				<!-- //btn_group -->
 			</div>
 			<!-- //section -->
-			<div class="box_text mg_t30">
-				<div class="txt_detail_list">
-					<p class="box_title">휴면이란?</p>
-					<ul class="mg_t5">
-						<li>
-							해당 카드의 최종이용일로부터 1년 이상 이용실적이 없는 카드로 해당 카드사의 운영기준에 따라 조회됩니다.<br>
-							(발급후 카드를 전혀 이용하지 않은 경우는 발급일 기준)
-						</li>
-						<li>
-							휴면카드는 해당 카드사 콜센터에 연락하여 해지 또는 유지 신청하시기 바랍니다.
-						</li>
-					</ul>
+			<!-- section -->
+			<div class="section">
+				<h4 class="hidden">은행별 계좌내역 안내</h4>
+				<div class="box_text">
+					<div class="txt_detail_list">
+						<ul>
+							
+							<!-- 2019-06-27 추가 --><li>계좌해지 및 잔고이전은 1년이상 입출금거래가 없거나 만기 후 1년이 경과한 비활동성계좌 중 잔고가 100만원 이하인 경우에 한해 신청할 수 있습니다.</li>
+							<li>한도대출약정계좌, 세금우대상품, 청약저축, 주택청약종합저축, 당좌예금 등 일부계좌는 항상 활동성 계좌로 분류됩니다.</li>
+							<!-- 2018-10-08 수정 --><!-- 2018-11-09 수정 --><li>미지급출자금은 당해 연도 이전에 탈퇴한 조합원에 한해 조회됩니다. (당해 연도 탈퇴시 미지급출자금 조회 불가)</li>
+							<!-- 2018-10-08 수정 --><!-- 2018-11-09 수정 --><!-- 2019-11-26 수정 --><li>미지급출자금·미지급배당금의 잔고는 해당 금융기관(조합)의 운영기준에 따라 제공되며, 비활동성계좌 중 잔고가 
+							1,000만원 이하일 경우 별도의 계좌의 해지 없이 잔고이전됩니다. 단, 압류·추심 등으로 인해 지급이 불가한 경우 
+							활동성계좌로 분류될 수 있으며, 관련 자세한 사항은 해당 금융기관(조합)으로 문의하시기 바랍니다.
+							</li>
+							<!-- 2018-11-09 수정 --><li>미지급출자금과 미지급배당금의 개설일은 조합원
+							가입일자입니다.</li>
+						</ul>
+					</div>
 				</div>
 			</div>
+			<!-- //section -->			
 		</div>
 		<!-- //contents -->
-
 
 		<!-- lay_pop : 2015-10-08 수정 -->
 		<div class="layer_wrap layer_loading" style="display:none">
 			<div class="layer" tabindex="0">
-				<span class="text_loading"><img src="../../images/common/icon_loading.gif" alt=""><span class="txt">조회중입니다.</span></span>
+				<span class="text_loading"><img src="../../images/common/icon_loading.gif" alt=""><span class="txt">처리중입니다.</span></span>
 			</div>
 		</div>
 
 		<!-- layer_background -->
 		<div class="layer_background" style="display:none"></div>
-		<!-- layer_background -->
-		
+		<!-- layer_background -->	
+
 	<script type="text/javascript">
 	$(document).ready(function(){
-		// 2015-10-19 수정
-		$(".btn_layer_error2").click(function(event) {
+		// 2017-08-21 수정
+		$(".btn_layer_adress").hover(function(event) {
 			event.preventDefault()
-			$(".layer_error2").css('display', 'none');
-			$(this).siblings('.layer_error2').css('display', 'block');
+			$(".layer_tooltip14").css('display', 'none');
+			$(this).siblings('.layer_tooltip14').css('display', 'block');
+		},function(){
+			$(this).siblings('.layer_tooltip14').css('display', 'none');
+		});
+		$(".btn_layer_tooltip").click(function(event) {
+			event.preventDefault()
+			$(".layer_tooltip").css('display', 'none');
+			$(this).siblings('.layer_tooltip').css('display', 'block');
 		});
 		// 닫기
 		$(".btn_close2").click(function(event) {

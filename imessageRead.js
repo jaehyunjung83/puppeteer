@@ -1,10 +1,12 @@
 const SQLiteMessagesDB = `${process.env.HOME}/Library/Messages/chat.db`
-const sqlite3 = require('sqlite3').verbose()
+// const sqlite3 = require('sqlite3').verbose()
+import verbose from 'sqlite3';
+const sqlite3 = verbose;
 
 const db = new sqlite3.Database(SQLiteMessagesDB)
 
 var nowTime = new Date();
-nowTime.setHours(nowTime.getHours() + 9);
+nowTime.setHours(nowTime.getHours() + 3);
 const sentTimeISO = nowTime.toISOString().replace('T', ' ').substring(0, 19);
 console.log("🚀 ~ file: imessageRead.js ~ line 9 ~ sentTimeISO", sentTimeISO)
 
@@ -17,7 +19,7 @@ let sql = `
         JOIN chat_message_join ON chat. "ROWID" = chat_message_join.chat_id
         JOIN message ON chat_message_join.message_id = message. "ROWID"
     WHERE
-        chat_identifier = '+82220338500'
+        chat_identifier = '+8216884932'
         and
         datetime (message.date / 1000000000 + strftime ("%s", "2001-01-01"), "unixepoch", "localtime") > '${sentTimeISO}'
     ORDER BY message_date DESC
@@ -25,7 +27,7 @@ let sql = `
 
 let result = {}
 const get = async () => {
-    db.get(sql, [], (err, row) => {
+    db.all(sql, [], (err, row) => {
         if (err) {
             throw err;
         }
