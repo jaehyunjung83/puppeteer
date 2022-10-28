@@ -54,11 +54,15 @@ puppeteer.use(pluginUserAgentOverride);
   await page.setRequestInterception(true);
 
   page.on('request', req => {
+    // console.log("🚀 ~ file: payinfo.js ~ line 70 ~ req.url()", req.url())
+    
     switch (req.resourceType()) {
       case 'font':
-        // case "image":
-        req.abort();
-        break;
+      case 'image':
+        if (!req.url().includes('captcha')) {
+          req.abort();
+          break;
+        }
       default:
         req.continue();
     }
@@ -92,7 +96,7 @@ puppeteer.use(pluginUserAgentOverride);
   // await axios(sendCookieConfig).then((res) => console.log('axios res: ', res)).catch((err) => console.log(err))
 
   // await page.setViewport({ width: 1080, height: 1080 });
-  console.log('🚀 ~ file: payinfo.js ~ line 60 ~ page', page.frames());
+  // console.log('🚀 ~ file: payinfo.js ~ line 60 ~ page', page.frames());
 
   const [, , secondStartFrame] = await page.frames();
 
@@ -119,7 +123,7 @@ puppeteer.use(pluginUserAgentOverride);
 
   await secondStartFrame.waitForNavigation();
 
-  console.log('page.frames()', page.frames());
+  // console.log('page.frames()', page.frames());
 
   const [, , , , , mainFrame] = page.frames();
   // await mainFrame.waitForNavigation();
@@ -132,7 +136,7 @@ puppeteer.use(pluginUserAgentOverride);
   await mainFrame.waitForSelector('#contents > div.btn_group2 > a');
   await mainFrame.click('#contents > div.btn_group2 > a');
 
-  console.log('frames', page.frames());
+  // console.log('frames', page.frames());
 
   await mainFrame.waitForSelector('#rlnmNum1', {waitUntil: 'load'});
   await mainFrame.click('#rlnmNum1');
@@ -197,7 +201,7 @@ puppeteer.use(pluginUserAgentOverride);
     OnSearch('f'),
   );
 
-  console.log('YESKEY 화면 뜬  후', page.frames());
+  // console.log('YESKEY 화면 뜬  후', page.frames());
 
   const iFrame = await mainFrame.waitForSelector('#finCertSdkIframe', {waitUntil: 'load'});
   console.log('🚀 ~ file: payinfo.js ~ line 167 ~ iFrame', iFrame);
@@ -285,7 +289,7 @@ puppeteer.use(pluginUserAgentOverride);
     $(`img[data-action="${button0}"]`).click().keyup();
   });
 
-  console.log('5009입력 후 frames', page.frames());
+  // console.log('5009입력 후 frames', page.frames());
 
   const [, , , , , frameset] = page.frames();
   await frameset.evaluate(() => {
@@ -301,7 +305,6 @@ puppeteer.use(pluginUserAgentOverride);
   const captchaGCV = async () => {
     var captchaSolveText = '';
     console.log('--캡챠solve시작--');
-    console.log('captchaGCV');
     // await frameset.waitForTimeout(100)
 
     // await frameset.click('#reLoad')
@@ -350,7 +353,7 @@ puppeteer.use(pluginUserAgentOverride);
     (await frameset.click('#reLoad')) + captchaGCV() + console.log('GCV인식오류로 재실행');
   }
 
-  await frameset.evaluate(async() => {
+  await frameset.evaluate(async () => {
     await $('#fncOrgCode > option:nth-child(2)').prop('selected', true);
     console.log('하나은행 option 선택');
     await $('#cellNum').val('01088957500');
@@ -456,11 +459,6 @@ puppeteer.use(pluginUserAgentOverride);
   const converted = tabletojson.convert(qryAcntSum);
   writeFileSync('convertedWhole.json', JSON.stringify(converted));
 
-
-
-
-  
-  
   // 은행권
   const bankWholeObj = await frameset.evaluate(() => {
     var cols = [];
@@ -555,14 +553,8 @@ puppeteer.use(pluginUserAgentOverride);
     await frameset.click('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)');
 
     await frameset.waitForNavigation();
-  };
+  }
 
-
-
-
-
-  
-  
   // 2금융권(저축은행, 우체국)
   await frameset.click('#lnb > li:nth-child(2) > a');
 
@@ -680,13 +672,6 @@ puppeteer.use(pluginUserAgentOverride);
 
   console.log('저축은행 obj 완료');
 
-
-
-
-
-
-
-
   // 증권사
   await frameset.waitForSelector('#lnb > li:nth-child(3) > a');
   await frameset.click('#lnb > li:nth-child(3) > a');
@@ -696,7 +681,6 @@ puppeteer.use(pluginUserAgentOverride);
   await frameset.click('#contents > div > div.btn_group2 > a');
 
   await frameset.waitForNavigation();
-
 
   const securitiesObj = await frameset.evaluate(() => {
     var cols = [];
@@ -725,7 +709,6 @@ puppeteer.use(pluginUserAgentOverride);
   });
 
   console.log('securitiesObjObj: ', securitiesObj);
-
 
   const securitiesDetailLength = await frameset.$$eval('a.btn_policy', button => button.length);
   const securitiesDetailButtons = await frameset.$$eval('a.btn_policy', buttons => buttons);
@@ -803,12 +786,7 @@ puppeteer.use(pluginUserAgentOverride);
     await frameset.click('#checkForm > div > a:nth-child(2)');
 
     await frameset.waitForNavigation();
-
-  };
-
-
-
-
+  }
 
   // 카드사
   await frameset.click('#gnb > li:nth-child(2) > a');
@@ -834,11 +812,11 @@ puppeteer.use(pluginUserAgentOverride);
       $(this)
         .find('td')
         .each(function (index) {
-            if (index == 3) {
+          if (index == 3) {
             row[cols[index + 2]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '');
-            } else {
+          } else {
             row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '');
-            }
+          }
         });
       cardsResult.push(row);
     });
@@ -848,16 +826,15 @@ puppeteer.use(pluginUserAgentOverride);
 
   console.log('cardsObj: ', cardsObj);
 
-
   const cardsDetailLength = await frameset.$$eval('a.btn_policy', button => button.length);
   const cardsDetailButtons = await frameset.$$eval('a.btn_policy', buttons => buttons);
   console.log('🚀 ~ file: payinfo.js ~ line 494 ~ cardsDetailButtons', cardsDetailButtons);
   console.log('🚀 ~ file: payinfo.js ~ line 400 ~ cardsDetailLength', cardsDetailLength);
 
   // const detail = {}
-  
+
   for (let i = 0; i < cardsDetailLength; i++) {
-    console.log('card detail 횟수: ', i + 1)
+    console.log('card detail 횟수: ', i + 1);
     i > 0 ? await frameset.waitForNavigation() : null;
     await frameset.$$eval('a.btn_policy', (button, i) => button[i].click(), i);
 
@@ -874,128 +851,169 @@ puppeteer.use(pluginUserAgentOverride);
 
     const detailJson = tabletojson.convert(detailView);
 
-    
-    
     var cardsDetailResult = [];
-    
+
     // 카드 info
-    const cardsDetailObj = await frameset.evaluate(async(cardsDetailResult) => { 
+    const cardsDetailObj = await frameset.evaluate(async cardsDetailResult => {
       var cols = [];
-      await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th').each(function (index) {
+      await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th').each(function (
+        index,
+      ) {
         cols.push($(this).text().replaceAll('\t', '').replaceAll('\n', ''));
       });
       console.log('카드사 info cols: ', cols);
-      
+
       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr').each(function (id) {
         var row = {
           id: id + 1,
-          title: $('#contents > div.section > div.tab > a.on > span').text()
+          title: $('#contents > div.section > div.tab > a.on > span').text(),
         };
         $(this)
           .find('td')
           .each(function (index) {
-              row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();
+            row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();
           });
-          cardsDetailResult.push(row);
-        });
-        console.log('card info cardsDetailResult: ', cardsDetailResult)
-        return cardsDetailResult;
+        cardsDetailResult.push(row);
+      });
+      console.log('card info cardsDetailResult: ', cardsDetailResult);
+      return cardsDetailResult;
     }, cardsDetailResult);
-    console.log("🚀 ~ file: payinfo.js ~ line 904 ~ cardsDetailObj ~ cardsDetailObj", cardsDetailObj)
-    
-    
+    console.log('🚀 ~ file: payinfo.js ~ line 904 ~ cardsDetailObj ~ cardsDetailObj', cardsDetailObj);
 
     // 결제예정금액
     await frameset.evaluate(() => OnSetl());
     await frameset.waitForNavigation();
-    const cardDetailHaveToPay = await frameset.evaluate(async(cardsDetailResult) => {
+    const cardDetailHaveToPay = await frameset.evaluate(async cardsDetailResult => {
       var cols = [];
-       // 연체금액 부연설명 제거
-       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th:nth-child(4) > div > a').remove();
-       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th:nth-child(4) > div > div').remove();
-       // 결제단위 부연설명 제거
-       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th.last > a').remove();
-       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th.last > div').remove();
-       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th').each(function (index) {
-         cols.push($(this).text().replaceAll('\t', '').replaceAll('\n', '').replaceAll('  ', '').trim());
-       });
-       console.log('카드사 결제예정금액 cols: ', cols);
+      // 연체금액 부연설명 제거
+      await $(
+        '#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th:nth-child(4) > div > a',
+      ).remove();
+      await $(
+        '#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th:nth-child(4) > div > div',
+      ).remove();
+      // 결제단위 부연설명 제거
+      await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th.last > a').remove();
+      await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th.last > div').remove();
+      await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th').each(function (
+        index,
+      ) {
+        cols.push($(this).text().replaceAll('\t', '').replaceAll('\n', '').replaceAll('  ', '').trim());
+      });
+      console.log('카드사 결제예정금액 cols: ', cols);
 
-       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr').each(function (id) {
+      await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr').each(function (id) {
         var row = {
-          title: $('#contents > div.section > div.tab > a.on > span').text()
+          title: $('#contents > div.section > div.tab > a.on > span').text(),
         };
         $(this)
           .find('td')
           .each(function (index) {
-              row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();
+            row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();
           });
         cardsDetailResult.push(row);
       });
-      console.log('card info + willpay cardsDetailResult: ', cardsDetailResult)
+      console.log('card info + willpay cardsDetailResult: ', cardsDetailResult);
       return cardsDetailResult;
     }, cardsDetailResult);
-    console.log("🚀 ~ file: payinfo.js ~ line 937 ~ cardDetailHaveToPay ~ cardDetailHaveToPay", cardDetailHaveToPay)
-    
+    console.log('🚀 ~ file: payinfo.js ~ line 937 ~ cardDetailHaveToPay ~ cardDetailHaveToPay', cardDetailHaveToPay);
 
-
-
-
-      // 최근 이용대금(명세서기준) 이동
-      await frameset.evaluate(() => OnUse());
-      await frameset.waitForNavigation();
-      const cardDetailSpecification = await frameset.evaluate(async(cardsDetailResult) => {
-      console.log('결제예정금액 이동')
-      var cols = [];
-       // 이용대금 부연설명 제거
-       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.bbn > div > a').remove();
-       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.bbn > div > div').remove();
-       // 결제단위 부연설명 제거
-       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.last > a').remove();
-       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.last > div').remove();
-       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr:nth-child(1) > td.last > div > a').remove();
-
-       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th').each(function (index) {
-         cols.push($(this).text().replaceAll('\t', '').replaceAll('\n', '').replaceAll('  ', '').trim());
-       });
-       console.log('카드사 최근이용대금(명세서) cols: ', cols);
-
-       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr').each(function (id) {
-        var row = {
-          title: $('#contents > div.section > div.tab > a.on > span').text()
-        };
-        $(this)
-          .find('td')
-          .each(function (index) {
-              if (index == 5) {
-               row[cols[index + 2]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();   
-              } else if (index == 6) {
-               row[cols[index - 1]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();   
-              } 
-              else {
-              row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();
-              }
-          });
-        cardsDetailResult.push(row);
-      });
-      console.log('card info + willpay + havetopay cardsDetailResult: ', cardsDetailResult)
-      return cardsDetailResult;
-    }, cardsDetailResult);
-      console.log("🚀 ~ file: payinfo.js ~ line 979 ~ cardDetailSpecification ~ cardDetailSpecification", cardDetailSpecification)
-
-
-      i == cardsDetailLength ? console.log('cards Detail result: ',  cardsDetailResult) : null;
-      await frameset.evaluate(() => OnList());
-
-    };
-    
-    // 카드 전체 목록으로
-    
-
+    // 최근 이용대금(명세서기준) 이동
+    await frameset.evaluate(() => OnUse());
     await frameset.waitForNavigation();
+    const cardDetailSpecification = await frameset.evaluate(async cardsDetailResult => {
+      console.log('결제예정금액 이동');
+      var cols = [];
+      // 이용대금 부연설명 제거
+      await $(
+        '#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.bbn > div > a',
+      ).remove();
+      await $(
+        '#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.bbn > div > div',
+      ).remove();
+      // 결제단위 부연설명 제거
+      await $(
+        '#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.last > a',
+      ).remove();
+      await $(
+        '#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.last > div',
+      ).remove();
+      await $(
+        '#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr:nth-child(1) > td.last > div > a',
+      ).remove();
 
-  
+      await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th').each(function (
+        index,
+      ) {
+        cols.push($(this).text().replaceAll('\t', '').replaceAll('\n', '').replaceAll('  ', '').trim());
+      });
+      console.log('카드사 최근이용대금(명세서) cols: ', cols);
 
+      await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr').each(function (id) {
+        var row = {
+          title: $('#contents > div.section > div.tab > a.on > span').text(),
+        };
+        $(this)
+          .find('td')
+          .each(function (index) {
+            if (index == 5) {
+              row[cols[index + 2]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();
+            } else if (index == 6) {
+              row[cols[index - 1]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();
+            } else {
+              row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();
+            }
+          });
+        cardsDetailResult.push(row);
+      });
+      console.log('card info + willpay + havetopay cardsDetailResult: ', cardsDetailResult);
+      return cardsDetailResult;
+    }, cardsDetailResult);
+    console.log(
+      '🚀 ~ file: payinfo.js ~ line 979 ~ cardDetailSpecification ~ cardDetailSpecification',
+      cardDetailSpecification,
+    );
 
+    i == cardsDetailLength ? console.log('cards Detail result: ', cardsDetailResult) : null;
+    await frameset.evaluate(() => OnList());
+  }
 
+  await frameset.waitForNavigation();
+
+  await frameset.evaluate(() => (location.href = '/extl/qryExtlLoan.do?menu=3'));
+
+  await frameset.waitForSelector('#confirm');
+  await frameset.$eval('#confirm', el => (el.checked = true));
+  await frameset.$eval('#checkForm', el => el.submit());
+
+  await frameset.waitForNavigation();
+
+  // 대출정보
+  const loanObj = await frameset.evaluate(() => {
+    var cols = [];
+    var loanResult = [];
+
+    // ? 설명 제거
+    $('#contents > div.section > div.tbl_list_inquiry2.mg_b50 > table > thead > tr > th.last > p > a').remove();
+
+    $('#contents > div.section > div.tbl_list_inquiry2 > table > thead > tr > th').each(function (index) {
+      cols.push($(this).text().replaceAll('\t', '').replaceAll('\n', ''));
+    });
+    console.log('대출 cols: ', cols);
+    $('#contents > div:nth-child(3) > div.tbl_list_inquiry2 > table > tbody > tr').each(function (id) {
+      var row = {id: id + 1};
+      $(this)
+        .find('td')
+        .each(function (index) {
+          row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '');
+        });
+      loanResult.push(row);
+    });
+
+    return loanResult;
+  });
+
+  console.log('loanObj: ', loanObj);
+
+  await frameset.waitForNavigation();
 })();
