@@ -350,10 +350,10 @@ puppeteer.use(pluginUserAgentOverride);
     (await frameset.click('#reLoad')) + captchaGCV() + console.log('GCV인식오류로 재실행');
   }
 
-  await frameset.evaluate(() => {
-    $('#fncOrgCode > option:nth-child(2)').prop('selected', true);
+  await frameset.evaluate(async() => {
+    await $('#fncOrgCode > option:nth-child(2)').prop('selected', true);
     console.log('하나은행 option 선택');
-    $('#cellNum').val('01088957500');
+    await $('#cellNum').val('01088957500');
     console.log("$('cellNum').value: ", $('cellNum').value);
   });
 
@@ -376,47 +376,6 @@ puppeteer.use(pluginUserAgentOverride);
 
   const db = new sqlite3.Database(SQLiteMessagesDB);
 
-  // let lastmessage = {};
-  // const messageResult = new Promise((resolve) => {
-  //   db.serialize(() => {
-  //     return db.each(
-  //     `
-  //     SELECT
-  //       message.date,
-  //       datetime (message.date / 1000000000 + strftime ("%s", "2001-01-01"), "unixepoch", "localtime") AS message_date,
-  //       message.text,
-  //       chat.chat_identifier,
-  //     FROM
-  //       chat
-  //       JOIN chat_message_join ON chat. "ROWID" = chat_message_join.chat_id
-  //       JOIN message ON chat_message_join.message_id = message. "ROWID"
-  //     WHERE
-  //       chat_identifier = '+82220338500'
-  //     ORDER BY message_date DESC LIMIT 1
-  //     `, (err, row) => {
-  //       if (err) {
-  //         console.error(err.message);
-  //       }
-  //       // console.log('row: ', row);
-  //     // lastmessage = row;
-  //       // console.log('lastmessage: ', lastmessage);
-  //     return resolve(row) ;
-  //     });
-  //   });
-  // });
-
-  // messageResult
-  // .then((res) => lastmessage = res)
-  // .then(() => console.log('lastmessage: ', lastmessage))
-  // .then(async() => {
-  //   const onlyNumber = lastmessage.text.replace(/[^0-9]/g, "")
-  //   console.log("🚀 ~ file: payinfo.js ~ line 414 ~ .then ~ onlyNumber", onlyNumber)
-  //   lastmessage.message_date > sentTimeISO
-  //   ? await frameset.type('#smsNum', onlyNumber)
-  //   : messageResult
-
-  //   });
-
   let sql = `
     SELECT
         datetime (message.date / 1000000000 + strftime ("%s", "2001-01-01"), "unixepoch", "localtime") AS message_date,
@@ -432,17 +391,17 @@ puppeteer.use(pluginUserAgentOverride);
     ORDER BY message_date DESC
     `;
 
-  let result = {};
+  let messageresult = {};
   const get = async () => {
     db.get(sql, [], (err, row) => {
       if (err) {
         throw err;
       }
       if (row) {
-        return (result = row), resultOut(result);
+        return (messageresult = row), resultOut(messageresult);
       } else {
         return setTimeout(() => {
-          get(), console.log('다시');
+          get(), console.log('메시지 올때까지 1초마다 db read');
         }, 1000);
       }
     });
@@ -505,7 +464,7 @@ puppeteer.use(pluginUserAgentOverride);
   // 은행권
   const bankWholeObj = await frameset.evaluate(() => {
     var cols = [];
-    var result = [];
+    var bankresult = [];
     $('#contents > div:nth-child(3) > div.tbl_list_inquiry2.stripes > table > thead > tr > th ').each(function () {
       cols.push($(this).text().toLowerCase());
     });
@@ -521,9 +480,9 @@ puppeteer.use(pluginUserAgentOverride);
             row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '');
           }
         });
-      result.push(row);
+      bankresult.push(row);
     });
-    return result;
+    return bankresult;
   });
   console.log('🚀 ~ file: payinfo.js ~ line 513 ~ bankWholeObj ~ bankWholeObj', bankWholeObj);
 
@@ -552,7 +511,7 @@ puppeteer.use(pluginUserAgentOverride);
 
     const bankDetailObj = await frameset.evaluate(() => {
       var cols = [];
-      var result = [];
+      var bankDetailResult = [];
       $('#contents > div:nth-child(3) > div.tbl_list_inquiry2 > table > thead > tr > th').each(function (index) {
         if (index < 7 && index != 4) {
           cols.push($(this).find('p:eq(0)').text().replaceAll('\t', '').replaceAll('\n', ''));
@@ -575,17 +534,17 @@ puppeteer.use(pluginUserAgentOverride);
               row[cols[index * 2 - 1]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();
             }
           });
-        result.push(row);
+        bankDetailResult.push(row);
       });
 
-      result.push({
+      bankDetailResult.push({
         합계: $('#contents > div:nth-child(3) > div.tbl_list_inquiry2 > table > tfoot > tr > td')
           .text()
           .replaceAll('\t', '')
           .replaceAll('\n', ''),
       });
 
-      return result;
+      return bankDetailResult;
     });
     console.log('🚀 ~ file: payinfo.js ~ line 568 ~ bankDetailObj ~ bankDetailObj', bankDetailObj);
 
@@ -611,7 +570,7 @@ puppeteer.use(pluginUserAgentOverride);
 
   const secondTeerObj = await frameset.evaluate(() => {
     var cols = [];
-    var result = [];
+    var secondTeerResult = [];
 
     $('#contents > div:nth-child(3) > div.tbl_list_inquiry2.stripes > table > thead > tr > th').each(function (index) {
       cols.push($(this).text().replaceAll('\t', '').replaceAll('\n', ''));
@@ -629,10 +588,10 @@ puppeteer.use(pluginUserAgentOverride);
             row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '');
           }
         });
-      result.push(row);
+      secondTeerResult.push(row);
     });
 
-    return result;
+    return secondTeerResult;
   });
 
   console.log('secondTeerObj: ', secondTeerObj);
@@ -665,7 +624,7 @@ puppeteer.use(pluginUserAgentOverride);
 
     const secondTeerDetailObj = await frameset.evaluate(() => {
       var cols = [];
-      var result = [];
+      var secondTeerDetailResult = [];
       $('#contents > div:nth-child(3) > div.tbl_list_inquiry2 > table > thead > tr > th').each(function (index) {
         if (index == 2) {
           // 지점명 ? 때문에 div > p 랑 그냥 p 각각 eq(0)으로 되어있음
@@ -696,17 +655,17 @@ puppeteer.use(pluginUserAgentOverride);
               row[cols[index * 2 - 1]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();
             }
           });
-        result.push(row);
+        secondTeerDetailResult.push(row);
       });
 
-      result.push({
+      secondTeerDetailResult.push({
         합계: $('#contents > div:nth-child(3) > div.tbl_list_inquiry2 > table > tfoot > tr > td')
           .text()
           .replaceAll('\t', '')
           .replaceAll('\n', ''),
       });
 
-      return result;
+      return secondTeerDetailResult;
     });
     console.log('🚀 ~ file: payinfo.js ~ line 568 ~ secondTeerDetailObj ~ secondTeerDetailObj', secondTeerDetailObj);
 
@@ -741,7 +700,7 @@ puppeteer.use(pluginUserAgentOverride);
 
   const securitiesObj = await frameset.evaluate(() => {
     var cols = [];
-    var result = [];
+    var securitiesResult = [];
 
     $('#contents > div:nth-child(3) > div.tbl_list_inquiry2.stripes > table > thead > tr > th').each(function (index) {
       cols.push($(this).text().replaceAll('\t', '').replaceAll('\n', ''));
@@ -759,10 +718,10 @@ puppeteer.use(pluginUserAgentOverride);
             row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '');
           }
         });
-      result.push(row);
+      securitiesResult.push(row);
     });
 
-    return result;
+    return securitiesResult;
   });
 
   console.log('securitiesObjObj: ', securitiesObj);
@@ -793,7 +752,7 @@ puppeteer.use(pluginUserAgentOverride);
 
     const securitiesDetailObj = await frameset.evaluate(() => {
       var cols = [];
-      var result = [];
+      var securitiesDetailResult = [];
       $('#contents > div:nth-child(3) > div.tbl_list_inquiry2 > table > thead > tr > th').each(function (index) {
         if (index == 5) {
           cols.push($(this).find('p:eq(0)').text().replaceAll('\t', '').replaceAll('\n', '').trim());
@@ -826,10 +785,10 @@ puppeteer.use(pluginUserAgentOverride);
               row[cols[index * 2 - 1]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();
             }
           });
-        result.push(row);
+        securitiesDetailResult.push(row);
       });
 
-      result.push({
+      securitiesDetailResult.push({
         합계: $('#contents > div:nth-child(3) > div.tbl_list_inquiry2 > table > tfoot > tr > td')
           .text()
           .replaceAll('\t', '')
@@ -837,7 +796,7 @@ puppeteer.use(pluginUserAgentOverride);
           .trim(),
       });
 
-      return result;
+      return securitiesDetailResult;
     });
     console.log('🚀 ~ file: payinfo.js ~ line 791 ~ securitiesDetailObj ~ securitiesDetailObj', securitiesDetailObj);
 
@@ -864,7 +823,7 @@ puppeteer.use(pluginUserAgentOverride);
 
   const cardsObj = await frameset.evaluate(() => {
     var cols = [];
-    var result = [];
+    var cardsResult = [];
 
     $('#contents > div.section > div.tbl_list_inquiry2 > table > thead > tr > th').each(function (index) {
       cols.push($(this).text().replaceAll('\t', '').replaceAll('\n', ''));
@@ -881,10 +840,10 @@ puppeteer.use(pluginUserAgentOverride);
             row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '');
             }
         });
-      result.push(row);
+      cardsResult.push(row);
     });
 
-    return result;
+    return cardsResult;
   });
 
   console.log('cardsObj: ', cardsObj);
@@ -898,7 +857,8 @@ puppeteer.use(pluginUserAgentOverride);
   // const detail = {}
   
   for (let i = 0; i < cardsDetailLength; i++) {
-    console.log('card detail 회수: ', i)
+    console.log('card detail 횟수: ', i + 1)
+    i > 0 ? await frameset.waitForNavigation() : null;
     await frameset.$$eval('a.btn_policy', (button, i) => button[i].click(), i);
 
     // console.log(page.frames())
@@ -914,16 +874,19 @@ puppeteer.use(pluginUserAgentOverride);
 
     const detailJson = tabletojson.convert(detailView);
 
-    const cardsDetailObj = await frameset.evaluate(async() => {
+    
+    
+    var cardsDetailResult = [];
+    
+    // 카드 info
+    const cardsDetailObj = await frameset.evaluate(async(cardsDetailResult) => { 
       var cols = [];
-      var result = [];
-      
-      $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th').each(function (index) {
+      await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th').each(function (index) {
         cols.push($(this).text().replaceAll('\t', '').replaceAll('\n', ''));
       });
       console.log('카드사 info cols: ', cols);
       
-      $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr').each(function (id) {
+      await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr').each(function (id) {
         var row = {
           id: id + 1,
           title: $('#contents > div.section > div.tab > a.on > span').text()
@@ -933,26 +896,32 @@ puppeteer.use(pluginUserAgentOverride);
           .each(function (index) {
               row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();
           });
-        result.push(row);
-      });
-      console.log('card info result: ', result)
-      
-      // 카드결제예정금액 이동
-      await OnSetl();
+          cardsDetailResult.push(row);
+        });
+        console.log('card info cardsDetailResult: ', cardsDetailResult)
+        return cardsDetailResult;
+    }, cardsDetailResult);
+    console.log("🚀 ~ file: payinfo.js ~ line 904 ~ cardsDetailObj ~ cardsDetailObj", cardsDetailObj)
+    
+    
 
+    // 결제예정금액
+    await frameset.evaluate(() => OnSetl());
+    await frameset.waitForNavigation();
+    const cardDetailHaveToPay = await frameset.evaluate(async(cardsDetailResult) => {
       var cols = [];
        // 연체금액 부연설명 제거
-       $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th:nth-child(4) > div > a').remove();
-       $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th:nth-child(4) > div > div').remove();
+       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th:nth-child(4) > div > a').remove();
+       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th:nth-child(4) > div > div').remove();
        // 결제단위 부연설명 제거
-       $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th.last > a').remove();
-       $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th.last > div').remove();
-       $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th').each(function (index) {
+       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th.last > a').remove();
+       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th.last > div').remove();
+       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th').each(function (index) {
          cols.push($(this).text().replaceAll('\t', '').replaceAll('\n', '').replaceAll('  ', '').trim());
        });
        console.log('카드사 결제예정금액 cols: ', cols);
 
-      $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr').each(function (id) {
+       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr').each(function (id) {
         var row = {
           title: $('#contents > div.section > div.tab > a.on > span').text()
         };
@@ -961,29 +930,37 @@ puppeteer.use(pluginUserAgentOverride);
           .each(function (index) {
               row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();
           });
-        result.push(row);
+        cardsDetailResult.push(row);
       });
-      console.log('card info + willpay result: ', result)
+      console.log('card info + willpay cardsDetailResult: ', cardsDetailResult)
+      return cardsDetailResult;
+    }, cardsDetailResult);
+    console.log("🚀 ~ file: payinfo.js ~ line 937 ~ cardDetailHaveToPay ~ cardDetailHaveToPay", cardDetailHaveToPay)
+    
+
+
 
 
       // 최근 이용대금(명세서기준) 이동
-      await OnUse();
-
+      await frameset.evaluate(() => OnUse());
+      await frameset.waitForNavigation();
+      const cardDetailSpecification = await frameset.evaluate(async(cardsDetailResult) => {
+      console.log('결제예정금액 이동')
       var cols = [];
        // 이용대금 부연설명 제거
-       $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.bbn > div > a').remove();
-       $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.bbn > div > div').remove();
+       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.bbn > div > a').remove();
+       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.bbn > div > div').remove();
        // 결제단위 부연설명 제거
-       $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.last > a').remove();
-       $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.last > div').remove();
-       $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr:nth-child(1) > td.last > div > a').remove();
+       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.last > a').remove();
+       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr:nth-child(1) > th.last > div').remove();
+       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr:nth-child(1) > td.last > div > a').remove();
 
-              $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th').each(function (index) {
+       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > thead > tr > th').each(function (index) {
          cols.push($(this).text().replaceAll('\t', '').replaceAll('\n', '').replaceAll('  ', '').trim());
        });
        console.log('카드사 최근이용대금(명세서) cols: ', cols);
 
-      $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr').each(function (id) {
+       await $('#contents > div.section > div.tbl_list_inquiry2.mg_b30 > table > tbody > tr').each(function (id) {
         var row = {
           title: $('#contents > div.section > div.tab > a.on > span').text()
         };
@@ -999,23 +976,25 @@ puppeteer.use(pluginUserAgentOverride);
               row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '').trim();
               }
           });
-        result.push(row);
+        cardsDetailResult.push(row);
       });
-        
-      console.log('card info + willpay + havetopay result: ', result)
+      console.log('card info + willpay + havetopay cardsDetailResult: ', cardsDetailResult)
+      return cardsDetailResult;
+    }, cardsDetailResult);
+      console.log("🚀 ~ file: payinfo.js ~ line 979 ~ cardDetailSpecification ~ cardDetailSpecification", cardDetailSpecification)
 
 
-      return result;
-    });
-    console.log('🚀 ~ file: payinfo.js ~ line 1009 ~ cardsDetailObj ~ cardsDetailObj', cardsDetailObj);
+      i == cardsDetailLength ? console.log('cards Detail result: ',  cardsDetailResult) : null;
+      await frameset.evaluate(() => OnList());
+
+    };
     
     // 카드 전체 목록으로
-    await frameset.evaluate(() => OnList());
     
 
     await frameset.waitForNavigation();
 
-  };
+  
 
 
 
