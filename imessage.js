@@ -65,9 +65,9 @@ puppeteer.use(pluginUserAgentOverride);
 
   const navigationPromise = page.waitForNavigation();
 
-  page.on('prompt', async prompt => {
-    console.log('prompt', prompt);
-    prompt.accept();
+  page.on('dialog', async dialog => {
+    console.log('dialog', dialog);
+    await dialog.accept();
   });
 
   await page.goto('https://google.com', {
@@ -77,4 +77,8 @@ puppeteer.use(pluginUserAgentOverride);
   
   await page.keyboard.press('Enter')
   await page.keyboard.press('Accept')
+
+  
+
+
 })();
