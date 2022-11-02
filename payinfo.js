@@ -385,22 +385,21 @@ puppeteer.use(pluginUserAgentOverride);
       while(waitTill > new Date()){}
     }
 
-    console.log('page2: ', browser.pages[2]);
+    const pages = await browser.pages();
+    console.log('page2: ', pages[pages.length - 1]);
     
     const page2 = 
-    browser.pages.length > 2 ? browser.pages[2] : await browser.newPage(); 
+    pages.length > 2 ? pages[pages.length - 1] : await browser.newPage(); 
 
-    browser.pages.length > 2 ? 
+    pages.length > 2 ? 
     await page2.bringToFront()
     : await page2.goto('https://bit.ly/glensocr', {
       waitUntil: 'networkidle0',
     });
-
+    console.log('page2: ', pages[pages.length - 1]);
     await page2.bringToFront();
 
     blockingWait(0.3);
-
-    await navigationPromise;
     
     await page2.evaluate(xInjection);
 
@@ -448,15 +447,16 @@ puppeteer.use(pluginUserAgentOverride);
     await page2.waitForNavigation({
         waitUntil: 'networkidle0',
       });
-    await page2.waitForXPath('//span[contains(text(), "Select all text")]')
+    const allSelect = await page2.waitForXPath('//span[contains(text(), "Select all text")]')
     // await page2.evaluate(() => $x('/html/body/div[3]/c-wiz/div/c-wiz/div/div[2]/div/div/div/div/div[1]/div/div[2]/div/button/div[3]').click())
 
-    await page2.evaluate(() => $x('//span[contains(text(), "Select all text")]').click())
+    allSelect ? await page2.evaluate(() => $x('//span[contains(text(), "Select all text")]').click()) : null;
     console.log('Select all text Click()')
     
-    await page2.waitForNavigation({
+    allSelect ? await page2.waitForNavigation({
         waitUntil: 'networkidle0',
-      });
+      })
+      : null
 
     
     const lensResultText = await page2.evaluate(() => {
@@ -477,14 +477,14 @@ puppeteer.use(pluginUserAgentOverride);
     const resultOKorNot = await frameset.$eval('#resultImg', el => (el.value === 'ok' ? true : false));
     console.log('🚀 ~ file: payinfo.js ~ line 377 ~ captchaByLens ~ resultOKorNot', resultOKorNot);
 
-    (await resultOKorNot) ? null : await captchaByLens(captchaSolveText);
+    (await resultOKorNot) ? await page2.close() : await captchaByLens(captchaSolveText);
   };
 
   try {
     const solvedCaptcha = await captchaByLens();
     console.log('🚀 ~ file: payinfo.js ~ line 395 ~ solvedCaptcha', solvedCaptcha);
   } catch {
-    (await frameset.click('#reLoad')) + captchaByLens() + console.log('GCV인식오류로 재실행');
+    (await frameset.click('#reLoad')) + captchaByLens() + console.log('Lens 인식오류로 재실행');
   }
 
 
@@ -1115,6 +1115,8 @@ puppeteer.use(pluginUserAgentOverride);
 
   await frameset.waitForNavigation();
 
+
+  // 대출정보
   await frameset.evaluate(() => (location.href = '/extl/qryExtlLoan.do?menu=3'));
 
   await frameset.waitForSelector('#confirm');
@@ -1123,7 +1125,6 @@ puppeteer.use(pluginUserAgentOverride);
 
   await frameset.waitForNavigation();
 
-  // 대출정보
   const loanObj = await frameset.evaluate(() => {
     var cols = [];
     var loanResult = [];
@@ -1149,6 +1150,84 @@ puppeteer.use(pluginUserAgentOverride);
   });
 
   console.log('loanObj: ', loanObj);
+
+
+
+
+  // 보험정보
+  await frameset.evaluate(() => (location.href = '/extl/qryExtlFxamtIns.do?menu=1'));
+
+  await frameset.waitForSelector('#confirm');
+  await frameset.$eval('#confirm', el => (el.checked = true));
+  await frameset.$eval('#checkForm', el => el.submit());
+
+  await frameset.waitForNavigation();
+
+  const insuaranceObj1 = await frameset.evaluate(() => {
+    var head = [];
+    var cols = [];
+    var insuaranceResult = [];
+
+    // row-title에서 선택됨 span 제거
+    $('#contents > div.section > form > div.tab > a.on > span > span').remove();
+
+
+    $('#contents > div.section > div.tbl_list_inquiry2 > table > thead > tr > th').each(function (index) {
+      cols.push($(this).text().replaceAll('\t', '').replaceAll('\n', ''));
+    });
+    console.log('정액형 보험 cols: ', cols);
+    $('#contents > div:nth-child(3) > div.tbl_list_inquiry2 > table > tbody > tr').each(function (id) {
+      var row = {
+        title: $('#contents > div.section > div.tab > a.on > span').text(),
+      };
+      $(this)
+        .find('td')
+        .each(function (index) {
+          row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '');
+        });
+      insuaranceResult.push(row);
+    });
+
+    return insuaranceResult;
+  });
+
+  console.log('insuaranceObj1: ', insuaranceObj1);
+
+
+  await frameset.evaluate(() => location.href = 'qryExtlActlossIns.do?menu=1');
+  
+  await frameset.waitForNavigation();
+
+  const insuaranceObj2 = await frameset.evaluate(() => {
+    var head = [];
+    var cols = [];
+    var insuaranceResult = [];
+
+    // row-title에서 선택됨 span 제거
+    $('#contents > div.section > form > div.tab > a.on > span > span').remove();
+
+
+    $('#contents > div.section > div.tbl_list_inquiry2 > table > thead > tr > th').each(function (index) {
+      cols.push($(this).text().replaceAll('\t', '').replaceAll('\n', ''));
+    });
+    console.log('실손형 보험 cols: ', cols);
+    $('#contents > div:nth-child(3) > div.tbl_list_inquiry2 > table > tbody > tr').each(function (id) {
+      var row = {
+        title: $('#contents > div.section > form > div.tab > a.on > span').text(),
+      };
+      $(this)
+        .find('td')
+        .each(function (index) {
+          row[cols[index]] = $(this).text().replaceAll('\t', '').replaceAll('\n', '');
+        });
+      insuaranceResult.push(row);
+      console.log("🚀 ~ file: payinfo.js ~ line 1224 ~ insuaranceResult", insuaranceResult)
+    });
+
+    return insuaranceResult;
+  });
+
+  console.log('insuaranceObj2: ', insuaranceObj2);
 
   await frameset.waitForNavigation();
 })();
