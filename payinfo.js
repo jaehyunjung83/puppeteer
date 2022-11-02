@@ -302,19 +302,61 @@ puppeteer.use(pluginUserAgentOverride);
 
   await frameset.waitForNavigation();
 
-  const captchaGCV = async () => {
+  // const captchaGCV = async () => {
+  //   var captchaSolveText = '';
+  //   console.log('--캡챠solve시작--');
+
+  //   await frameset.waitForTimeout(200);
+  //   const captchaImg = await frameset.waitForSelector('#catpcha > img');
+  //   console.log('🚀 ~ file: payinfo.js ~ line 296 ~ captchaGCV ~ captchaImg', captchaImg);
+
+  //   try {
+  //     const catchaScreenshot = await captchaImg.screenshot({
+  //       path: './payinfoCaptchaImg.png',
+  //     });
+  //   } catch (e) {
+  //     console.log(e);
+  //     console.log('exception    ');
+  //   }
+
+  //   const GCVclient = new ImageAnnotatorClient();
+  //   const fileName = './payinfoCaptchaImg.png';
+
+  //   // Performs text detection on the local file
+  //   const [result] = await GCVclient.textDetection(fileName);
+  //   const detections = result.textAnnotations;
+
+  //   detections[1].description
+  //     ? console.log(`${fileName}` + `s Text: ${detections[1].description}`)
+  //     : (await frameset.click('#reLoad')) + captchaGCV();
+
+  //   await frameset.waitForSelector('#answer', {waitUntil: 'load'});
+  //   await frameset.type('#answer', detections[1].description);
+  //   captchaSolveText = detections[1].description;
+  //   await frameset.click('#frmSubmit');
+  //   const resultOKorNot = await frameset.$eval('#resultImg', el => (el.value === 'ok' ? true : false));
+  //   console.log('🚀 ~ file: payinfo.js ~ line 377 ~ captchaGCV ~ resultOKorNot', resultOKorNot);
+
+  //   (await resultOKorNot) ? null : await captchaGCV(captchaSolveText);
+  // };
+
+  // try {
+  //   const solvedCaptcha = await captchaGCV();
+  //   console.log('🚀 ~ file: payinfo.js ~ line 395 ~ solvedCaptcha', solvedCaptcha);
+  // } catch {
+  //   (await frameset.click('#reLoad')) + captchaGCV() + console.log('GCV인식오류로 재실행');
+  // }
+
+
+  const captchaByLens = async () => {
     var captchaSolveText = '';
-    console.log('--캡챠solve시작--');
-    // await frameset.waitForTimeout(100)
-
-    // await frameset.click('#reLoad')
-    await frameset.waitForTimeout(200);
+    console.log('--lens 캡챠solve시작--');
+    
     const captchaImg = await frameset.waitForSelector('#catpcha > img');
-    console.log('🚀 ~ file: payinfo.js ~ line 296 ~ captchaGCV ~ captchaImg', captchaImg);
-
+    console.log("🚀 ~ file: payinfo.js ~ line 356 ~ captchaByLens ~ captchaImg", captchaImg)
+    
     try {
       const catchaScreenshot = await captchaImg.screenshot({
-        // encoding: "base64",
         path: './payinfoCaptchaImg.png',
       });
     } catch (e) {
@@ -322,36 +364,129 @@ puppeteer.use(pluginUserAgentOverride);
       console.log('exception    ');
     }
 
-    const GCVclient = new ImageAnnotatorClient();
     const fileName = './payinfoCaptchaImg.png';
 
-    // Performs text detection on the local file
-    const [result] = await GCVclient.textDetection(fileName);
-    const detections = result.textAnnotations;
-    // detections.forEach(text => {
-    //     return console.log('detections forEach', text.description)
-    // })
+    // Performs text detection by Lens
+    const xInjection = () => {
+      window.$x = xPath => document
+          .evaluate(
+              xPath,
+              document,
+              null,
+              XPathResult.FIRST_ORDERED_NODE_TYPE,
+              null
+          )
+          .singleNodeValue;
+    };
 
-    detections[1].description
-      ? console.log(`${fileName}` + `s Text: ${detections[1].description}`)
-      : (await frameset.click('#reLoad')) + captchaGCV();
+    const blockingWait = (seconds) => {
+      //simple blocking technique (wait...)
+      var waitTill = new Date(new Date().getTime() + seconds * 1000);
+      while(waitTill > new Date()){}
+    }
+
+    console.log('page2: ', browser.pages[2]);
+    
+    const page2 = 
+    browser.pages.length > 2 ? browser.pages[2] : await browser.newPage(); 
+
+    browser.pages.length > 2 ? 
+    await page2.bringToFront()
+    : await page2.goto('https://bit.ly/glensocr', {
+      waitUntil: 'networkidle0',
+    });
+
+    await page2.bringToFront();
+
+    blockingWait(0.3);
+
+    await navigationPromise;
+    
+    await page2.evaluate(xInjection);
+
+    await navigationPromise;
+
+    const uploadSelector = await page2.waitForSelector('#gb > div > div > div > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > span > div > button > div')
+    
+
+    const nCexist = async () => {
+        const upload = await page2.evaluate(() => $x('//span[contains(text(), "Upload")]'))
+        upload ?
+            await page2.evaluate(() =>
+                $x('//span[contains(text(), "Upload")]').length = 1
+                    ? $x('//span[contains(text(), "Upload")]').click()
+                    : $x('//span[contains(text(), "Upload")]')
+            )
+            : await navigationPromise
+    };
+    await nCexist();
+
+    await navigationPromise;    
+
+    console.log('Computer')
+    const computer = await page2.waitForXPath('//span[contains(text(), "Computer")]');
+    
+
+    const [fileChooser] = await Promise.all([
+        page2.waitForFileChooser(),
+        page2.evaluate(() => $x('//span[contains(text(), "Computer")]').click()),
+      ]);
+    
+
+    await fileChooser.accept([fileName,]);
+    console.log(`${fileName} file Uploaded!`)
+    await navigationPromise;
+
+
+    await page2.waitForXPath('//span[contains(text(), "Text")]');
+    // await page2.evaluate(() => $x('/html/body/div[3]/c-wiz/div/c-wiz/div/div[1]/div/div[3]/div/div/span[2]/span/button/span[1]').click());
+    await page2.waitForNavigation({
+        waitUntil: 'networkidle0',
+      });
+    await page2.evaluate(() => $x('//span[contains(text(), "Text")]').click());
+    console.log('Text Click()')
+    await page2.waitForNavigation({
+        waitUntil: 'networkidle0',
+      });
+    await page2.waitForXPath('//span[contains(text(), "Select all text")]')
+    // await page2.evaluate(() => $x('/html/body/div[3]/c-wiz/div/c-wiz/div/div[2]/div/div/div/div/div[1]/div/div[2]/div/button/div[3]').click())
+
+    await page2.evaluate(() => $x('//span[contains(text(), "Select all text")]').click())
+    console.log('Select all text Click()')
+    
+    await page2.waitForNavigation({
+        waitUntil: 'networkidle0',
+      });
+
+    
+    const lensResultText = await page2.evaluate(() => {
+        return ($x('//div[starts-with(@jsaction, "contextmenu")]').innerText)
+    });  
+  
+    await page.bringToFront();
+    blockingWait(0.3);
+
+    lensResultText
+      ? console.log(`${fileName}` + `s Text: ${lensResultText}`)
+      : (await frameset.click('#reLoad')) + captchaByLens();
 
     await frameset.waitForSelector('#answer', {waitUntil: 'load'});
-    await frameset.type('#answer', detections[1].description);
-    captchaSolveText = detections[1].description;
+    await frameset.type('#answer', lensResultText);
+    captchaSolveText = lensResultText;
     await frameset.click('#frmSubmit');
     const resultOKorNot = await frameset.$eval('#resultImg', el => (el.value === 'ok' ? true : false));
-    console.log('🚀 ~ file: payinfo.js ~ line 377 ~ captchaGCV ~ resultOKorNot', resultOKorNot);
+    console.log('🚀 ~ file: payinfo.js ~ line 377 ~ captchaByLens ~ resultOKorNot', resultOKorNot);
 
-    (await resultOKorNot) ? null : await captchaGCV(captchaSolveText);
+    (await resultOKorNot) ? null : await captchaByLens(captchaSolveText);
   };
 
   try {
-    const solvedCaptcha = await captchaGCV();
+    const solvedCaptcha = await captchaByLens();
     console.log('🚀 ~ file: payinfo.js ~ line 395 ~ solvedCaptcha', solvedCaptcha);
   } catch {
-    (await frameset.click('#reLoad')) + captchaGCV() + console.log('GCV인식오류로 재실행');
+    (await frameset.click('#reLoad')) + captchaByLens() + console.log('GCV인식오류로 재실행');
   }
+
 
   await frameset.evaluate(async () => {
     await $('#fncOrgCode > option:nth-child(2)').prop('selected', true);

@@ -87,19 +87,18 @@ const xInjection = () => {
     });
 
     await navigationPromise;
+    
+    
 
     await page.evaluate(xInjection);
 
     await navigationPromise;
 
     const uploadSelector = await page.waitForSelector('#gb > div > div > div > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > span > div > button > div')
-    console.log("🚀 ~ file: lens.js ~ line 97 ~ uploadSelector", uploadSelector)
-    // await upload.click()
+    
 
     const nCexist = async () => {
         const upload = await page.evaluate(() => $x('//span[contains(text(), "Upload")]'))
-        console.log("🚀 ~ file: lens.js ~ line 100 ~ upload", upload)
-
         upload ?
             await page.evaluate(() =>
                 $x('//span[contains(text(), "Upload")]').length = 1
@@ -123,7 +122,7 @@ const xInjection = () => {
     
 
     await fileChooser.accept([
-    "captchaImg (8).png",
+    "/Users/hyun_M1/Downloads/captchaImg (2).png",
     ]);
     console.log('fileChoosed!')
     await navigationPromise;
@@ -144,23 +143,22 @@ const xInjection = () => {
 
     await page.evaluate(() => $x('//span[contains(text(), "Select all text")]').click())
     console.log('Select all text Click()')
+    
     await page.waitForNavigation({
         waitUntil: 'networkidle0',
       });
-    await page.waitForXPath('//span[contains(text(), "Copy text")]')
-    // await page.evaluate(() => $x('/html/body/div[3]/c-wiz/div/c-wiz/div/div[1]/div/div[2]/div/div/div/div/div[2]/div[3]/div/button/div[3]').click());
-    await page.evaluate(() => $x('//span[contains(text(), "Copy text")]').click());
-    
-
-    await navigationPromise;
-    
-    const clipboardReadText = clipboard.readSync();
-    console.log("🚀 ~ file: lens.js ~ line 156 ~ clipboardReadText", clipboardReadText)
-    
 
     
+    const resultText = await page.evaluate(() => {
+        return ($x('//div[starts-with(@jsaction, "contextmenu")]').innerText)
+    });  
     
+
+    // await page.waitForXPath('//span[contains(text(), "Copy text")]')
     
+    // await page.evaluate(() => $x('//span[contains(text(), "Copy text")]').click());
+
+
 
 
     await navigationPromise;
