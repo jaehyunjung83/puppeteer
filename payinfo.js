@@ -456,7 +456,7 @@ puppeteer.use(pluginUserAgentOverride);
     allSelect ? await page2.waitForNavigation({
         waitUntil: 'networkidle0',
       })
-      : null
+      : console.log('allSelect none!')
 
     
     const lensResultText = await page2.evaluate(() => {
@@ -491,6 +491,8 @@ puppeteer.use(pluginUserAgentOverride);
   await frameset.evaluate(async () => {
     await $('#fncOrgCode > option:nth-child(2)').prop('selected', true);
     console.log('하나은행 option 선택');
+  });
+  await frameset.evaluate(async () => {
     await $('#cellNum').val('01088957500');
     console.log("$('cellNum').value: ", $('cellNum').value);
   });
@@ -594,6 +596,8 @@ puppeteer.use(pluginUserAgentOverride);
   const converted = tabletojson.convert(qryAcntSum);
   writeFileSync('convertedWhole.json', JSON.stringify(converted));
 
+  const payinfo = [];
+
   // 은행권
   const bankWholeObj = await frameset.evaluate(() => {
     var cols = [];
@@ -618,7 +622,8 @@ puppeteer.use(pluginUserAgentOverride);
     return bankresult;
   });
   console.log('🚀 ~ file: payinfo.js ~ line 513 ~ bankWholeObj ~ bankWholeObj', bankWholeObj);
-
+  payinfo['bankWhole'] = bankWholeObj;
+  console.log("🚀 ~ file: payinfo.js ~ line 626 ~ bankWholeObj", payinfo)
   const bankDetailLength = await frameset.$$eval('a.btn_policy', button => button.length);
   const bankDetailButtons = await frameset.$$eval('a.btn_policy', buttons => buttons);
   console.log('🚀 ~ file: payinfo.js ~ line 494 ~ bankDetailButtons', bankDetailButtons);
@@ -680,10 +685,13 @@ puppeteer.use(pluginUserAgentOverride);
       return bankDetailResult;
     });
     console.log('🚀 ~ file: payinfo.js ~ line 568 ~ bankDetailObj ~ bankDetailObj', bankDetailObj);
+    payinfo.bankWhole[i]['bankDetail'] = bankDetailObj;
+    console.log("🚀 ~ file: payinfo.js ~ line 689 ~ payinfo", payinfo)
+    
 
-    i == 0
-      ? writeFileSync('detail.json', JSON.stringify(detailJson))
-      : appendFileSync('detail.json', ',' + JSON.stringify(detailJson));
+    // i == 0
+    //   ? writeFileSync('detail.json', JSON.stringify(detailJson))
+    //   : appendFileSync('detail.json', ',' + JSON.stringify(detailJson));
 
     await frameset.click('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)');
 
@@ -722,6 +730,8 @@ puppeteer.use(pluginUserAgentOverride);
   });
 
   console.log('secondTeerObj: ', secondTeerObj);
+  payinfo['secondTeer'] = secondTeerObj;
+  console.log("🚀 ~ file: payinfo.js ~ line 733 ~ payinfo", payinfo)
 
   const readText = clipboard.readSync();
   console.log('🚀 ~ file: payinfo.js ~ line 638 ~ readText', readText);
@@ -796,9 +806,14 @@ puppeteer.use(pluginUserAgentOverride);
     });
     console.log('🚀 ~ file: payinfo.js ~ line 568 ~ secondTeerDetailObj ~ secondTeerDetailObj', secondTeerDetailObj);
 
-    i == 0
-      ? writeFileSync('detail.json', JSON.stringify(secondTeerDetailJson))
-      : appendFileSync('detail.json', ',' + JSON.stringify(secondTeerDetailJson));
+    payinfo.secondTeer[i]['accountDetail'] = secondTeerDetailObj
+    console.log("🚀 ~ file: payinfo.js ~ line 810 ~ payinfo", payinfo)
+    
+    // i == 0
+    //   ? writeFileSync('detail.json', JSON.stringify(secondTeerDetailJson))
+    //   : payinfo[`secondTeerDetail${i}`] = secondTeerDetailResult;
+      
+    
 
     await frameset.click('#contents > div:nth-child(3) > div.btn_group > a:nth-child(2)');
 
@@ -844,6 +859,8 @@ puppeteer.use(pluginUserAgentOverride);
   });
 
   console.log('securitiesObjObj: ', securitiesObj);
+  payinfo['securities'] = securitiesObj;
+  console.log("🚀 ~ file: payinfo.js ~ line 860 ~ payinfo", payinfo)
 
   const securitiesDetailLength = await frameset.$$eval('a.btn_policy', button => button.length);
   const securitiesDetailButtons = await frameset.$$eval('a.btn_policy', buttons => buttons);
@@ -917,6 +934,8 @@ puppeteer.use(pluginUserAgentOverride);
       return securitiesDetailResult;
     });
     console.log('🚀 ~ file: payinfo.js ~ line 791 ~ securitiesDetailObj ~ securitiesDetailObj', securitiesDetailObj);
+    payinfo.securities[i]['accountDetail'] = securitiesDetailObj;
+    console.log("🚀 ~ file: payinfo.js ~ line 935 ~ payinfo", payinfo)
 
     await frameset.click('#checkForm > div > a:nth-child(2)');
 
@@ -960,6 +979,8 @@ puppeteer.use(pluginUserAgentOverride);
   });
 
   console.log('cardsObj: ', cardsObj);
+  payinfo['cards'] = cardsObj;
+  console.log("🚀 ~ file: payinfo.js ~ line 980 ~ payinfo", payinfo);
 
   const cardsDetailLength = await frameset.$$eval('a.btn_policy', button => button.length);
   const cardsDetailButtons = await frameset.$$eval('a.btn_policy', buttons => buttons);
@@ -1014,6 +1035,10 @@ puppeteer.use(pluginUserAgentOverride);
       return cardsDetailResult;
     }, cardsDetailResult);
     console.log('🚀 ~ file: payinfo.js ~ line 904 ~ cardsDetailObj ~ cardsDetailObj', cardsDetailObj);
+    // payinfo[`cardsDetail${i}`] = cardsDetailObj;
+    // console.log("🚀 ~ file: payinfo.js ~ line 1036 ~ payinfo", payinfo)
+    payinfo.cards[i]['cardInfo'] = cardsDetailObj;
+
 
     // 결제예정금액
     await frameset.evaluate(() => OnSetl());
@@ -1052,7 +1077,11 @@ puppeteer.use(pluginUserAgentOverride);
       return cardsDetailResult;
     }, cardsDetailResult);
     console.log('🚀 ~ file: payinfo.js ~ line 937 ~ cardDetailHaveToPay ~ cardDetailHaveToPay', cardDetailHaveToPay);
-
+    // payinfo[`cardDetailHaveToPay${i}`] = cardDetailHaveToPay;
+    // console.log("🚀 ~ file: payinfo.js ~ line 1076 ~ payinfo", payinfo)
+    payinfo.cards[i]['HaveToPay'] = cardDetailHaveToPay;
+    
+    
     // 최근 이용대금(명세서기준) 이동
     await frameset.evaluate(() => OnUse());
     await frameset.waitForNavigation();
@@ -1108,8 +1137,11 @@ puppeteer.use(pluginUserAgentOverride);
       '🚀 ~ file: payinfo.js ~ line 979 ~ cardDetailSpecification ~ cardDetailSpecification',
       cardDetailSpecification,
     );
+    console.log('cardsDetailResult: ', cardsDetailResult)
+    payinfo.cards[i]['Specification'] = cardDetailSpecification;
 
-    i == cardsDetailLength ? console.log('cards Detail result: ', cardsDetailResult) : null;
+    // i == cardsDetailLength ? payinfo[`cardsDetailResult${i}`] = cardsDetailResult: null;
+    console.log("🚀 ~ file: payinfo.js ~ line 1135 ~ payinfo", payinfo);
     await frameset.evaluate(() => OnList());
   }
 
@@ -1150,7 +1182,8 @@ puppeteer.use(pluginUserAgentOverride);
   });
 
   console.log('loanObj: ', loanObj);
-
+  payinfo['loan'] = loanObj;
+  console.log("🚀 ~ file: payinfo.js ~ line 1177 ~ payinfo", payinfo)
 
 
 
@@ -1191,8 +1224,10 @@ puppeteer.use(pluginUserAgentOverride);
     return insuaranceResult;
   });
 
-  console.log('insuaranceObj1: ', insuaranceObj1);
-
+  console.log('insuaranceObj_xamt: ', insuaranceObj1);
+  payinfo['insuarance'] = [] ;
+  payinfo.insuarance['xamt'] = insuaranceObj1 ;
+  console.log("🚀 ~ file: payinfo.js ~ line 1220 ~ payinfo", payinfo)
 
   await frameset.evaluate(() => location.href = 'qryExtlActlossIns.do?menu=1');
   
@@ -1227,7 +1262,9 @@ puppeteer.use(pluginUserAgentOverride);
     return insuaranceResult;
   });
 
-  console.log('insuaranceObj2: ', insuaranceObj2);
+  console.log('insuaranceObj_loss: ', insuaranceObj2);
+  payinfo.insuarance['loss'] = insuaranceObj2;
+  console.log("🚀 ~ file: payinfo.js ~ line 1257 ~ payinfo", payinfo)
 
   await frameset.waitForNavigation();
 })();
