@@ -63,69 +63,6 @@ $(`img[data-action="${touchEnButtonConfirm}"]`).click();
 
 
 
-// // 중요!! mainFrame(inputRlnmNum.do) frame에서!!!
-// // MAC 공동인증서 keypad 받아오기
-// var data = "at=r&cf=yessignWeb.ui.triggerKeypadEnter()&d=nppfs-keypad-div&dp=hide&ev=v2&f=d18a8366c45ca85d6&h=1583&i=yessign_certselect_password_0&ip=https%3A%2F%2Fpayinfo.or.kr%2Fpluginfree%2Fjsp%2Fnppfs.keypad.jsp&jv=1.9.0&m=e&st=l&t=b&ta=true&tf=%2Fpluginfree%2Ficon%2Ficon_mouse_off.gif&th=default&to=%2Fpluginfree%2Ficon%2Ficon_mouse_on.gif&ui=yessign_certselect_password_0_toggle&ut=t&w=715";
-
-// var xhr = new XMLHttpRequest();
-// xhr.withCredentials = true;
-
-// xhr.addEventListener("readystatechange", function() {
-//   if(this.readyState === 4) {
-//     console.log(this.responseText);
-//   }
-// });
-
-// xhr.open("POST", "https://payinfo.or.kr/pluginfree/jsp/nppfs.keypad.jsp");
-// xhr.setRequestHeader("host", "payinfo.or.kr");
-// xhr.setRequestHeader("Accept", "*/*");
-// xhr.setRequestHeader("sec-ch-ua", "\".Not/A)Brand\";v=\"99\", \"Google Chrome\";v=\"103\", \"Chromium\";v=\"103\"");
-// xhr.setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36");
-// xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-// xhr.setRequestHeader("Sec-Fetch-Dest", "empty");
-// xhr.setRequestHeader("Sec-Fetch-Mode", "cors");
-// xhr.setRequestHeader("Sec-Fetch-Site", "same-origin");
-// xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-// xhr.setRequestHeader("sec-ch-ua-mobile", "?0");
-// xhr.setRequestHeader("sec-ch-ua-platform", "\"Windows\"");
-// xhr.setRequestHeader("Cookie", "JSESSIONID=rTPJNEOF8SqRftmm2wTnmFzRd1Wv4hSnT4NvYgSc0ITxWKPE7xBpwAB6OuhJJreJ.d2R0cm5zX2RvbWFpbi93ZHQxLTI=");
-
-// xhr.send(data);
-
-
-// // 공동인증서 singedValue 보내기
-// var data = "__E2E_KEYPAD__=1bfd1cb49e9e95dc3b41359907814e064539cbb958946ced9a5904995e90871ef95bb52f76724c74a36ce080e6b88c8d4c069ece41d5bebef7b0964116bfe37084db5884e113b87c56f8846836b0260a76c196dd4f142d0fe72e071e07716ca65d7c18f6ede1e9d719104a1ff4e711c3ee8427ca20251a1a7ce7fb6bf348a5be74eb959cb5d49f5476734fef13f42077ac5a60f45a6ccf4bb0d792273f119d972589af5bfe53194301a3243d5d25accfb33ad46b9ea5b591085e9f767ff6dd447d814a71f63dda67f27429f1aa8a44f3a9b4759bd68757ecbf8d4af5b08fe815fe3aaf8f49974bbfc218f1cce25a5f59930d7a38dade2c1fac966b3c3fa821fa&__E2E_UNIQUE__=165951386558931&__KH_520a4197028b=a314e86c5b1280f81b4850745fca89dbc2f42a9c62f28463241df7058077efed142918e4eb97829eca6701361128f67d8b109ab4432b4659f285b2368f52736ac89d4b53628ff5e84e09d9f777ab3302ed31ebbd72e18a4c7c599be0793d82df8b109ab4432b4659f285b2368f52736ac89d4b53628ff5e84e09d9f777ab3302ed31ebbd72e18a4c7c599be0793d82dfa314e86c5b1280f81b4850745fca89dbc2f42a9c62f28463241df7058077efed142918e4eb97829eca6701361128f67dd8f2f02e38e01938169ed538f70a5efa111651f7c7cea7f2bb6d0674d575d4b428f01efbd3495546c42a1311ae22609aab5fe7c73a5bd5d4adc6c223d3851ced72fe9516dec3b40cfa0631058636f1caaf40421bd0093c158e28d03e6f80ef48ab5fe7c73a5bd5d4adc6c223d3851ced72fe9516dec3b40cfa0631058636f1caaf40421bd0093c158e28d03e6f80ef48&__KI_rlnmNum2=4674fb4bcf0228c1599ab37bf923e3a613d795854aa28988541c847e002b46627435f5cd53f5c9744d67ac628b3cf4a60635bf455c5bf0314a17ee901420facfd7d4b74f65d3a5dcd1b4d8786811d5a179107eeb4b40b0325510d3ca6fd4982e&__KU_520a4197028b=Y&certiKind=c&checkConfirm=no&inpType=1&installed=T&menu=1&rlnmNum=8312061111111&rlnmNum1=831206&rlnmNum2=1111111&signedval=3082081306092a864886f70d010702a082080430820800020101310f300d06096086480165030402010500306f06092a864886f70d010701a0620460726c6e6d4e756d3d3833313230363131313131313126bcadb8edbdc3b0a23d323032322e30382e303325323031373a31303a343526c0cfc8b8bfebc5e4c5ab3d3939383036396538396631306136633761303561613661303036653864643133a08205b3308205af30820497a00302010202042e51e7f8300d06092a864886f70d01010b05003052310b3009060355040613026b723110300e060355040a0c077965737369676e31153013060355040b0c0c416363726564697465644341311a301806035504030c117965737369676e434120436c6173732032301e170d3232303631323135303030305a170d3233303631353134353935395a3071310b3009060355040613026b723110300e060355040a0c077965737369676e31143012060355040b0c0b706572736f6e616c344942310c300a060355040b0c03534842312c302a06035504030c23eca095ec9eaced9884282930303838303436323031383036313131383830303030353530820122300d06092a864886f70d01010105000382010f003082010a02820101008aa4f1b9741bcd2bc693d821b90abdb5df56ed7ae04c9aeac678af0a293a99e9d3dbf8110f53571b66d0a25b6ef84e2e8a0a9eac5a990def33f08cad63d6b552e908ebbf135d7944545d0d2f349343b3b289a968339a2ebc42f1fecac5375600aac2967c58c18aa45ebb3bc23bc2ce72adb6c0f42aa79a9dd67d388c1c54a1978fbd16bb27c09d5341ea15a909e39d6fcc3aa59d4ae5943e1056605cd89d1ec35693e1f7fdd28c3ed5ba45f3944266825e7c7db878aea942fef1c6496e6b77a521df67c32223cefda67691319b0b097bd72184c832d7b50401f6e8131a8322bd921e831264d565252c52fa82e214c5d2c5a2e47dad7ebe0fa47e10a96d6fbb450203010001a382026c3082026830818f0603551d230481873081848014efdc44d2c68dc00ea338c07c93c6c341bf4a8ff0a168a4663064310b3009060355040613024b52310d300b060355040a0c044b495341312e302c060355040b0c254b6f7265612043657274696669636174696f6e20417574686f726974792043656e7472616c3116301406035504030c0d4b49534120526f6f74434120348202101c301d0603551d0e041604149511225d239751c47b622be5bd3495a94b7566d6300e0603551d0f0101ff0404030206c030818c0603551d200101ff048181307f307d06092a831a8c9a450101043070304006082b0601050507020230341e32c7740020c778c99dc11cb2940020ae08c735acb0c81cc6d0c5d0c11c0020bc1cae09d55c0020c778c99dc11cc785b2c8b2e4302c06082b060105050702011620687474703a2f2f7777772e7965737369676e2e6f722e6b722f6370732e68746d30680603551d110461305fa05d06092a831a8c9a440a0101a050304e0c09eca095ec9eaced98843041303f060a2a831a8c9a440a0101013031300b0609608648016503040201a022042050ac5033c905526735aa1f134deeb6a637e471a4230b60b2e4029bd60fcbae2630720603551d1f046b30693067a065a06386616c6461703a2f2f64732e7965737369676e2e6f722e6b723a3338392f6f753d6470357039383033382c6f753d4163637265646974656443412c6f3d7965737369676e2c633d6b723f63657274696669636174655265766f636174696f6e4c697374303806082b06010505070101042c302a302806082b06010505073001861c687474703a2f2f6f6373702e7965737369676e2e6f72673a34363132300d06092a864886f70d01010b0500038201010062dd2323ec834e28ee35d3fecbeae4f34a0e3c92fcbd4ee27933c6953b6ae230d883c5d55dd02e338d99b0226f3b27051c1c3b4ea372d85beec239edf5d6f3e1b1a69f8f71b4319574d85af08d6d3a474099c9eded928a095b0cf7abbc57b951e7f78ed41462bb4bbfdd0c2b03f260b535b2caa7e872b7c82b485f740d6a51fa3915fa7cb6147d4e335a7cb9cd6eb3086c31e21245c88bce53cb5f601321570fa5508d25253cf89d6f08d202b69325c742e995787226e60dd9fd7342240f3089fb0d9746254f3acf03fd439c4d34c6f8d4a17095220a436525f2ff92a4301bf0aaac955224169b2c58f0bcae62f351b77ba4dddf1e33e502559a6187f2e22a68318201c0308201bc020101305a3052310b3009060355040613026b723110300e060355040a0c077965737369676e31153013060355040b0c0c416363726564697465644341311a301806035504030c117965737369676e434120436c617373203202042e51e7f8300d06096086480165030402010500300d06092a864886f70d01010105000482010056d76ce92489ffcc4c18d7755f37fc2dd5b1f9afccccffdafeec4acfb5b7134c555cf6845cfe41d22228020f688795a997459f6cde1878d71f74a37e5c53a346d5a51f0d0a86bf59ce81a5996251f2e6906c84179029366cd7d8a5d119e91a74c34fc8197369c8d8ce1303507b3cd18d66e50ae747aff5e322d95730d9af535533ddb26c4ef493fc4dab1007ac3a9874aec1c616bd703a3586d06d6edc2907fbeb83bb206452ef2364ac0fc72b658a00bb54123e10da753ee0f6a76de38a379768fbe5a9c0409541ae74dfd89c74d52792da701373c927efe1c5498420fb3a6a08695c2e069cb27a1a05ba14dba236e9fce83c7fbe90cc7d556a7417765dbb0ba139303706092a831a8c9a45010a01312a04283026130d3833313230363131313131313103150078237d1762fe7f4fc534fe945dfce26cac5555ee";
-
-// var xhr = new XMLHttpRequest();
-// xhr.withCredentials = true;
-
-// xhr.addEventListener("readystatechange", function() {
-//   if(this.readyState === 4) {
-//     console.log(this.responseText);
-//   }
-// });
-
-// xhr.open("POST", "https://payinfo.or.kr/acntcb/qryAcntSummary.do");
-// xhr.setRequestHeader("host", "payinfo.or.kr");
-// xhr.setRequestHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-// xhr.setRequestHeader("sec-ch-ua", "\".Not/A)Brand\";v=\"99\", \"Google Chrome\";v=\"103\", \"Chromium\";v=\"103\"");
-// xhr.setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36");
-// xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-// xhr.setRequestHeader("Sec-Fetch-Dest", "frame");
-// xhr.setRequestHeader("Sec-Fetch-Mode", "navigate");
-// xhr.setRequestHeader("Sec-Fetch-Site", "same-origin");
-// xhr.setRequestHeader("Sec-Fetch-User", "?1");
-// xhr.setRequestHeader("sec-ch-ua-mobile", "?0");
-// xhr.setRequestHeader("sec-ch-ua-platform", "\"Windows\"");
-// xhr.setRequestHeader("Upgrade-Insecure-Requests", "1");
-// // WARNING: Cookies will be stripped away by the browser before sending the request.
-// xhr.setRequestHeader("Cookie", "JSESSIONID=rTPJNEOF8SqRftmm2wTnmFzRd1Wv4hSnT4NvYgSc0ITxWKPE7xBpwAB6OuhJJreJ.d2R0cm5zX2RvbWFpbi93ZHQxLTI=");
-
-// xhr.send(data);
-
-
-
-
 
 // 금융인증서 로그인
 OnSearch('f');
@@ -135,10 +72,6 @@ OnSearch('f');
 
 
 // 자동로그인 아닐 떄!!
-
-
-
-
 
 
 
@@ -175,7 +108,16 @@ $(`img[data-action="${button0}"]`).click().keyup();
 $('#contents > div > a > div > span').click()
 
 
+// 하나은행 선택, 휴대폰번호 입력
+$('#fncOrgCode > option:nth-child(2)').prop('selected', true);
+$('#cellNum').val('01088957500');
+$x('//a[.="인증번호받기"]').click()
 
+
+$x('//a[.="인증확인"]')[0].click()
+
+
+$x('//a[.="계속진행"]')[0].click()
 
 // captcha image download
 // changeCaptch function click 시 a tag에 href download atrribute 만들어서 넣고
