@@ -109,6 +109,9 @@ $('#contents > div > a > div > span').click()
 
 
 // 하나은행 선택, 휴대폰번호 입력
+window.$x = xPath =>
+document.evaluate(xPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+  
 $('#fncOrgCode > option:nth-child(2)').prop('selected', true);
 $('#cellNum').val('01088957500');
 $x('//a[.="인증번호받기"]').click()
