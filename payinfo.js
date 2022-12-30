@@ -5,6 +5,8 @@ import puppeteerExtraPluginUserAgentOverride from 'puppeteer-extra-plugin-stealt
 import {writeFileSync, appendFileSync} from 'fs';
 import path from 'path';
 import dayjs from 'dayjs';
+import 'dayjs/locale/ko.js'
+dayjs.locale('ko')
 import localizedFormat from 'dayjs/plugin/localizedFormat.js';
 dayjs.extend(localizedFormat);
 import download from 'image-downloader';
@@ -380,14 +382,18 @@ puppeteer.use(pluginUserAgentOverride);
     console.log('--lens 캡챠solve시작--');
 
     const captchaImg = await frameset.waitForSelector('#catpcha > img');
+    console.log("🚀 ~ file: payinfo.js ~ line 383 ~ captchaByLens ~ captchaImg", captchaImg)
+
+    await frameset.waitForFunction(() => {
+      const img = $('#catpcha > img')[0]
+      return img.width > 0
+    },{timeout:0})
 
     try {
-      const catchaScreenshot = await captchaImg.screenshot({
-        path: './payinfoCaptchaImg.png',
-      });
+      await captchaImg.screenshot({path: './payinfoCaptchaImg.png',});
     } catch (e) {
-      console.log(e);
       console.log('exception    ');
+      console.log(e);
     }
 
     const fileName = './payinfoCaptchaImg.png';
@@ -403,9 +409,9 @@ puppeteer.use(pluginUserAgentOverride);
       ? await page2.bringToFront()
       : await page2.goto('https://bit.ly/glensocr', {
           waitUntil: 'networkidle0',
-        });
-    console.log('page2: ', pages[pages.length - 1]);
-    await page2.bringToFront();
+        }) + await page2.bringToFront();
+    // console.log('page2: ', pages[pages.length - 1]);
+    
 
     blockingWait(0.3);
 
@@ -413,9 +419,9 @@ puppeteer.use(pluginUserAgentOverride);
 
     await navigationPromise;
 
-    const uploadSelector = await page2.waitForSelector(
-      '#gb > div > div > div > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > span > div > button > div',
-    );
+    // const uploadSelector = await page2.waitForSelector(
+    //   '#gb > div > div > div > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > span > div > button > div',
+    // );
 
     const nCexist = async () => {
       const upload = await page2.evaluate(() => $x('//span[contains(text(), "Upload")]'));
@@ -441,7 +447,7 @@ puppeteer.use(pluginUserAgentOverride);
     ]);
     await page2.waitForResponse(res => res);
     await fileChooser.accept([fileName]);
-    console.log(`${fileName} file Uploaded!`);
+    console.log(`${fileName} Uploaded!`);
     // await navigationPromise;
 
     // await page2.waitForResponse(res => {return res.remoteAddress === '142.250.196.142:443'})
@@ -456,38 +462,38 @@ puppeteer.use(pluginUserAgentOverride);
     await page2.evaluate(() => $x('//button[contains(@aria-label, "Switch to Text mode")]').click()),
       // blockingWait(1);
 
-      console.log('Text Click()');
+    console.log('Text Button Click()');
+
+    
 
     await page2.waitForResponse(res => {
       return res.url().includes('batchexecute');
     });
 
-    const allSelect = await page2.waitForXPath('//span[.="Select all text"]');
-    // await page2.evaluate(() => $x('/html/body/div[3]/c-wiz/div/c-wiz/div/div[2]/div/div/div/div/div[1]/div/div[2]/div/button/div[3]').click())
+    
+    await page2.waitForXPath('//span[.="Select all text"]');
 
     await page2.evaluate(() => $x('//span[.="Select all text"]').click());
 
-    await page2.waitForNavigation({waitUntil: 'networkidle0'});
+    await page2.waitForFunction(() => {
+      const textReadDiv = $x('//div[contains(@jsname, "r4nke")]').innerText
+    return textReadDiv.length > 0
+    },{timeout: 0},)
+  
 
     console.log('Select all text Click()');
 
-    // allSelect
-    //   ? await page2.waitForNavigation({
-    //       waitUntil: 'networkidle0',
-    //     })
-    //   : console.log('allSelect none!');
 
     const lensResultText = await page2.evaluate(() => {
       return $x('//div[starts-with(@jsaction, "contextmenu")]').innerText;
     });
     console.log('🚀 ~ file: payinfo.js ~ line 479 ~ lensResultText ~ lensResultText', lensResultText);
 
+
+
     await page.bringToFront();
     blockingWait(0.3);
 
-    // lensResultText
-    //   ? console.log(`${fileName}` + `s Text: ${lensResultText}`)
-    //   : (await frameset.click('#reLoad')) + captchaByLens();
 
     await frameset.waitForSelector('#answer', {waitUntil: 'load'});
     await frameset.type('#answer', lensResultText);
@@ -575,8 +581,7 @@ puppeteer.use(pluginUserAgentOverride);
       await frameset.type('#smsNum', resultOutReturn.text.replace(/[^0-9]/g, ''));
   };
 
-  await frameset.waitForFunction(
-    () => {
+  await frameset.waitForFunction(() => {
       const smsConfirmNum = document.getElementById('smsNum').value;
 
       return smsConfirmNum.length == 6;
@@ -1458,10 +1463,9 @@ puppeteer.use(pluginUserAgentOverride);
       $(this)
         .find('td')
         .each(function (index) {
-          if (index == 7 || index == 8) {
+          if (index == 7) { //1회보험료
             Number(row[cols[index]] = $(this).text().replace(/[^0-9]/g, ''));
-          } else {
-            row[cols[index]] = $(this).text().replaceAll(/\t|\n|\s/g, "");
+          } else {row[cols[index]] = $(this).text().replaceAll(/\t|\n|\s/g, "");
           }
         });
       insuaranceResult.push(row);
@@ -1513,7 +1517,12 @@ puppeteer.use(pluginUserAgentOverride);
 
 
   writeFileSync('payinfo.json', JSON.stringify({...payinfo}))
+  
+  const dayKO = dayjs().format("LL LTS")
 
-  set(startRef, payinfo);
+  const payinfoToFB = {}
+  payinfoToFB[dayKO] = payinfo;
+  set(startRef, payinfoToFB);
+
   await frameset.waitForNavigation();
 })();

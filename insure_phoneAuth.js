@@ -1,13 +1,21 @@
 // const puppeteer = require("puppeteer");
-const puppeteer = require("puppeteer-extra");
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-const puppeteerExtraPluginUserAgentOverride = require("puppeteer-extra-plugin-stealth/evasions/user-agent-override");
-const fs = require('fs');
-const dayjs = require('dayjs');
-require('dayjs/locale/ko');
-const localizedFormat = require('dayjs/plugin/localizedFormat');
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import puppeteerExtraPluginUserAgentOverride from 'puppeteer-extra-plugin-stealth/evasions/user-agent-override/index.js';
+import fs from 'fs';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ko.js'
+dayjs.locale('ko')
+import localizedFormat from 'dayjs/plugin/localizedFormat.js';
 dayjs.extend(localizedFormat);
-const download = require('image-downloader')
+import download from 'image-downloader';
+const SQLiteMessagesDB = `${process.env.HOME}/Library/Messages/chat.db`;
+// const sqlite3 = require('sqlite3').verbose()
+import verbose from 'sqlite3';
+const sqlite3 = verbose;
+
+
+
 
 const stealthPlugin = StealthPlugin();
 stealthPlugin.enabledEvasions.delete("user-agent-override");
@@ -38,7 +46,6 @@ puppeteer.use(pluginUserAgentOverride);
         case "font":
         case "image":
           req.abort();
-          console.log('css 없앤 중단점')
           break;
         default:
           req.continue();
@@ -54,7 +61,7 @@ puppeteer.use(pluginUserAgentOverride);
       await page.evaluate("navigator.userAgent")
     );
     console.log(
-      "launch후 UserAgent",
+      "launch후 platform",
       await page.evaluate("navigator.platform")
     );
 
@@ -101,11 +108,11 @@ puppeteer.use(pluginUserAgentOverride);
 
     await page.waitForSelector("#email1");
     await page.click("#email1");
-    await page.type("#email1", "");
+    await page.type("#email1", "jjjh1983");
 
     await page.waitForSelector("#email2");
     await page.click("#email2");
-    await page.type("#email2", "");
+    await page.type("#email2", "naver.com");
 
 
     
@@ -117,7 +124,7 @@ puppeteer.use(pluginUserAgentOverride);
 
 
     console.log("cert전 UserAgent", await page.evaluate("navigator.userAgent"));
-    console.log("cert전 UserAgent", await page.evaluate("navigator.platform"));
+    console.log("cert전 platform", await page.evaluate("navigator.platform"));
 
 
     // 핸드폰 인증 선택
@@ -142,8 +149,13 @@ puppeteer.use(pluginUserAgentOverride);
 
     // popup창 alert창 뜨는 거 확인 버튼
     page.on("dialog", async (dialog) => {
-      console.log("dialog");
-      await dialog.accept();
+      console.log(dialog);
+      await dialog.dismiss();
+    });
+    popup.on("dialog", async (dialog) => {
+      console.log(dialog.message());
+      await dialog.dismiss();
+      await captchaByLens();
     });
 
 
@@ -168,14 +180,17 @@ puppeteer.use(pluginUserAgentOverride);
       const wholeAgree = document.querySelector("#agree_all");
       console.log("🚀 ~ file: insure.js ~ line 190 ~ awaitpopup.evaluate ~ wholeAgree", wholeAgree)
       wholeAgree.click();
-      console.log('전체 동의 clicked')
+      $('#btnSms').click()
     });
+    console.log('전체 동의 & 문자(SMS)로 인증하기 clicked')
 
-
-    await popup.waitForSelector("#btnSms").then((res) => console.log('문자(sms)로 인증하기버튼 element', res));
-    await popup.click("#btnSms");
-
-    await navigationPromise;
+    
+    // popup안에서 url 바뀔 때
+    await popup.waitForFunction(
+      url => window.location.href === url,
+      {},
+      'https://nice.checkplus.co.kr/CheckPlusSafeModel/service.cb'
+    );
 
     await popup.waitForSelector("#username");
     await popup.click("#username");
@@ -193,56 +208,260 @@ puppeteer.use(pluginUserAgentOverride);
     await popup.click("#mobileno");
     await popup.type("#mobileno", "01088957500");
 
+  
+  const xInjection = () => {
+    window.$x = xPath =>
+      document.evaluate(xPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+  };
+
+
+  const blockingWait = seconds => {
+    //simple blocking technique (wait...)
+    var waitTill = new Date(new Date().getTime() + seconds * 1000);
+    while (waitTill > new Date()) {}
+  };
+
   // captcha image down
-    const captchaImg = await popup.$eval('#CAPTCHA_CaptchaImage', (el) => el.getAttribute('src'));
-    const options = {
-      url: 'https://nice.checkplus.co.kr' + captchaImg + '.png',
-      dest: '/Users/hyun_M1/Documents/nodeJS/Puppeteer/puppeteer/captcha_img'
+  const captchaByLens = async () => {
+    popup.bringToFront();
+    var captchaSolveText = '';
+    console.log('--lens 캡챠solve시작--');
+
+    const dayKO = dayjs().format("LL LTS")
+
+    const captchaImg = await popup.waitForSelector('#CAPTCHA_CaptchaImage');
+    console.log("🚀 ~ file: insure_phoneAuth.js ~ line 208 ~ captchaByLens ~ captchaImg", captchaImg)
+    
+
+    await popup.waitForFunction(() => {
+      const img = $('#CAPTCHA_CaptchaImage')[0]
+      return img.width > 0
+    },{timeout:0})
+
+
+    try {
+      await captchaImg.screenshot({path: `./contInsure_${dayKO}.png`,});
+    } catch (e) {
+      console.log(e);
+    }
+
+    const fileName = `./contInsure_${dayKO}.png`;
+
+    // Performs text detection by Lens
+
+    const pages = await browser.pages();
+    console.log("🚀 ~ file: insure_phoneAuth.js ~ line 247 ~ captchaByLens ~ pages", pages.length)
+    console.log('page2: ', pages[pages.length - 1]);
+
+    const page2 = pages.length > 3 ? pages[pages.length - 1] : await browser.newPage();
+
+    pages.length > 3
+      ? await page2.bringToFront()
+      : await page2.goto('https://bit.ly/glensocr', {
+          waitUntil: 'networkidle0',
+        }) + await page2.bringToFront();
+    // console.log('page2: ', pages[pages.length - 1]);
+    
+
+    blockingWait(0.3);
+
+    await page2.evaluate(xInjection);
+
+    // await page2.waitForNavigation({waitUntil: 'networkidle0'});
+
+    console.log('before Find Upload')
+    const nCexist = async () => {
+      const upload = await page2.evaluate(() => $x('//span[contains(text(), "Upload")]'));
+      upload
+        ? await page2.evaluate(
+            () =>
+              ($x('//span[contains(text(), "Upload")]').length = 1
+                ? $x('//span[contains(text(), "Upload")]').click()
+                : $x('//span[contains(text(), "Upload")]')),
+          )
+        : await navigationPromise;
     };
-    await download.image(options)
-      .then(({ filename }) => {
-          console.log('Saved to', filename)
-      })
-      .catch(err => console.error("ERR save!!! " + err))
+    await nCexist();
+    console.log('after Find Upload')
+    // await page2.waitForNavigation();
+
+    const computer = await page2.waitForXPath('//span[.="Computer"]');
+    console.log('Computer', computer);
+    await page2.waitForResponse(res => res);
+    const [fileChooser] = await Promise.all([
+      page2.waitForFileChooser(),
+      page2.evaluate(() => $x('//span[.="Computer"]').click()),
+    ]);
+    await page2.waitForResponse(res => res);
+    await fileChooser.accept([fileName]);
+    console.log(`${fileName} Uploaded!`);
+    // await navigationPromise;
+
+    // await page2.waitForResponse(res => {return res.remoteAddress === '142.250.196.142:443'})
+    await page2.waitForResponse(res => {
+      return res.url().includes('play.google.com');
+    });
+    await page2.waitForXPath('//button[contains(@aria-label, "Switch to Text mode")]');
+    // await page2.evaluate(() => $x('/html/body/div[3]/c-wiz/div/c-wiz/div/div[1]/div/div[3]/div/div/span[2]/span/button/span[1]').click());
+
+    await page2.waitForNavigation({waitUntil: 'networkidle0'});
+
+    await page2.evaluate(() => $x('//button[contains(@aria-label, "Switch to Text mode")]').click()),
+      // blockingWait(1);
+
+    console.log('Text Button Click()');
+
+    
+
+    await page2.waitForResponse(res => {
+      return res.url().includes('batchexecute');
+    });
+
+    try {
+    await page2.waitForXPath('//span[.="Select all text"]');
+    } catch { return (popup.bringToFront() + await popup.click('#CAPTCHA_ReloadIcon')) + captchaByLens() + console.log('catch오류 재실행');}
+    await page2.evaluate(() => $x('//span[.="Select all text"]').click());
+
+    await page2.waitForFunction(() => {
+      const textReadDiv = $x('//div[contains(@jsname, "r4nke")]').innerText
+    return textReadDiv.length > 0
+    },{timeout: 0},)
+  
+
+    console.log('Select all text Click()');
 
 
-    await popup.waitForSelector("#answer");
-    await popup.click("#answer");
-    await popup.type("#answer", "user한테 받을 captcha");  // user한테 핸드폰 인증번호 argu로 받아서 별도 async funtion으로 전달해야함
+    const lensResultText = await page2.evaluate(() => {
+      return $x('//div[starts-with(@jsaction, "contextmenu")]').innerText;
+    });
+    console.log('🚀 ~ file: payinfo.js ~ line 479 ~ lensResultText ~ lensResultText', lensResultText);
 
-    await popup.waitForSelector("#btnSubmit");
-    await popup.click("#btnSubmit");
+
+
+    await popup.bringToFront();
+    blockingWait(3);
+
+
+    await popup.waitForSelector('#answer', {waitUntil: 'load'});
+    await popup.type('#answer', lensResultText);
+    captchaSolveText = lensResultText;
+    await popup.click('#btnSubmit');
+
+    console.log('captcha frm send wait for sms div')
+
+    await popup.waitForNavigation();
+    
+    const phoneAuthNumberDiv = await popup.$eval('#authnumber', el => (el ? true : false));
+    console.log('🚀 ~ file: payinfo.js ~ line 377 ~ captchaByLens ~ phoneAuthNumberDiv', phoneAuthNumberDiv);
+
+    phoneAuthNumberDiv
+      ? await page2.close()
+      : (await captchaByLens(captchaSolveText)) + console.log('Lens 인식오류로 재실행');
+  };
+
+  try {
+    const solvedCaptcha = await captchaByLens();
+    console.log('🚀 ~ file: payinfo.js ~ line 395 ~ solvedCaptcha', solvedCaptcha);
+  } catch {
+    (await popup.click('#CAPTCHA_ReloadIcon')) + captchaByLens() + console.log('catch오류 재실행');
+  }
+
+
+
+    // await popup.waitForSelector("#answer");
+    // await popup.click("#answer");
+    // await popup.type("#answer", "user한테 받을 captcha");  // user한테 핸드폰 인증번호 argu로 받아서 별도 async funtion으로 전달해야함
+
+    // await popup.waitForSelector("#btnSubmit");
+    // await popup.click("#btnSubmit");
+
+
+
 
 
     // user한테 sms 인증번호 전달 받아 입력하고 &
+
+
+    var nowTime = new Date();
+    nowTime.setHours(nowTime.getHours() + 9);
+    const sentTimeISO = nowTime.toISOString().replace('T', ' ').substring(0, 19);
+
+    const db = new sqlite3.Database(SQLiteMessagesDB);
+
+    let sql = `
+      SELECT
+          datetime (message.date / 1000000000 + strftime ("%s", "2001-01-01"), "unixepoch", "localtime") AS message_date,
+          message.text
+      FROM
+          chat
+          JOIN chat_message_join ON chat. "ROWID" = chat_message_join.chat_id
+          JOIN message ON chat_message_join.message_id = message. "ROWID"
+      WHERE
+          chat_identifier = '+8216001522'
+          and
+          datetime (message.date / 1000000000 + strftime ("%s", "2001-01-01"), "unixepoch", "localtime") > '${sentTimeISO}'
+      ORDER BY message_date DESC
+      `;
+
+    let messageresult = {};
+    const get = async () => {
+      db.get(sql, [], (err, row) => {
+        if (err) {
+          throw err;
+        }
+        if (row) {
+          return (messageresult = row), resultOut(messageresult);
+        } else {
+          return setTimeout(() => {
+            get(), console.log('메시지 올때까지 1초마다 db read');
+          }, 1000);
+        }
+      });
+    };
+    get();
+    const resultOut = async resultOutReturn => {
+      console.log('resultOutReturn: ', resultOutReturn),
+        // 문자+숫자 => 숫자가 아닌 건 지워라
+        await popup.type('#authnumber', resultOutReturn.text.replace(/[^0-9]/g, ''));
+    };
+
+    await popup.waitForFunction(() => {
+        const smsConfirmNum = document.getElementById('authnumber').value;
+
+        return smsConfirmNum.length == 6;
+      },
+      {timeout: 0},
+    );
+
+
     // captcha answer 전송 버튼하고 sms인증 answer 전송 버튼 모두 btnSubmit이니 헷갈리지 말 것
     await popup.waitForSelector("#btnSubmit");
     await popup.click("#btnSubmit");
 
     await navigationPromise;
 
-    const [, page2] = await browser.pages();
-    console.log("🚀 ~ file: insure.js ~ line 206 ~ page2", page2.url);
+    const [, page3] = await browser.pages();
+    console.log("🚀 ~ file: insure.js ~ line 206 ~ page3", page3.url());
 
 
-    await page2.waitForSelector("#checkAgree1_Y");
-    await page2.click("#checkAgree1_Y");
+    await page3.waitForSelector("#checkAgree1_Y");
+    await page3.click("#checkAgree1_Y");
 
-    await page2.waitForSelector("#checkAgree2_Y");
-    await page2.click("#checkAgree2_Y");
+    await page3.waitForSelector("#checkAgree2_Y");
+    await page3.click("#checkAgree2_Y");
 
-    await page2.waitForSelector("#checkAgree3_Y");
-    await page2.click("#checkAgree3_Y");
+    await page3.waitForSelector("#checkAgree3_Y");
+    await page3.click("#checkAgree3_Y");
 
-    await page2.waitForSelector("#checkAgree4_Y");
-    await page2.click("#checkAgree4_Y");
+    await page3.waitForSelector("#checkAgree4_Y");
+    await page3.click("#checkAgree4_Y");
 
-    await page2.waitForSelector("#contents > #insuranceAgree > #agreeForm > .btn_area > .btn_next_go");
-    await page2.click("#contents > #insuranceAgree > #agreeForm > .btn_area > .btn_next_go");
+    await page3.waitForSelector("#contents > #insuranceAgree > #agreeForm > .btn_area > .btn_next_go");
+    await page3.click("#contents > #insuranceAgree > #agreeForm > .btn_area > .btn_next_go");
 
     await navigationPromise;
 
-    const InsureResultDetail = await page2.$('#resultDetail')
+    const InsureResultDetail = await page3.$('#resultDetail')
     console.log("🚀 ~ file: insure.js ~ line 306 ~ InsureResultDetail", InsureResultDetail)
 
     const resultTable = await InsureResultDetail.evaluate(node => {return node});

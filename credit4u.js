@@ -6,6 +6,7 @@ $('#form1')[0][14].value = '123456';    //CAPTCHA input에는 6자리 아무거�
 function chkCaptcha() { return true };  //CAPTCHA check function force to "true"
 $('#login').click();
 
+$('.layerPopupArea')? $('.layerPopupArea').remove() : null;
 
 
 // 공동인증서 키보드 보안 우회(DOM)

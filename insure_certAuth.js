@@ -1,14 +1,32 @@
 // const puppeteer = require("puppeteer");
-const puppeteer = require("puppeteer-extra");
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-const puppeteerExtraPluginUserAgentOverride = require("puppeteer-extra-plugin-stealth/evasions/user-agent-override");
-const fs = require("fs");
-const dayjs = require("dayjs");
-require("dayjs/locale/ko");
-const localizedFormat = require("dayjs/plugin/localizedFormat");
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import puppeteerExtraPluginUserAgentOverride from 'puppeteer-extra-plugin-stealth/evasions/user-agent-override/index.js';
+import fs from 'fs';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ko.js'
+dayjs.locale('ko')
+import localizedFormat from 'dayjs/plugin/localizedFormat.js';
 dayjs.extend(localizedFormat);
-const download = require("image-downloader");
-const cheerio = require('cheerio');
+import {initializeApp} from 'firebase/app';
+import {getDatabase, ref, child, get, onValue, set} from 'firebase/database';
+
+
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyCTfD88e8xfwTzdzaiit4Ze01ntDLtSYho',
+  authDomain: 'lunar-5abf5.firebaseapp.com',
+  databaseURL: 'https://lunar-5abf5-payinfotest-d37a2.firebaseio.com/',
+  projectId: 'lunar-5abf5',
+  storageBucket: 'lunar-5abf5.appspot.com',
+  messagingSenderId: '135894682543',
+  appId: '1:135894682543:web:357b3079bfae5ef12a7d5a',
+  measurementId: 'G-BCDMP8HXF6',
+};
+const app = initializeApp(firebaseConfig);
+
+const database = getDatabase();
+const startRef = ref(database, '/insure/');
 
 const stealthPlugin = StealthPlugin();
 stealthPlugin.enabledEvasions.delete("user-agent-override");
@@ -117,8 +135,8 @@ puppeteer.use(pluginUserAgentOverride);
 
   // popup창 alert창 뜨는 거 확인 버튼
   page.on("dialog", async (dialog) => {
-    console.log("dialog", dialog);
-    (await dialog) ?? dialog.accept();
+    console.log("dialog", dialog.message());
+    await dialog.accept();
   });
 
   await popup.waitForSelector(
@@ -226,21 +244,25 @@ puppeteer.use(pluginUserAgentOverride);
 
   page5.setDefaultNavigationTimeout(0);
 
-  await page5.waitForSelector("#resultDetail");
+  const resultDetail = await page5.waitForSelector("#resultDetail");
+  console.log("🚀 ~ file: insure_certAuth.js ~ line 228 ~ resultDetail", resultDetail)
   
 
-  const resultText = await page5.$eval("#resultDetail", (eval) => {
-    return eval.innerText;
-  });
+  // const resultText = await page5.$eval("#resultDetail", (result) => {
+  //   return result;
+  // });
+  // console.log("🚀 ~ file: insure_certAuth.js ~ line 233 ~ resultText ~ resultText", resultText)
 
-  
+  await page5.waitForFunction(() => {
+    return $("#resultDetail").width() > 0
+  })
 
   const data = await page5.evaluate(() => {
     const titles = Array.from(document.querySelectorAll('#popuForm > h4.sub_sstit_bul')); 
     const InsuaranceStatusTable = Array.from(document.querySelectorAll('#popuForm > table:nth-child(8)')); 
-    console.log("🚀 ~ file: insure_certAuth.js ~ line 229 ~ data ~ InsuaranceStatusTable", InsuaranceStatusTable)
+    console.log("🚀 ~ file: insure_certAuth.js ~ line 229 ~ data ~ InsuaranceStatusTable[0]", InsuaranceStatusTable[0])
     // 그냥 전체 Table에서 select하면 mobile view 포함해서 중복 조회되므로 pc view의 선택자만 골라서 담기
-   
+
     const ISTheaders = [];
     const ISTcells = {};
 
@@ -317,13 +339,22 @@ puppeteer.use(pluginUserAgentOverride);
 })
   console.log("🚀 ~ file: insure_certAuth.js ~ line 259 ~ data ~ data", data)
 
+
+  const dayKO = dayjs().format("LL LTS")
+
+  const insureToFB = {}
+  insureToFB[dayKO] = data;
+  set(startRef, insureToFB);
+
+
+
   await fs.writeFile("./TEMP_FOLDER/resultDetail.json", JSON.stringify(data), (err) =>
     console.log(err)
   );
 
 
-  const resultAllHTML = await page5.$eval("#resultDetail", (eval) => {
-    return eval.innerHTML;
+  const resultAllHTML = await page5.$eval("#resultDetail", (result) => {
+    return result.innerHTML;
   });
 
   const resultPage = await browser.newPage();
@@ -353,34 +384,5 @@ puppeteer.use(pluginUserAgentOverride);
   );
 
 
-  // const table = await page5.$$eval("#popuForm > table:nth-child(8)", eval => { return eval });
-  // console.log("🚀 ~ file: insure_certAuth.js ~ line 254 ~ table", table)
-  // const resultTable = { header: "", rows: "" };
-
-  // // // html table to json
-  // table.find("tbody tr th").each(function () {
-  //   resultTable.header.push($(this).html());
-  // });
   
-  // table.find("tbody tr").each(function () {
-  //   var row = {};
-    
-  //   $(this)
-  //   .find("td")
-  //   .each(function (i) {
-  //     var key = header[i],
-  //     value = $(this).html();
-      
-  //     resultTable.row[key] = value;
-  //   });
-    
-  //   resultTable.rows.push(row);
-  // });
-  
-  // console.log("🚀 ~ file: insure_certAuth.js ~ line 256 ~ resultTable", resultTable)
-  
-
-  // await page4.waitForSelector('#AFTER_START > btn_area > button')
-
-  // await browser.close();
 })();

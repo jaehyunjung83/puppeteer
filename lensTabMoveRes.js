@@ -114,13 +114,17 @@ const blockingWait = (seconds) => {
     });
 
 
+    var responsedText = {}
     
     page2.on('response', async res => {
         if (res.url().includes('batchexecute')) {
-            // const resText = await res.text()
-            // const test3 = resText.match(/\W{4}\d{6}\W{2}/g);
-            // const test4 = test3[0].replace(/\D/g, '')
-            // console.log("🚀 ~ file: lensTabMove.js ~ line 127 ~ test4", test4)
+                                    
+            const resText = await res.text()
+            
+            
+            const test3 = resText.match(/\W{4}\d{6}\W{2}/g);
+            responsedText = test3[0].replace(/\D/g, '');
+            console.log("🚀 ~ file: lensTabMoveRes.js ~ line 127 ~ responsedText", responsedText)
             
         }
     });
@@ -138,7 +142,6 @@ const blockingWait = (seconds) => {
     blockingWait(0.3);
 
     const page1Frames = await page1.frames();
-    console.log("🚀 ~ file: lensTabMove.js ~ line 121 ~ page1Frames", page1Frames)
     const [, scourtFrame] = await page1.frames();
     await scourtFrame.evaluate(xInjection);
 
@@ -158,15 +161,10 @@ const blockingWait = (seconds) => {
         console.time(`${i + 1}'s lens Try`)
 
         // i > 0 ? await scourtFrame.evaluate(() => reloadCaptcha()) : null;
-        i > 0 ?
-        await scourtFrame.evaluate(() => 
-            $x('//a[contains(@title, "자동입력방지문자 새로고침")]').click()) 
-            + console.log('새로고침')
-        : null;
+        i > 0 ? await scourtFrame.evaluate(() => $x('//a[contains(@title, "자동입력방지문자 새로고침")]').click()) : null;
 
 
         const captchaImg = await scourtFrame.waitForSelector('#captcha > img');
-        
         await scourtFrame.waitForFunction(() => {
             const img = $('#captcha > img')[0]
             return img.width > 0
@@ -176,9 +174,6 @@ const blockingWait = (seconds) => {
         // blockingWait(1)
 
         const tabTestCaptcha = await captchaImg.screenshot({ path: `tabTestcaptcha(${i + 1}).png` });
-        // const tabTestCaptcha = await captchaImg.screenshot({ path: `tabTestcaptcha_beside.png` });
-        console.log("🚀 ~ file: lensTabMove.js ~ line 135 ~ tabTestCaptcha", tabTestCaptcha)
-
 
         await page2.bringToFront();
         // blockingWait(1);
@@ -210,102 +205,55 @@ const blockingWait = (seconds) => {
 
 
 
-        await fileChooser.accept([`tabTestcaptcha(${i + 1}).png`]),
-        // await fileChooser.accept([`tabTestcaptcha(${15}).png`]),
-            // await fileChooser.accept(["nothing.jpg"]);
-            console.log(`tabTestcaptcha(${i + 1}).png choosed & uploaded!`)
-            // console.log(`tabTestcaptcha(${15}).png choosed & uploaded!`)
-
-        await page2.waitForNavigation();
-
-
-        try {
-        const textButton = await page2.waitForXPath('//span[contains(text(), "Text")]');
-        console.log("🚀 ~ file: lensTabMove.js ~ line 191 ~ captchaRoutine ~ textButton", textButton)
-        await page2.waitForNavigation({
-            waitUntil: 'networkidle0',
-        })
-        } catch {
-            async (err) => {
-                console.log("🚀 ~ file: lensTabMove.js ~ line 223 ~ err", err)
-                await page2.waitForXPath('//div[contains(text(), "find text")]');
-                const cantFind = await page2.evaluate(() => $x('//div[contains(text(), "find text")]').innerText)
-                console.log("🚀 ~ file: lensTabMove.js ~ line 226 ~ cantFind", cantFind)
-                await page1.bringToFront();
-                blockingWait(0.3);
-                await captchaRoutine(i+1);
-            }
-        }
-        
-
         const [response] = await Promise.all([
-            await page2.evaluate(() => $x('//span[contains(text(), "Text")]').click()),
-            console.log('Text Click()'),
+            await fileChooser.accept([`tabTestcaptcha(${i + 1}).png`]),
+            // await fileChooser.accept(["nothing.jpg"]);
+            console.log(`tabTestcaptcha(${i + 1}).png choose&uploaded!`),
             await page2.waitForResponse((res) => { return res.url().includes('batchexecute') })
         ]);
-        console.log("🚀 ~ file: lensTabMove.js ~ line 228 ~ captchaRoutine ~ response", response)
+        const uploadNres = await response;
+        console.log("🚀 ~ file: lensTabMoveRes.js ~ line 215 ~ captchaRoutine ~ uploadNres", uploadNres)
+        
+
+        await page2.waitForNavigation({
+            waitUntil: 'networkidle0',
+        });
+
+        const textButton = await page2.waitForXPath('//span[contains(text(), "Text")]');
+        console.log("🚀 ~ file: lensTabMove.js ~ line 191 ~ captchaRoutine ~ textButton", textButton)
+        
+        
+        
 
         const whenSuccess = async () => {
-            console.log('👍 whenSuccess')
-            // await page2.waitForNavigation({
-            //     waitUntil: 'networkidle0',
-            // });
-
-            const selectAll = await page2.waitForXPath('//span[contains(text(), "Select all text")]')
-            console.log("🚀 ~ file: lensTabMove.js ~ line 193 ~ captchaRoutine ~ selectAll", selectAll)
-
-            selectAll ? await page2.evaluate(() => $x('//span[contains(text(), "Select all text")]').click()) : null;
-            console.log('Select all text Click()')
-
-            // i == 0 ? await page2.waitForNavigation({
-            //     waitUntil: 'networkidle0',
-            // }) : null;
-
-
-            await page2.waitForFunction(() => {
-                const textReadDiv = $x('//div[contains(@jsname, "r4nke")]').innerText
-            return textReadDiv.length > 0
-            },{timeout: 0},)
-
-            const resultText = await page2.evaluate(() => {
-                return ($x('//div[starts-with(@jsaction, "contextmenu")]').innerText)
-            });
-            console.log("🚀 ~ file: lensTabMove.js ~ line 204 ~ resultText ~ resultText", resultText)
+            console.log('whenSuccess')
+            
 
             await page1.bringToFront();
             blockingWait(0.3);
 
-            await scourtFrame.evaluate((resultText) => $x('//input[contains(@name, "answer")]').value = resultText, resultText);
-
-            console.timeEnd(`${i + 1}'s lens Try`)
-        };
-
-        const whenFailed = async (err) => {
-            console.log("❌ ~ file: lensTabMove.js ~ line 205 ~ captchaRoutine ~ err", err)
-            await page2.waitForXPath('//div[contains(text(), "find text")]');
-            const cantFind = await page2.evaluate(() => $x('//div[contains(text(), "find text")]').innerText)
             
-            await page1.bringToFront();
-            blockingWait(0.3);
-            await captchaRoutine(i++);
+            await scourtFrame.evaluate((responsedText) => $x('//input[contains(@name, "answer")]').value = responsedText, responsedText)
             
         };
 
-        // Lens 글자 인식 됐는 지 안 됐는 지
+        // Lens 글자 인식 실패
         try {
-            await page2.waitForXPath('//span[contains(text(), "Select all text")]', { timeout: 3000 })
             await whenSuccess();
         } catch {
-            await whenFailed()
+            async (err) => {
+                await captchaRoutine(i);
+            }
         }
-        
 
-        
+
+
+        console.timeEnd(`${i + 1}'s lens Try`)
 
     };
 
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 5; i++) {
 
         await captchaRoutine(i);
     }
