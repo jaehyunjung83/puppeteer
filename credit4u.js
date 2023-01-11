@@ -10,7 +10,7 @@ $('.layerPopupArea')? $('.layerPopupArea').remove() : null;
 
 
 // 공동인증서 키보드 보안 우회(DOM)
-
+$('#pubCertAgree')[0].click();
 touchenexInfo.isInstalled = true;
 yettie.signFormNewUCPID($('#signMsg').val(), true, true, true, true, true, 'credit4u.or.kr', {
 	encoding: 'hex'
