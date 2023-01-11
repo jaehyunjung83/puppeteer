@@ -1,3 +1,4 @@
+const template = `
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
@@ -157,7 +158,7 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:60px 60px 30px;font-family:'Open Sans',sans-serif;" align="left">
         
   <div style="color: #ffffff; line-height: 140%; text-align: center; word-wrap: break-word;">
-    <p style="font-size: 14px; line-height: 140%;">Dear Customer,</p>
+    <p style="font-size: 14px; line-height: 140%;">Dear ${TO_ADDRESS},</p>
 <p style="font-size: 14px; line-height: 140%;"> </p>
 <p style="font-size: 14px; line-height: 140%;"><span style="font-size: 16px; line-height: 22.4px;"><strong>We Wish you a Happy New Year!</strong></span></p>
 <p style="font-size: 14px; line-height: 140%;"> </p>
@@ -388,4 +389,6 @@ table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: under
   <!--[if IE]></div><![endif]-->
 </body>
 
-</html>
+</html>`
+
+export default template;

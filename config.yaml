@@ -1,0 +1,7 @@
+url:
+  protocol: https
+  host: re-ply.r-e.kr
+  port: 5001
+  account: 정재현
+  passwd: wjdwogus1@
+  apiVersion: 6.2.2

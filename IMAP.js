@@ -1,6 +1,11 @@
 import Imap from 'imap';
 import { inspect } from 'util';
 import fs from 'fs';
+import { MailParser } from 'mailparser';
+
+
+export var OBJ = {};
+
 
 const imap = new Imap({
   user: 'jjjh1983@naver.com',
@@ -9,64 +14,83 @@ const imap = new Imap({
   port: 993,
   tls: true
 });
-
-function openInbox(cb) {
+const openInbox = (cb) => {
   imap.openBox('INBOX', true, cb);
 }
 
 
-imap.once('ready', function () {
-  openInbox(function (err, box) {
+imap.once('ready', () => {
+  openInbox((err, box) => {
     if (err) throw err;
-    imap.search([['HEADER', 'from', 'mail@kcredit.or.kr'], ['SINCE', 'Dec 16, 2022']], function (err, results) {
-
+    imap.search(
+      [
+        ['HEADER', 'from', 'REPLY TEAM.'],
+        ['SINCE', 'Jan 2, 2023']
+      ], (err, results) => {
       if (err) throw err;
+
       var f = imap.fetch(results, { bodies: ''});
-
-
-
-      f.on('message', function (msg, seqno) {
+      f.on('message', (msg, seqno) => {
         console.log('Message #%d', seqno);
-        var obj = {};
+        
         var prefix = '(#' + seqno + ') ';
-        obj.num = seqno;
-        msg.on('body', function (stream, info) {
+        OBJ.num = seqno;
+
+
+        var parser = new MailParser();
+        parser.on('data', data => {
+          
+          // console.log('parser message 본문: ', data.text);
+          OBJ.body = data.text
+          console.log('parsed OBJ: ', OBJ)
+        });
+
+
+
+
+        msg.on('body', (stream, info) => {
 
           if (info.which === 'TEXT') {
             console.log(prefix + 'Body [%s] found, %d total bytes', inspect(info.which), info.size);
             var buffer = '', count = 0;
           }
-          stream.on('data', function (chunk) {
+          stream.on('data', (chunk) => {
             count += chunk.length;
             buffer += chunk.toString('utf8');
+            parser.write(buffer)
           });
-          stream.once('end', function () {
+          stream.once('end', () => {
             if (info.which === 'TEXT') {
-              obj.body = buffer.toString('utf8');
+              OBJ.body = buffer.toString('utf8');
             } else {
               console.log('info.which is not TEXT')
-              obj.header = Imap.parseHeader(buffer);
+              OBJ.header = Imap.parseHeader(buffer);
+              
             }
-            console.log('obj', obj)
-
+            // console.log('OBJ', OBJ)
+            parser.end()
 
           });
 
           
           // console.log(prefix + 'Body');
           stream.pipe(fs.createWriteStream('msg-' + seqno + '-body.txt'));
+          
         });
-        msg.once('attributes', function (attrs) {
+        msg.once('attributes', (attrs) => {
           console.log(prefix + 'Attributes: %s', inspect(attrs, false, 8));
         });
-        msg.once('end', function () {
+        msg.once('end', () => {
           console.log(prefix + 'Finished');
         });
+
+
+
       });
-      f.once('error', function (err) {
+      f.once('error', (err) => {
         console.log('Fetch error: ' + err);
       });
-      f.once('end', function () {
+      f.once('end', () => {
         console.log('Done fetching all messages!');
         imap.end();
       });
@@ -74,12 +98,13 @@ imap.once('ready', function () {
   });
 });
 
-imap.once('error', function (err) {
+imap.once('error', (err) => {
   console.log(err);
 });
 
-imap.once('end', function () {
+imap.once('end', () => {
   console.log('Connection ended');
 });
 
 imap.connect();
+

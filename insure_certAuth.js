@@ -9,7 +9,7 @@ dayjs.locale('ko')
 import localizedFormat from 'dayjs/plugin/localizedFormat.js';
 dayjs.extend(localizedFormat);
 import {initializeApp} from 'firebase/app';
-import {getDatabase, ref, child, get, onValue, set} from 'firebase/database';
+import {getDatabase, ref, child, get, onValue, set, update} from 'firebase/database';
 
 
 
@@ -31,12 +31,12 @@ const startRef = ref(database, '/insure/');
 const stealthPlugin = StealthPlugin();
 stealthPlugin.enabledEvasions.delete("user-agent-override");
 puppeteer.use(stealthPlugin);
-const pluginUserAgentOverride = puppeteerExtraPluginUserAgentOverride({
-  userAgent:
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36",
-  platform: "Win32",
-});
-puppeteer.use(pluginUserAgentOverride);
+// const pluginUserAgentOverride = puppeteerExtraPluginUserAgentOverride({
+//   userAgent:
+//     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36",
+//   platform: "Win32",
+// });
+// puppeteer.use(pluginUserAgentOverride);
 
 (async () => {
   const browser = await puppeteer.launch(
@@ -64,8 +64,8 @@ puppeteer.use(pluginUserAgentOverride);
     }
   });
 
-  page.setDefaultNavigationTimeout(0);
-
+  page.setDefaultNavigationTimeout(600000);
+  
   const navigationPromise = page.waitForNavigation();
 
   await page.goto("https://cont.insure.or.kr", {
@@ -131,7 +131,12 @@ puppeteer.use(pluginUserAgentOverride);
     popup
   );
 
-  popup.setDefaultNavigationTimeout(0);
+  popup.setDefaultNavigationTimeout(600000);
+
+  popup.on("dialog", async (dialog) => {
+    console.log("dialog", dialog.message());
+    await dialog.accept();
+  });
 
   // popup창 alert창 뜨는 거 확인 버튼
   page.on("dialog", async (dialog) => {
@@ -156,7 +161,7 @@ puppeteer.use(pluginUserAgentOverride);
 
   const [, , page3] = await browser.pages();
 
-  page3.setDefaultNavigationTimeout(0);
+  page3.setDefaultNavigationTimeout(600000);
   // const yettieFramePromise = new Promise((x) =>
   // console.log("🚀 ~ file: insure_certAuth.js ~ line 138 ~ x", x),
   //   page3.once("framenavigated", (target) => console.log(target))
@@ -211,7 +216,7 @@ puppeteer.use(pluginUserAgentOverride);
   const [, page4] = await browser.pages();
   console.log("🚀 ~ file: insure_certAuth.js ~ line 178 ~ page4", page4);
 
-  page4.setDefaultNavigationTimeout(0);
+  page4.setDefaultNavigationTimeout(600000);
   
   await page4.waitForSelector("#checkAgree1_Y");
   await page4.click("#checkAgree1_Y");
@@ -242,7 +247,7 @@ puppeteer.use(pluginUserAgentOverride);
 
   const [, page5] = await browser.pages();
 
-  page5.setDefaultNavigationTimeout(0);
+  page5.setDefaultNavigationTimeout(600000);
 
   const resultDetail = await page5.waitForSelector("#resultDetail");
   console.log("🚀 ~ file: insure_certAuth.js ~ line 228 ~ resultDetail", resultDetail)
@@ -344,11 +349,11 @@ puppeteer.use(pluginUserAgentOverride);
 
   const insureToFB = {}
   insureToFB[dayKO] = data;
-  set(startRef, insureToFB);
+  update(startRef, insureToFB, {merge: true});
 
 
 
-  await fs.writeFile("./TEMP_FOLDER/resultDetail.json", JSON.stringify(data), (err) =>
+  await fs.writeFile("puppeteer/TEMP_FOLDER/resultDetail.json", JSON.stringify(data), (err) =>
     console.log(err)
   );
 
@@ -360,7 +365,7 @@ puppeteer.use(pluginUserAgentOverride);
   const resultPage = await browser.newPage();
   await resultPage.setContent(resultAllHTML);
   await resultPage.screenshot({
-    path: `./TEMP_FOLDER/${dayjs(new Date()).locale("ko").format("llll")}.png`,
+    path: `puppeteer/TEMP_FOLDER/${dayjs(new Date()).locale("ko").format("llll")}.png`,
     fullPage: true,
   });
   // await resultPage.pdf({ path: `./TEMP_FOLDER/${dayjs(new Date).locale('ko').format('llll')}.pdf` });
@@ -377,7 +382,7 @@ puppeteer.use(pluginUserAgentOverride);
     </html>
   `;
   fs.writeFileSync(
-    `./TEMP_FOLDER/${dayjs(new Date()).locale("ko").format("llll")}.html`,
+    `puppeteer/TEMP_FOLDER/${dayjs(new Date()).locale("ko").format("llll")}.html`,
     resultHTML,
     "utf8",
     (res) => console.log("파일저장결과:", res)

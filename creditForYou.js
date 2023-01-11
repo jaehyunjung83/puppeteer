@@ -243,7 +243,10 @@ puppeteer.use(stealthPlugin);
         $('#btnSendAuthNum').click();
     });
 
-    const emailAuthNumber = [];
+    var now = new Date();
+    var timeAgo = new Date();
+    timeAgo.setMinutes(timeAgo.getMinutes() + 1);
+
 
     var imapConfig = {
         imap: {
@@ -261,68 +264,346 @@ puppeteer.use(stealthPlugin);
         while (waitTill > new Date()) { }
     };
 
-    const retriveAuthNum = async () => {
-        console.log('email auth retrive')
-        imaps
-            .connect(imapConfig)
-            .then((connection) => {
-                var now = new Date();
-                var timeAgo = new Date();
-                timeAgo.setMinutes(timeAgo.getMinutes() - 1);
 
-                return connection.openBox('INBOX')
-                    .then(() => {
-                        var searchCriteria = [
-                            ['HEADER', 'from', 'mail@kcredit.or.kr'],
-                            ['SINCE', now.toISOString()], // 날짜 기준만 적용 가능
-                        ];
-                        var fetchOptions = { bodies: ['HEADER', 'TEXT', ''], };
-                        return connection
-                            .search(searchCriteria, fetchOptions)
-                            .then((messages) => {
-                                console.log(`whole messages length: ${messages.length}`)
-                                var count = 0;
-                                messages.forEach((item) => {
+    const connection = await imaps.connect(imapConfig)
 
-                                    var all = _.find(item.parts, { "which": "" })
-                                    var id = item.attributes.uid;
-                                    var idHeader = "Imap-Id: " + id + "\r\n";
-                                    simpleParser(idHeader + all.body, (err, mail) => {
-                                        count++
-                                        // access to the whole mail object
-                                        if (mail.date > timeAgo) {
-                                            console.log(`${count} -> ${timeAgo} received mail was found`)
-                                            console.log(mail.date) + console.log(mail.subject)
-                                            const body = mail.date + mail.html
-                                            fs.writeFile('./nodeimap_' + id + '.html', body, () => console.log())
-                                            const text = mail.text
-                                            console.log('RegEx: ', text.match(/\s*(\d{6})\s*/g))
-                                            const authResult = text.match(/\s*(\d{6})\s*/g);
-                                            emailAuthNumber.push(authResult[0].trim())
-                                            console.log("🚀 ~ file: creditForYou.js:302 ~ simpleParser ~ emailAuthNumber", emailAuthNumber)
-                                            
-                                        } else {
-                                            console.log(`${count} -> ${timeAgo} received mail was not found`)
-                                        }
-                                    });
-                                });
-                            })
-                            .then(() => connection.end());
-                    });
-            });
+    const imapConnect = async () => {
 
+        await connection.openBox('INBOX')
+
+        var searchCriteria = [
+            ['NEW'],
+            ['HEADER', 'from', 'mail@kcredit.or.kr'],
+            ['SINCE', now.toISOString()], // 날짜 기준만 적용 가능, 시간x. now.toISOString() = today()
+        ];
+        var fetchOptions = { bodies: ['HEADER', 'TEXT', ''], };
+
+        return await connection.search(searchCriteria, fetchOptions)
     };
+
+    const untilNewMailConfirm = async () => {
+        while (true) {
+            const searchMail = await imapConnect();
+
+            // imap.seach returns an array
+            if (searchMail.length > 0) {
+                //  NEW Flag로 메시지가 1개라도 있으면 그 uid 읽음 처리 addFlag Callback Sent
+                await connection.addFlags(searchMail[0].attributes.uid, ['\\SEEN'], (err) => { if (err) { console.log('addFlage Err', err) } });
+                // NEW Flag mail 을 parse Function으로 보내고 untilNewMailConfirm function 종료
+                return newMailParse(searchMail[0]);
+            }
+            // Wait 1 second before checking again
+            console.log('NEW 메시지 올때까지 1초마다 sleep and recursively do while function')
+            await sleep(1000);
+        }
+    };
+
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+
+
+    const newMailParse = async (newMail) => {
+        const fullBody = _.find(newMail.parts, { which: '' });
+        const parseNewMailBody = await simpleParser(fullBody.body);
+        // match는 array 반환
+        const authNumber = parseNewMailBody.text.match(/\b\d{6}\b/g, '')[0];
+        return authNumber
+    };
+
+
+    const authNumberOut = await untilNewMailConfirm();
+    console.log("🚀 ~ file: creditForYou.js:314 ~ authNumberOut", authNumberOut)
+    await connection.end();
+    console.log('connection end')
 
     blockingWait(3);
 
-    const authType = await Promise.all([
-        retriveAuthNum(),
-        page.waitForSelector('#edtAuthNum'),
-    ]);
+    await page.waitForSelector('#edtAuthNum');
 
-    await page.type('#edtAuthNum', emailAuthNumber[emailAuthNumber.length-1])
-    
+    await page.type('#edtAuthNum', authNumberOut)
+
 
     await page.waitForSelector('#btnAuthConfirm');
+    await page.evaluate(() => $('#btnAuthConfirm').click())
+    console.log('확인 버튼 클릭')
+    // await page.waitForNavigation();
+    blockingWait(1);
+
+    await page.waitForSelector('#btnConfirm');
+    await page.evaluate(() => $('#btnConfirm').click())
+    console.log('다음 버튼 클릭')
+    await page.waitForNavigation();
+
+    await page.evaluate(() => window.location.href = "/memb/memberLoginView.do")
+    await page.waitForNavigation();
+
+
+    await page.evaluate(() => {
+        $('#form1')[0][10].value = 'jjjh1983';
+        $('#form1')[0][12].value = 'wjdwogus1@';
+        $('#form1')[0][14].value = '123456';    //CAPTCHA input에는 6자리 아무거나
+        window.chkCaptcha = () => { return true };  //CAPTCHA check function force to "true"
+        $('#login').click();
+    });
+    await page.waitForNavigation();
+
+    // await page.evaluate(() => {
+    //     // 보험계약현황 페이지 이동
+    //     fn_main_headPageAction(this, '210', 'ins/contStatList.do');
+    // });
+    // await page.waitForNavigation();
+
+
+    // const credit4u = [];
+    // await page.evaluate(() => {
+    //     // 정액형 page
+    //     location.href = "/ins/fixedReturn.do"
+    // });
+    // await page.waitForNavigation();
+
+
+    
+
+    // fontEnd에서 한 페이지씩 list 가져오기
+
+
+
+
+    // await page.evaluate(() => {
+    //     // 기본 '정상' 계약만 조회되있는 거 전체(해지포함) 조회로 바꿈
+    //     $('#all_sub')[0].checked = true;    // radio check
+    //     fixedReturnList("1");
+    // })
+    // const xamtResult = await page.evaluate(async () => {
+    //     // paging이동은 dom 변수 초기화 안 됨. arr.push해도 이어짐
+    //     var insuarance = [];
+    //     var count = 1;
+    //     const loop = async () => {
+    //         while (true) {
+    //             count++
+    //             fixedReturnList(count);
+
+    //             // $('#item li .box').each 안에서 $(this)는 오직 .box div 만 가르킴
+    //             $('#item li .box').each(function (index) {
+    //                 const commodity = {}
+    //                 commodity['보험사'] = $(this).find('.info_gap').find('.overdue').text(),
+    //                     commodity['상품명'] = $(this).find('.info_gap').find('.str_product').text(),
+    //                     commodity['상태'] = $(this).find('.info_gap').find('span').text();
+    //                 var contract = {}
+    //                 $(this).find('.rezult_list').find('ul').find('li').each((index, li) => {
+    //                     // 이 안에서의 this도 .box div 임. li 가 아님
+    //                     contract[li.textContent.split(':')[0].trim()] = li.textContent.split(':')[1].trim();
+
+    //                 })
+    //                 commodity['contract'] = contract
+    //                 insuarance.push(commodity)
+    //             });
+
+    //             if ($('#divPaging').children().length - 4 == count) {
+    //                 return insuarance;
+    //             }
+    //             await sleep(500);
+    //         }
+    //     };
+
+    //     const loopResult = await loop()
+
+    //     return loopResult;
+    // })
+
+    // credit4u['xamt'] = xamtResult
+    // console.log("🚀 ~ file: creditForYou.js:379 ~ credit4u", credit4u)
+
+
+
+
+
+    // 아니면 그냥 xhr 보내서 network response json data로 일괄 확인 가능
+    // const xamtResult = await page.evaluate(() => {
+    //     const insContract = {}
+
+    //     return $.ajax({
+    //         url: '/ins/ajaxPrintFixedReturn.do',
+    //         type: 'post',
+    //         data: {
+    //             'contractor': 'ALL',
+    //             'mcontSttusCd': 'ALL',
+    //             'pageIndex': 1,
+    //             'pageUseYn': 'false',
+    //             'viewCon': 'p'
+    //         },
+    //         async: false,
+    //         beforeSend: function (xhr) {
+    //             var header = $("meta[name='_csrf_header']").attr("content");
+    //             var token = $("meta[name='_csrf']").attr("content");
+    //             xhr.setRequestHeader(header, token);
+    //         },
+    //         success: function (data) {
+    //             //요부분이 전체 계약 세부내역
+    //         }
+    //     }).responseJSON;
+    // });
+
+    // credit4u['xamt'] = xamtResult
+    // console.log("🚀 ~ file: creditForYou.js:452 ~ credit4u", credit4u)
+
+    // await page.waitForNavigation();
+
+
+    // const aliResult = await page.evaluate(() => {
+    //     const insContract = {}
+    //     // responseJSON.paginationInfo.lastPageNo 랑 responseJSON.paginationInfo.currentPageNo 랑 비교해서
+    //     // 같아질때까지 반복
+    //     return $.ajax({
+    //         url:'/ins/ajaxIndemnityContList.do',
+    //         type:'post',
+    //         data: {
+    //             'pageIndex'		: 1,
+    //             'pageUseYn' 	: "true",
+    //             'viewCon'		: 'p',
+    //         },
+    //          async: false,
+    //         beforeSend: function( xhr ) {
+    //             var header = $("meta[name='_csrf_header']").attr("content");
+    //             var token = $("meta[name='_csrf']").attr("content");
+    //             xhr.setRequestHeader(header, token);
+    //         },
+    //         success: function(data){}
+    //     }).responseJSON;
+    // });
+
+    // credit4u['ali'] = aliResult
+    // console.log("🚀 ~ file: creditForYou.js:478 ~ credit4u", credit4u)
+    
+
+    // await page.waitForNavigation();
+
+
+
+    // const aliPayed = await page.evaluate(() => {
+    //     const insContract = {}
+    //     // responseJSON.paginationInfo.lastPageNo 랑 responseJSON.paginationInfo.currentPageNo 랑 비교해서
+    //     // 같아질때까지 반복
+    //     return $.ajax({
+    //         url:'/ins/ajaxindemnityClaimList.do',
+    //         type:'post',
+    //         data: {
+    //             'viewCon'		: 'p',
+    //             'pageIndex'		: 1,
+    //             'pageUseYn' 	: "true",
+    //         },
+    //         async: false,
+    //         beforeSend: function( xhr ) {
+    //             var header = $("meta[name='_csrf_header']").attr("content");
+    //             var token = $("meta[name='_csrf']").attr("content");
+    //             xhr.setRequestHeader(header, token);
+    //         },
+    //         success: function(data){
+    //         }
+    //     }).responseJSON;
+    // });
+
+    // credit4u['aliPayed'] = aliPayed
+    // console.log("🚀 ~ file: creditForYou.js:508 ~ credit4u", credit4u)
+    
+
+    // await page.waitForNavigation();
+
+    // const fire = await page.evaluate(() => {
+    //     const insContract = {}
+    //     // responseJSON.paginationInfo.lastPageNo 랑 responseJSON.paginationInfo.currentPageNo 랑 비교해서
+    //     // 같아질때까지 반복
+    //     return $.ajax({
+    //         url : '/ins/ajaxFireList.do',
+    //         type : 'post',
+    //         data : {
+    //             'contractor' 	: 'ALL',
+    //             'mcontSttusCd'	: 'ALL',
+    //             'pageIndex'		: 1,
+    //             'pageUseYn'		: 'true',
+    //             'viewCon'		: 'p',
+    //         },
+    //         async: false,
+    //         beforeSend: function( xhr ) {
+    //             var header = $("meta[name='_csrf_header']").attr("content");
+    //             var token = $("meta[name='_csrf']").attr("content");
+    //             xhr.setRequestHeader(header, token);
+    //         },
+    //         success : function(data) {}
+    //     }).responseJSON;
+    // });
+
+    // credit4u['fire'] = fire
+    // console.log("🚀 ~ file: creditForYou.js:508 ~ credit4u", credit4u)
+    
+
+    // await page.waitForNavigation();
+
+
+    // const car = await page.evaluate(() => {
+    //     const insContract = {}
+    //     // responseJSON.paginationInfo.lastPageNo 랑 responseJSON.paginationInfo.currentPageNo 랑 비교해서
+    //     // 같아질때까지 반복
+    //     return $.ajax({
+    //         url : '/ins/ajaxAutomobileList.do',
+    //         type : 'post',
+    //         data : {
+    //             'contractor' 	: 'ALL',
+    //             'mcontSttusCd'	: 'ALL',
+    //             'pageIndex'		: 1,
+    //             'pageUseYn'		: 'true',
+    //             'viewCon'		: 'p',
+    //         },
+    //         async: false,
+    //         beforeSend: function( xhr ) {
+    //             var header = $("meta[name='_csrf_header']").attr("content");
+    //             var token = $("meta[name='_csrf']").attr("content");
+    //             xhr.setRequestHeader(header, token);
+    //         },
+    //         success : function(data) {}
+    //     }).responseJSON;
+    // });
+
+    // credit4u['car'] = car
+    // console.log("🚀 ~ file: creditForYou.js:508 ~ credit4u", credit4u)
+
+
+    await page.evaluate(() => {
+
+        const url = [
+            "/ins/ajaxPrintFixedReturn.do",
+            "/ins/ajaxIndemnityContList.do",
+            "/ins/ajaxindemnityClaimList.do",
+            "/ins/ajaxFireList.do",
+            "/ins/ajaxAutomobileList.do"
+        ];
+        const seperator = url.map((url) => url.match(/(?<=\ajax)(.*?)(?=\.do)/g).toString());
+
+        seperator.map((sep) => {
+    
+            const sepAjaxRes = $.ajax({
+                url : `/ins/ajax${sep}.do`,
+                    type : 'post',
+                    data : {
+                        'contractor' 	: 'ALL',
+                        'mcontSttusCd'	: 'ALL',
+                        'pageIndex'		: 1,
+                        'pageUseYn'		: 'false',
+                        'viewCon'		: 'p',
+                    },
+                    async: false,
+                    beforeSend: function( xhr ) {
+                        xhr.setRequestHeader(header, token);
+                    },
+                    success : function(data) {}
+            }).responseJSON;
+            credit4u[sep] = sepAjaxRes
+        });
+    })
+    
+    console.log("🚀 ~ file: creditForYou.js:601 ~ seperator.map ~ credit4u", credit4u)
+    
+
+    await page.waitForNavigation();
 
 })();
