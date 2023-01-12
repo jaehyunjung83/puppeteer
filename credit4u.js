@@ -9,7 +9,7 @@ $('#login').click();
 $('.layerPopupArea')? $('.layerPopupArea').remove() : null;
 
 
-// 공동인증서 키보드 보안 우회(DOM)
+// NICE아이디. 공동인증서 키보드 보안 우회(DOM)
 $('#pubCertAgree')[0].click();
 touchenexInfo.isInstalled = true;
 yettie.signFormNewUCPID($('#signMsg').val(), true, true, true, true, true, 'credit4u.or.kr', {
@@ -17,7 +17,7 @@ yettie.signFormNewUCPID($('#signMsg').val(), true, true, true, true, true, 'cred
 }, function resultCallback(result) {
 	$("#signedMsg").val(result.signature);
 	$("#storageType").val(result.storageType);
-    alert('success시: ', result.signature)
+    console.log('signFormNewUCPID success시 callback: ', result)
 	
 	if($("#signedMsg").val() ==  null || $("#signedMsg").val() == "") {
 		alert("전자서명문 또는 식별번호 검증 메시지가 올바르지 않습니다.");
@@ -29,7 +29,7 @@ yettie.signFormNewUCPID($('#signMsg').val(), true, true, true, true, true, 'cred
 	}
 }, function errorCallback(error) {
 	if(error.code == -9999) alert('error시: ', error.code);  // 취소 버튼 이벤트 error.code: -9999
-	else alert(error.msg);
+	else console.log(error.msg);
 });
 
 
