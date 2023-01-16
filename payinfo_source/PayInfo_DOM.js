@@ -8,6 +8,8 @@
 
 //  1. chrome 개발자도구 설정 -> javascript사용 중단 -> payinfo.or.kr -> javascript 다시 사용
 //  2. https://payinfo.or.kr/acntcb/qryAcntSummary.do?menu=1
+//      만일 qryAcntSummary.do?menu=1 에서 installcheck 다음으로 안 넘어가면 그냥
+//      https://payinfo.or.kr/ 로 접속 한 다음에 javascript enabled로 하고 qryAcntSummary.do로 가보면 됨
 
 
 window.alert = function(){return false;};window.confirm = function(){return false;};

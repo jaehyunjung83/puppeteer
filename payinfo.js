@@ -18,7 +18,7 @@ import verbose from 'sqlite3';
 const sqlite3 = verbose;
 import clipboard from 'clipboardy';
 import {initializeApp} from 'firebase/app';
-import {getDatabase, ref, child, get, onValue, set} from 'firebase/database';
+import {getDatabase, ref, child, get, onValue, set, update} from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCTfD88e8xfwTzdzaiit4Ze01ntDLtSYho',
@@ -963,12 +963,31 @@ puppeteer.use(pluginUserAgentOverride);
 
 
   // 증권사
-  await frameset.waitForSelector('#lnb > li:nth-child(3) > a');
-  await frameset.click('#lnb > li:nth-child(3) > a');
+  // await frameset.waitForSelector('#lnb > li:nth-child(3) > a');
+  // await frameset.click('#lnb > li:nth-child(3) > a');
+
+  await frameset.evaluate(() => { location.href="/acntcb/qryAcntStockSummary.do?menu=5&t=214327"})
 
   await frameset.waitForSelector('#confirm');
-  await frameset.click('#confirm');
-  await frameset.click('#contents > div > div.btn_group2 > a');
+  
+  await frameset.evaluate(() => {
+    $('#confirm')[0].checked = true;
+    OnSearch();
+  })
+
+  // await frameset.evaluate(() => {
+  //   $('#confirm_paystop')[0].checked = true;
+  //   OnSearch();
+  // });
+  // await frameset.waitForNavigation();
+
+  // await frameset.evaluate(() => {
+  //   $('#confirm')[0].checked = true;
+  //   OnSearch();
+  // });
+
+
+  // await frameset.click('#contents > div > div.btn_group2 > a');
 
   await frameset.waitForNavigation();
 
@@ -1158,13 +1177,18 @@ puppeteer.use(pluginUserAgentOverride);
 
 
   // 카드사
-  await frameset.click('#gnb > li:nth-child(2) > a');
+  // await frameset.click('#gnb > li:nth-child(2) > a');
+  await frameset.evaluate(() => location.href="/card/qryCardSumr.do?menu=1&t=214702");
 
   await frameset.waitForNavigation();
 
-  await frameset.waitForSelector('#confirm');
-  await frameset.click('#confirm');
-  await frameset.click('#contents > div > div.btn_group2 > a');
+  // await frameset.waitForSelector('#confirm');
+  // await frameset.click('#confirm');
+  // await frameset.click('#contents > div > div.btn_group2 > a');
+  await frameset.evaluate(() => {
+    $('#confirm')[0].checked = true;
+    OnSearch();
+  })
 
   await frameset.waitForNavigation();
 
@@ -1522,7 +1546,7 @@ puppeteer.use(pluginUserAgentOverride);
 
   const payinfoToFB = {}
   payinfoToFB[dayKO] = payinfo;
-  set(startRef, payinfoToFB);
+  update(startRef, payinfoToFB, {merge: true});
 
   await frameset.waitForNavigation();
 })();
