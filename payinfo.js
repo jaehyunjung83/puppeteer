@@ -107,6 +107,11 @@ puppeteer.use(pluginUserAgentOverride);
     waitUntil: 'networkidle0',
   });
 
+  page.on('dialog', (dialog) => {
+    console.log('page dialog', dialog.message());
+    dialog.dismiss();
+  });
+
   const client = await page.target().createCDPSession();
   const cookies = (await client.send('Network.getAllCookies')).cookies;
 
@@ -129,26 +134,25 @@ puppeteer.use(pluginUserAgentOverride);
 
   const [, , secondStartFrame] = await page.frames();
 
-  const testCaptureImg = await secondStartFrame.waitForSelector(
-    '#wrap > div.main_container > div.quick_menu > ul > li.quick_m04 > a > img',
-  );
+  // const testCaptureImg = await secondStartFrame.waitForSelector(
+  //   '#wrap > div.main_container > div.quick_menu > ul > li.quick_m04 > a > img',
+  // );
+
   // await testCaptureImg.click({ button: "right" })
 
   // await secondStartFrame.keyboard.type('g')
 
   // await secondStartFrame.keyboard.press('Enter')
 
-  const img = await testCaptureImg.screenshot({
-    path: './test.png',
-  });
+  // const img = await testCaptureImg.screenshot({
+  //   path: './test.png',
+  // });
 
-  await secondStartFrame.waitForSelector('#gnb > li:nth-child(1) > a');
-  await secondStartFrame.click('#gnb > li:nth-child(1) > a');
+  // await secondStartFrame.waitForSelector('#gnb > li:nth-child(1) > a');
+  // await secondStartFrame.click('#gnb > li:nth-child(1) > a');
 
-  page.on('dialog', async dialog => {
-    console.log('dialog', dialog);
-    dialog.dismiss();
-  });
+  await secondStartFrame.evaluate(() => location.href="/acntcb/qryAcntSummary.do?menu=1&t=123728");
+  
 
   await secondStartFrame.waitForNavigation();
 
@@ -171,9 +175,6 @@ puppeteer.use(pluginUserAgentOverride);
 
   await mainFrame.waitForSelector('#rlnmNum1', {waitUntil: 'load'});
   await mainFrame.click('#rlnmNum1');
-  // page.on("dialog", async (dialog) => {
-  //   dialog.dismiss();
-  // });
   await mainFrame.type('#rlnmNum1', '831206');
 
   await mainFrame.waitForSelector('#rlnmNum2', {waitUntil: 'load'});
@@ -332,188 +333,175 @@ puppeteer.use(pluginUserAgentOverride);
 
   await frameset.waitForNavigation();
 
-  // const captchaGCV = async () => {
-  //   var captchaSolveText = '';
-  //   console.log('--캡챠solve시작--');
-
-  //   await frameset.waitForTimeout(200);
-  //   const captchaImg = await frameset.waitForSelector('#catpcha > img');
-  //   console.log('🚀 ~ file: payinfo.js ~ line 296 ~ captchaGCV ~ captchaImg', captchaImg);
-
-  //   try {
-  //     const catchaScreenshot = await captchaImg.screenshot({
-  //       path: './payinfoCaptchaImg.png',
-  //     });
-  //   } catch (e) {
-  //     console.log(e);
-  //     console.log('exception    ');
-  //   }
-
-  //   const GCVclient = new ImageAnnotatorClient();
-  //   const fileName = './payinfoCaptchaImg.png';
-
-  //   // Performs text detection on the local file
-  //   const [result] = await GCVclient.textDetection(fileName);
-  //   const detections = result.textAnnotations;
-
-  //   detections[1].description
-  //     ? console.log(`${fileName}` + `s Text: ${detections[1].description}`)
-  //     : (await frameset.click('#reLoad')) + captchaGCV();
-
-  //   await frameset.waitForSelector('#answer', {waitUntil: 'load'});
-  //   await frameset.type('#answer', detections[1].description);
-  //   captchaSolveText = detections[1].description;
-  //   await frameset.click('#frmSubmit');
-  //   const resultOKorNot = await frameset.$eval('#resultImg', el => (el.value === 'ok' ? true : false));
-  //   console.log('🚀 ~ file: payinfo.js ~ line 377 ~ captchaGCV ~ resultOKorNot', resultOKorNot);
-
-  //   (await resultOKorNot) ? null : await captchaGCV(captchaSolveText);
-  // };
-
-  // try {
-  //   const solvedCaptcha = await captchaGCV();
-  //   console.log('🚀 ~ file: payinfo.js ~ line 395 ~ solvedCaptcha', solvedCaptcha);
-  // } catch {
-  //   (await frameset.click('#reLoad')) + captchaGCV() + console.log('GCV인식오류로 재실행');
-  // }
-
-  const captchaByLens = async () => {
-    var captchaSolveText = '';
-    console.log('--lens 캡챠solve시작--');
-
-    const captchaImg = await frameset.waitForSelector('#catpcha > img');
-    console.log("🚀 ~ file: payinfo.js ~ line 383 ~ captchaByLens ~ captchaImg", captchaImg)
-
-    await frameset.waitForFunction(() => {
-      const img = $('#catpcha > img')[0]
-      return img.width > 0
-    },{timeout:0})
-
-    try {
-      await captchaImg.screenshot({path: './payinfoCaptchaImg.png',});
-    } catch (e) {
-      console.log('exception    ');
-      console.log(e);
-    }
-
-    const fileName = './payinfoCaptchaImg.png';
-
-    // Performs text detection by Lens
-
-    const pages = await browser.pages();
-    console.log('page2: ', pages[pages.length - 1]);
-
-    const page2 = pages.length > 2 ? pages[pages.length - 1] : await browser.newPage();
-
-    pages.length > 2
-      ? await page2.bringToFront()
-      : await page2.goto('https://bit.ly/glensocr', {
-          waitUntil: 'networkidle0',
-        }) + await page2.bringToFront();
-    // console.log('page2: ', pages[pages.length - 1]);
-    
-
-    blockingWait(0.3);
-
-    await page2.evaluate(xInjection);
-
-    await navigationPromise;
-
-    // const uploadSelector = await page2.waitForSelector(
-    //   '#gb > div > div > div > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > span > div > button > div',
-    // );
-
-    const nCexist = async () => {
-      const upload = await page2.evaluate(() => $x('//span[contains(text(), "Upload")]'));
-      upload
-        ? await page2.evaluate(
-            () =>
-              ($x('//span[contains(text(), "Upload")]').length = 1
-                ? $x('//span[contains(text(), "Upload")]').click()
-                : $x('//span[contains(text(), "Upload")]')),
-          )
-        : await navigationPromise;
-    };
-    await nCexist();
-
-    await navigationPromise;
-
-    const computer = await page2.waitForXPath('//span[.="Computer"]');
-    console.log('Computer', computer);
-    await page2.waitForResponse(res => res);
-    const [fileChooser] = await Promise.all([
-      page2.waitForFileChooser(),
-      page2.evaluate(() => $x('//span[.="Computer"]').click()),
-    ]);
-    await page2.waitForResponse(res => res);
-    await fileChooser.accept([fileName]);
-    console.log(`${fileName} Uploaded!`);
-    // await navigationPromise;
-
-    // await page2.waitForResponse(res => {return res.remoteAddress === '142.250.196.142:443'})
-    await page2.waitForResponse(res => {
-      return res.url().includes('play.google.com');
-    });
-    await page2.waitForXPath('//button[contains(@aria-label, "Switch to Text mode")]');
-    // await page2.evaluate(() => $x('/html/body/div[3]/c-wiz/div/c-wiz/div/div[1]/div/div[3]/div/div/span[2]/span/button/span[1]').click());
-
-    await page2.waitForNavigation({waitUntil: 'networkidle0'});
-
-    await page2.evaluate(() => $x('//button[contains(@aria-label, "Switch to Text mode")]').click()),
-      // blockingWait(1);
-
-    console.log('Text Button Click()');
-
-    
-
-    await page2.waitForResponse(res => {
-      return res.url().includes('batchexecute');
-    });
-
-    
-    await page2.waitForXPath('//span[.="Select all text"]');
-
-    await page2.evaluate(() => $x('//span[.="Select all text"]').click());
-
-    await page2.waitForFunction(() => {
-      const textReadDiv = $x('//div[contains(@jsname, "r4nke")]').innerText
-    return textReadDiv.length > 0
-    },{timeout: 0},)
   
 
-    console.log('Select all text Click()');
+  var count = 0;
+  const captchaByLens = async () => {
+
+    while (true) {
+      count++
+      var captchaSolveText = '';
+      count == 1 ? console.log('--lens 캡챠solve시작--') : console.log(`--lens 오류 ${count} 번째 재실행--`);
+
+      await page.bringToFront();
+      const captchaImg = await frameset.waitForSelector('#catpcha > img');
+      console.log("🚀 ~ file: payinfo.js ~ line 383 ~ captchaByLens ~ captchaImg", captchaImg)
+
+      await frameset.waitForFunction(() => {
+        const img = $('#catpcha > img')[0]
+        return img.width > 0
+      },{timeout:0})
+
+      
+      await captchaImg.screenshot({path: './payinfoCaptchaImg.png',});
+      
+
+      const fileName = './payinfoCaptchaImg.png';
+
+      // Performs text detection by Lens
+
+      const pages = await browser.pages();
+      console.log('page2: ', pages[pages.length - 1]);
+
+      const page2 = pages.length > 2 ? pages[pages.length - 1] : await browser.newPage();
+
+      pages.length > 2
+        ? null
+        : await page2.goto('https://bit.ly/glensocr', {
+            waitUntil: 'networkidle0',
+          });
+      // console.log('page2: ', pages[pages.length - 1]);
+      
+      await page2.bringToFront();
+
+      blockingWait(0.3);
+
+      await page2.evaluate(xInjection);
+
+      // await page2.waitForNavigation();
 
 
-    const lensResultText = await page2.evaluate(() => {
-      return $x('//div[starts-with(@jsaction, "contextmenu")]').innerText;
-    });
-    console.log('🚀 ~ file: payinfo.js ~ line 479 ~ lensResultText ~ lensResultText', lensResultText);
+      // const nCexist = async () => {
+      //   const upload = await page2.evaluate(() => $x('//span[contains(text(), "Upload")]'));
+      //   upload
+      //     ? await page2.evaluate(
+      //         () =>
+      //           ($x('//span[contains(text(), "Upload")]').length = 1
+      //             ? $x('//span[contains(text(), "Upload")]').click()
+      //             : $x('//span[contains(text(), "Upload")]')),
+      //       )
+      //     : await page2.waitForNavigation();
+      // };
+      // await nCexist();
+
+      await page2.waitForXPath('//span[contains(text(), "Upload")]');
+      await page2.evaluate(() => $x('//span[contains(text(), "Upload")]').click());
+      
+
+      await page2.waitForXPath('//span[.="Computer"]');
+      console.log('Computer');
+      
+      // await page2.waitForResponse(res => res);
+
+      const [fileChooser] = await Promise.all([
+        page2.waitForFileChooser(),
+        page2.evaluate(() => $x('//span[.="Computer"]').click()),
+      ]);
+      // await page2.waitForResponse(res => res);
+
+      await fileChooser.accept([fileName]);
+      console.log(`${fileName} Uploaded!`);
+      
+      // await page2.waitForNavigation();
+      
+
+      // await page2.waitForResponse(res => {return res.remoteAddress === '142.250.196.142:443'})
+      
+      await page2.waitForResponse(res => {
+        return res.url().includes('play.google.com');
+      });
 
 
 
-    await page.bringToFront();
-    blockingWait(0.3);
+      // 모서리 받침 부분이 화면에 그려지면 Text button click 하게
+      await page2.waitForFunction(() => {
+        return $x('//input[contains(@data-corner-type, "1")]').clientWidth > 0;
+      });
+      console.log('모서리 확인')
+
+      await page2.waitForXPath('//button[contains(@aria-label, "Switch to Text mode")]');
+
+      // await page2.waitForNavigation({waitUntil: 'networkidle0'});
+
+      await page2.evaluate(() => 
+        $x('//button[contains(@aria-label, "Switch to Text mode")]').click()
+      );
+        // blockingWait(1);
+
+      console.log('Text Button Click()');
+
+      await page2.waitForResponse(res => {
+        return res.url().includes('batchexecute');
+      });
+
+      await page2.waitForXPath('//span[.="Select all text"]');
+      await page2.evaluate(() => $x('//span[.="Select all text"]').click());
+
+      await page2.waitForFunction(() => {
+        const textReadDiv = $x('//div[contains(@jsname, "r4nke")]').innerText
+      return textReadDiv.length > 0
+      },{timeout: 0},)
+    
+
+      console.log('Select all text');
 
 
-    await frameset.waitForSelector('#answer', {waitUntil: 'load'});
-    await frameset.type('#answer', lensResultText);
-    captchaSolveText = lensResultText;
-    await frameset.click('#frmSubmit');
-    const resultOKorNot = await frameset.$eval('#resultImg', el => (el.value === 'ok' ? true : false));
-    console.log('🚀 ~ file: payinfo.js ~ line 377 ~ captchaByLens ~ resultOKorNot', resultOKorNot);
+      const lensResultText = await page2.evaluate(() => {
+        return $x('//div[starts-with(@jsaction, "contextmenu")]').innerText;
+      });
+      console.log('🚀 ~ file: payinfo.js ~ line 479 ~ lensResultText ~ lensResultText', lensResultText);
 
-    resultOKorNot
-      ? await page2.close()
-      : (await captchaByLens(captchaSolveText)) + console.log('Lens 인식오류로 재실행');
+      // 특수문자만 regex
+      const reg = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi
+      // 특수문자 만 제외하고 숫자만 남김
+      const refinedResult = lensResultText.replace(reg, '');
+
+      await page.bringToFront();
+      blockingWait(0.3);
+
+
+      await frameset.waitForSelector('#answer', {waitUntil: 'load'});
+      await frameset.type('#answer', refinedResult);
+      captchaSolveText = refinedResult;
+      await frameset.click('#frmSubmit');
+      const resultOKorNot = await frameset.$eval('#resultImg', el => (el.value === 'ok' ? true : false));
+      console.log('🚀 ~ file: payinfo.js ~ line 377 ~ captchaByLens ~ resultOKorNot', resultOKorNot);
+
+      if (resultOKorNot) { 
+        return await page2.close() 
+      } else { 
+            await page.bringToFront();
+            blockingWait(0.3);
+            await frameset.click('#reLoad');
+          }
+      
+      };
   };
+
+
 
   try {
     const solvedCaptcha = await captchaByLens();
     console.log('🚀 ~ file: payinfo.js ~ line 395 ~ solvedCaptcha', solvedCaptcha);
   } catch {
-    (await frameset.click('#reLoad')) + captchaByLens() + console.log('catch오류 재실행');
+      await page.bringToFront();
+      blockingWait(0.3);
+      await frameset.click('#reLoad');
+      await captchaByLens();
   }
 
+  console.log('captcha 끝내고 은행 핸드폰번호 입력 ');
+  
   await frameset.evaluate(() => {
     $('#fncOrgCode > option:nth-child(2)').prop('selected', true);
     console.log('하나은행 option 선택');
@@ -575,6 +563,8 @@ puppeteer.use(pluginUserAgentOverride);
     });
   };
   get();
+
+
   const resultOut = async resultOutReturn => {
     console.log('resultOutReturn: ', resultOutReturn),
       // 문자+숫자 => 숫자가 아닌 건 지워라
@@ -1169,7 +1159,10 @@ puppeteer.use(pluginUserAgentOverride);
     payinfo.securities[i]['securitiesDetail'] = securitiesDetailObj;
     console.log('🚀 ~ file: payinfo.js ~ line 935 ~ payinfo', payinfo);
 
-    await frameset.click('#checkForm > div > a:nth-child(2)');
+    // await frameset.click('#checkForm > div > a:nth-child(2)');
+
+    // 증권사 전체 목록으로
+    await frameset.evaluate(() => OnList())
 
     await frameset.waitForNavigation();
   }
@@ -1540,13 +1533,18 @@ puppeteer.use(pluginUserAgentOverride);
   console.log('🚀 ~ file: payinfo.js ~ line 1257 ~ payinfo', payinfo);
 
 
-  writeFileSync('payinfo.json', JSON.stringify({...payinfo}))
   
   const dayKO = dayjs().format("LL LTS")
-
+  
   const payinfoToFB = {}
-  payinfoToFB[dayKO] = payinfo;
+  payinfoToFB[dayKO] = {...payinfo};
+  console.log("🚀 ~ file: payinfo.js:1555 ~ payinfoToFB", payinfoToFB)
+  
   update(startRef, payinfoToFB, {merge: true});
+  
+  writeFileSync(`payinfo_${dayKO}.json`, JSON.stringify({...payinfoToFB}))
+
+  console.log('firebase/payinfo/날짜 merge updated')
 
   await frameset.waitForNavigation();
 })();

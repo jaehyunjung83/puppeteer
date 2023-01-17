@@ -261,6 +261,8 @@ const blockingWait = (seconds) => {
 
     await navigationPromise1;
 
+
+    await console.log('async 벗어나는 지 확인')
 })();
 
 
