@@ -8,7 +8,7 @@ dayjs.locale('ko')
 import localizedFormat from 'dayjs/plugin/localizedFormat.js';
 dayjs.extend(localizedFormat);
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, child, get, onValue, set } from 'firebase/database';
+import { getDatabase, ref, update } from 'firebase/database';
 import imaps from 'imap-simple';
 import { simpleParser } from 'mailparser';
 import _ from 'lodash';
@@ -41,6 +41,9 @@ puppeteer.use(stealthPlugin);
 // puppeteer.use(pluginUserAgentOverride);
 
 (async () => {
+    // console.time('회원가입&ins조회')
+    const start = performance.now();
+
     const browser = await puppeteer.launch(
         { headless: false, defaultViewport: null, },
         {
@@ -193,7 +196,7 @@ puppeteer.use(stealthPlugin);
     console.log('%c popup에서 공동인증 가능처리', "background: red; color: black")
 
     const [, , yettie] = await popup.frames()
-    console.log("🚀 ~ file: creditForYou.js:174 ~ yettie", yettie)
+    // console.log("🚀 ~ file: creditForYou.js:174 ~ yettie", yettie)
 
     await yettie.waitForNavigation();
 
@@ -254,7 +257,8 @@ puppeteer.use(stealthPlugin);
             password: 'wjdwogus7*',
             host: 'imap.naver.com',
             port: 993,
-            tls: true
+            tls: true,
+            timeout: 10000 // 10 seconds
         }
     };
 
@@ -327,7 +331,7 @@ puppeteer.use(stealthPlugin);
     await page.evaluate(() => $('#btnAuthConfirm').click())
     console.log('확인 버튼 클릭')
     // await page.waitForNavigation();
-    blockingWait(1);
+    // blockingWait(1);
 
     await page.waitForSelector('#btnConfirm');
     await page.evaluate(() => $('#btnConfirm').click())
@@ -568,7 +572,10 @@ puppeteer.use(stealthPlugin);
     // console.log("🚀 ~ file: creditForYou.js:508 ~ credit4u", credit4u)
 
 
-    await page.evaluate(() => {
+    
+    const credit4u = await page.evaluate(() => {
+        var header = $("meta[name='_csrf_header']").attr("content");
+        var token = $("meta[name='_csrf']").attr("content");
 
         const url = [
             "/ins/ajaxPrintFixedReturn.do",
@@ -579,9 +586,8 @@ puppeteer.use(stealthPlugin);
         ];
         const seperator = url.map((url) => url.match(/(?<=\ajax)(.*?)(?=\.do)/g).toString());
 
-        seperator.map((sep) => {
-    
-            const sepAjaxRes = $.ajax({
+        return seperator.map((sep) => {
+            return $.ajax({
                 url : `/ins/ajax${sep}.do`,
                     type : 'post',
                     data : {
@@ -594,16 +600,36 @@ puppeteer.use(stealthPlugin);
                     async: false,
                     beforeSend: function( xhr ) {
                         xhr.setRequestHeader(header, token);
-                    },
-                    success : function(data) {}
+                    }
             }).responseJSON;
-            credit4u[sep] = sepAjaxRes
         });
     })
     
     console.log("🚀 ~ file: creditForYou.js:601 ~ seperator.map ~ credit4u", credit4u)
-    
 
-    await page.waitForNavigation();
+    const dayKO = dayjs().format("LL LTS")
+  
+    const credit4UToFB = {}
+    credit4UToFB[dayKO] = {...credit4u};
+    console.log("🚀 ~ file: creditForYou.js:611 ~ credit4UToFB", credit4UToFB)
+    
+    update(startRef, credit4UToFB, {merge: true});
+    
+    
+    // console.timeEnd('회원가입&ins조회')
+
+    const end = performance.now();
+    
+    const elapsed = end - start;
+    const seconds = Math.floor(elapsed / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = (seconds % 60).toFixed(0);
+    
+    console.log(`회원가입 & ins 조회: ${minutes}:${remainingSeconds}`);
+
+    credit4u ? await browser.close()
+    : await page.waitForNavigation();
+
+    process.exit();
 
 })();

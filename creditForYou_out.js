@@ -41,6 +41,7 @@ puppeteer.use(stealthPlugin);
 // puppeteer.use(pluginUserAgentOverride);
 
 (async () => {
+    const start = performance.now();
     const browser = await puppeteer.launch(
         { headless: false, defaultViewport: null, },
         {
@@ -140,14 +141,16 @@ puppeteer.use(stealthPlugin);
     
     await page.waitForNavigation();
     console.log('login 후 초기 페이지 return')
-    await page.evaluate(() => window.location.href="/memb/memberWithdrawal.do");
+    await page.evaluate(() => location.href="/memb/memberWithdrawal.do");
     console.log('after 회원탈퇴 링크클릭')
     
     
     await page.waitForSelector('#btnWithdrawal');
 
-    await page.evaluate(() => {
-        $.ajax({
+    const withdrawal = await page.evaluate(async() => {
+        
+        
+        return await $.ajax({
 			type: "POST",
 			url: "/memb/memberWithdrawalAction.do",
 			contentType : "application/json; charset=utf-8",
@@ -158,13 +161,28 @@ puppeteer.use(stealthPlugin);
 				var token = $("meta[name='_csrf']").attr("content");
 				xhr.setRequestHeader(header, token);
 			}, 
-			data: JSON.stringify({userId: ''})
-		})
+			data: JSON.stringify({userId: ''}),
+            success: (data) => console.log(data)
+		});
+
+        
     });
+    console.log("🚀 ~ file: creditForYou_out.js:165 ~ withdrawal ~ withdrawal", withdrawal)
 
-    console.log('회원탈퇴');
+    
 
 
+    const end = performance.now();
+    
+    const elapsed = end - start;
+    const seconds = Math.floor(elapsed / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = (seconds % 60).toFixed(0);
+    
+    console.log(`회원탈퇴: ${minutes}:${remainingSeconds}`);
 
+    withdrawal.success ? await browser.close() : await page.waitForNavigation();
+
+    process.exit();
 
 })();
